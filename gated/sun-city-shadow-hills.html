@@ -63,7 +63,7 @@
 
   <!-- HERO -->
   <section class="gc-hero">
-    <img class="gc-hero-img" id="gc-hero-img" src="" alt="" />
+    <div id="gc-hero-map"></div>
     <div class="gc-hero-overlay"></div>
     <div class="gc-hero-content">
       <div class="gc-breadcrumb">
@@ -326,9 +326,9 @@
     </div>
   </footer>
 
-  <!-- Mapbox + shared token init -->
+  <!-- Mapbox + shared token (community-map.js sets token before early-return) -->
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
-  <script src="/community-map.js" defer></script>
+  <script src="/community-map.js"></script>
 
   <script>
   (function() {
@@ -358,14 +358,33 @@
       return 'Affordable';
     }
 
+    function initHeroMap(lat, lng) {
+      if (!window.mapboxgl || !mapboxgl.accessToken) return;
+      const map = new mapboxgl.Map({
+        container: 'gc-hero-map',
+        style: 'mapbox://styles/mapbox/standard',
+        center: [lng, lat],
+        zoom: 14,
+        pitch: 45,
+        bearing: -10,
+        interactive: false,
+        attributionControl: false
+      });
+      map.on('style.load', () => {
+        map.setConfigProperty('basemap', 'lightPreset', 'night');
+      });
+    }
+
     function initMap(lat, lng, name) {
       if (!window.mapboxgl || !mapboxgl.accessToken) return;
       const map = new mapboxgl.Map({
         container: 'gc-map',
         style: 'mapbox://styles/mapbox/standard',
         center: [lng, lat],
-        zoom: 13,
-        pitch: 30
+        zoom: 14,
+        pitch: 40,
+        bearing: -12,
+        attributionControl: false
       });
       map.on('style.load', () => {
         map.setConfigProperty('basemap', 'lightPreset', 'night');
@@ -489,7 +508,10 @@
       }
 
       // Map
-      if (c.lat && c.lng) initMap(c.lat, c.lng, c.name);
+      if (c.lat && c.lng) {
+        initHeroMap(c.lat, c.lng);
+        initMap(c.lat, c.lng, c.name);
+      }
     }
 
     function buildOthers(all, current) {
