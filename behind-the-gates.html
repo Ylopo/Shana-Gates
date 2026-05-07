@@ -312,10 +312,12 @@
 
     function cardHTML(c) {
       const city = CITY_SLUGS[c.communitySlug] || c.city;
-      const imgEl = imgWithFallback(c, 'btg-card-image');
-      const btnHTML = c.hasDetailPage
-        ? `<a href="/gated/${c.slug}.html" class="btg-card-btn">Explore Community →</a>`
-        : `<span class="btg-card-btn btg-card-btn-disabled">Profile Coming Soon</span>`;
+      const sat = satImg(c);
+      const bgStyle = sat ? ` style="background-image:url('${sat}')"` : '';
+      const tag = c.hasDetailPage ? 'a' : 'div';
+      const hrefAttr = c.hasDetailPage ? ` href="/gated/${c.slug}.html"` : '';
+      const btnLabel = c.hasDetailPage ? 'Explore Community →' : 'Profile Coming Soon';
+      const btnCls = c.hasDetailPage ? 'btg-card-btn' : 'btg-card-btn btg-card-btn-disabled';
       const filterAttrs = [
         `data-tier="${c.tier}"`,
         `data-city="${c.communitySlug}"`,
@@ -325,17 +327,21 @@
       ].join(' ');
 
       return `
-      <div class="btg-card${!c.hasDetailPage ? ' coming-soon' : ''}" ${filterAttrs}>
-        ${imgEl}
+      <${tag}${hrefAttr} class="btg-card${!c.hasDetailPage ? ' coming-soon' : ''}" ${filterAttrs}>
+        <div class="btg-card-banner"${bgStyle}>
+          <div class="btg-card-banner-overlay"></div>
+          <div class="btg-card-banner-text">
+            <div class="btg-card-banner-name">${c.name}</div>
+            <div class="btg-card-banner-city">${city}</div>
+          </div>
+        </div>
         <div class="btg-card-body">
           <div class="btg-card-badges">${badgesHTML(c)}</div>
-          <div class="btg-card-name">${c.name}</div>
-          <div class="btg-card-city">${city}</div>
           <div class="btg-card-price">${c.priceRange.display} <span>· HOA ${c.hoaRange.display}</span></div>
           <div class="btg-card-amenities">${topAmenities(c)}</div>
         </div>
-        <div class="btg-card-footer">${btnHTML}</div>
-      </div>`;
+        <div class="btg-card-footer"><div class="${btnCls}">${btnLabel}</div></div>
+      </${tag}>`;
     }
 
     function renderGrid(list) {
