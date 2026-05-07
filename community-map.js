@@ -14,14 +14,13 @@
 ;(function () {
   'use strict'
 
+  var TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog'
+  var BRONZE = '#B8975A'
+  mapboxgl.accessToken = TOKEN
+
   var cfg = window.CV_MAP_CONFIG
   var propCfg = window.PROPERTY_MAP_CONFIG
   if (!cfg && !propCfg) return
-
-  var TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog'
-  var BRONZE = '#B8975A'
-
-  mapboxgl.accessToken = TOKEN
 
   // ── Single-property map (used on /properties/{slug}.html) ────────────────
   // Reads window.PROPERTY_MAP_CONFIG: { lng, lat, label, container }
