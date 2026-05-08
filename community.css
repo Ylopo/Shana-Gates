@@ -3541,6 +3541,7 @@ a.btg-card { text-decoration: none; color: inherit; }
 /* Hero */
 .gc-hero {
   position: relative;
+  margin-top: 93px;
   min-height: 80vh;
   display: flex;
   align-items: flex-end;
@@ -4134,7 +4135,7 @@ a.btg-card { text-decoration: none; color: inherit; }
   .gc-nearby-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 900px) {
-  .gc-hero { min-height: 62vh; }
+  .gc-hero { margin-top: 80px; min-height: 62vh; }
   .gc-hero-content { padding: 0 40px 56px; }
   .gc-stats-bar { padding: 0 40px; flex-wrap: wrap; }
   .gc-stat-item { flex: 0 0 50%; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -4150,7 +4151,7 @@ a.btg-card { text-decoration: none; color: inherit; }
   .gc-new-dev { padding: 24px 40px; }
 }
 @media (max-width: 600px) {
-  .gc-hero { min-height: 52vh; }
+  .gc-hero { margin-top: 68px; min-height: 52vh; }
   /* Override inline background-position set by JS for photo heroes */
   #gc-hero-map { background-position: center 25% !important; }
   .gc-hero-content { padding: 0 20px 48px; }
