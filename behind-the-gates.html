@@ -329,6 +329,7 @@
       return `
       <${tag}${hrefAttr} class="btg-card${!c.hasDetailPage ? ' coming-soon' : ''}" ${filterAttrs}>
         <div class="btg-card-banner"${bgStyle}>
+          <img class="btg-card-banner-photo" src="${c.heroImage}" alt="${c.name}" loading="lazy" onerror="this.style.display='none'" />
           <div class="btg-card-banner-overlay"></div>
           <div class="btg-card-banner-text">
             <div class="btg-card-banner-name">${c.name}</div>
@@ -372,8 +373,12 @@
       strip.innerHTML = picks.map(c => {
         const city = CITY_SLUGS[c.communitySlug] || c.city;
         const href = c.hasDetailPage ? `/gated/${c.slug}.html` : '#';
+        const sat2 = satImg(c);
+        const bg2 = sat2 ? ` style="background-image:url('${sat2}')"` : '';
         return `<a href="${href}" class="btg-pick-card" ${!c.hasDetailPage ? 'style="pointer-events:none"' : ''}>
-          ${imgWithFallback(c, 'btg-pick-img')}
+          <div class="btg-pick-banner"${bg2}>
+            <img class="btg-card-banner-photo" src="${c.heroImage}" alt="${c.name}" loading="lazy" onerror="this.style.display='none'" />
+          </div>
           <div class="btg-pick-body">
             <div class="btg-pick-name">${c.name}</div>
             <div class="btg-pick-city">${city}</div>
