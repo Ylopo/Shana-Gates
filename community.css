@@ -3501,6 +3501,7 @@ a.btg-card { text-decoration: none; color: inherit; }
   .btg-number-item:nth-child(3) { border-right: none; }
 }
 @media (max-width: 900px) {
+  .btg-hero { min-height: 75vh; }
   .btg-hero-content { padding: 0 40px 72px; }
   .btg-intro { grid-template-columns: 1fr; padding: 64px 40px; gap: 48px; }
   .btg-filters { padding: 24px 40px; top: 56px; }
@@ -3511,6 +3512,15 @@ a.btg-card { text-decoration: none; color: inherit; }
   .btg-cta { padding: 64px 40px; grid-template-columns: 1fr; gap: 32px; }
 }
 @media (max-width: 600px) {
+  .btg-hero { min-height: 62vh; }
+  /* Shift image right on mobile so Shana is centred in the narrow viewport */
+  .btg-hero-bg { background-position: 72% center; }
+  /* Stronger uniform overlay on mobile — text stacks vertically and needs contrast */
+  .btg-hero-bg::after {
+    background:
+      linear-gradient(to bottom, rgba(10,26,28,0.55) 0%, rgba(10,26,28,0.88) 70%),
+      linear-gradient(105deg, rgba(10,26,28,0.85) 0%, rgba(10,26,28,0.40) 100%);
+  }
   .btg-hero-content { padding: 0 20px 56px; }
   .btg-hero-stats { flex-wrap: wrap; gap: 24px; }
   .btg-grid { grid-template-columns: 1fr; }
@@ -4124,6 +4134,7 @@ a.btg-card { text-decoration: none; color: inherit; }
   .gc-nearby-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 900px) {
+  .gc-hero { min-height: 62vh; }
   .gc-hero-content { padding: 0 40px 56px; }
   .gc-stats-bar { padding: 0 40px; flex-wrap: wrap; }
   .gc-stat-item { flex: 0 0 50%; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -4139,6 +4150,9 @@ a.btg-card { text-decoration: none; color: inherit; }
   .gc-new-dev { padding: 24px 40px; }
 }
 @media (max-width: 600px) {
+  .gc-hero { min-height: 52vh; }
+  /* Override inline background-position set by JS for photo heroes */
+  #gc-hero-map { background-position: center 25% !important; }
   .gc-hero-content { padding: 0 20px 48px; }
   .gc-stats-bar { padding: 0 20px; }
   .gc-stat-item { flex: 0 0 100%; }
