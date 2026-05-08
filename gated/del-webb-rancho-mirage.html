@@ -583,5 +583,38 @@
   })();
   </script>
 
+  <script>
+  (function() {
+    const nav = document.querySelector('nav');
+    const hero = document.querySelector('.gc-hero');
+    if (!nav || !hero) return;
+    function makeTransparent() {
+      nav.style.transition = 'none';
+      nav.style.background = 'transparent';
+      nav.style.backdropFilter = 'none';
+      nav.style.webkitBackdropFilter = 'none';
+      nav.style.borderBottomColor = 'transparent';
+      nav.style.boxShadow = 'none';
+    }
+    function makeSolid() {
+      nav.style.transition = 'background 0.35s ease, border-color 0.35s ease';
+      nav.style.background = 'rgba(13,13,13,0.96)';
+      nav.style.backdropFilter = 'blur(16px)';
+      nav.style.webkitBackdropFilter = 'blur(16px)';
+      nav.style.borderBottomColor = 'rgba(184,151,90,0.18)';
+      nav.style.boxShadow = '';
+    }
+    function tick() {
+      if (window.scrollY < hero.offsetHeight - 80) {
+        makeTransparent();
+      } else {
+        makeSolid();
+      }
+    }
+    tick();
+    window.addEventListener('scroll', tick, { passive: true });
+  })();
+  </script>
+
 </body>
 </html>
