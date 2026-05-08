@@ -2924,14 +2924,15 @@ body.property-page { background: var(--dark); color: var(--text-light); }
 }
 .btg-hero-bg {
   position: absolute; inset: 0;
-  background: linear-gradient(135deg, #0a1a1c 0%, #0d2a2e 40%, #0d1a1a 100%);
+  background: #0a1a1c url('/images/gated/behind-the-gates-hero.png') right center / cover no-repeat;
 }
 .btg-hero-bg::after {
   content: '';
   position: absolute; inset: 0;
-  background: url('/images/gated/hero-bg.jpg') center/cover no-repeat;
-  opacity: 0.22;
-  mix-blend-mode: luminosity;
+  /* Dark on left where the headline lives, eases right; dark at bottom for stats */
+  background:
+    linear-gradient(105deg, rgba(10,26,28,0.94) 0%, rgba(10,26,28,0.72) 42%, rgba(10,26,28,0.28) 100%),
+    linear-gradient(to top, rgba(10,26,28,0.80) 0%, transparent 38%);
 }
 .btg-hero-content {
   position: relative; z-index: 2;

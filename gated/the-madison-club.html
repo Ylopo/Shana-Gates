@@ -507,11 +507,26 @@
         ctaMailto.href = `mailto:shana@craftbauer.com?subject=Consultation%3A%20${encodeURIComponent(c.name)}`;
       }
 
-      // Map
-      if (c.lat && c.lng) {
+      // Hero background: real photo beats Mapbox map
+      const heroPhotoSrc = c.heroPageImage || null;
+      if (heroPhotoSrc) {
+        const heroMapEl = document.getElementById('gc-hero-map');
+        if (heroMapEl) {
+          const probe = new Image();
+          probe.onload = function() {
+            heroMapEl.style.backgroundImage = `url('${heroPhotoSrc}')`;
+            heroMapEl.style.backgroundSize = 'cover';
+            heroMapEl.style.backgroundPosition = 'center';
+          };
+          probe.onerror = function() {
+            if (c.lat && c.lng) initHeroMap(c.lat, c.lng);
+          };
+          probe.src = heroPhotoSrc;
+        }
+      } else if (c.lat && c.lng) {
         initHeroMap(c.lat, c.lng);
-        initMap(c.lat, c.lng, c.name);
       }
+      if (c.lat && c.lng) initMap(c.lat, c.lng, c.name);
     }
 
     function buildOthers(all, current) {
