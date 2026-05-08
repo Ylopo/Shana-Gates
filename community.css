@@ -4128,6 +4128,34 @@ a.btg-card { text-decoration: none; color: inherit; }
   color: var(--bronze);
 }
 
+/* Official Resources links */
+.gc-official-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(184,151,90,0.12);
+  color: var(--cream);
+  text-decoration: none;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  transition: color 0.2s;
+  gap: 8px;
+}
+.gc-official-link:last-child { border-bottom: none; }
+.gc-official-link:hover { color: var(--bronze); }
+.gc-official-domain {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 300;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 130px;
+}
+.gc-official-link:hover .gc-official-domain { color: rgba(184,151,90,0.7); }
+
 /* Detail page responsive */
 @media (max-width: 1100px) {
   .gc-main { grid-template-columns: 1fr; gap: 48px; }
