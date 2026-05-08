@@ -414,5 +414,22 @@
   })();
   </script>
 
+  <script>
+  (function() {
+    const nav = document.querySelector('nav');
+    const hero = document.querySelector('.btg-hero');
+    if (!nav || !hero) return;
+    function tick() {
+      if (window.scrollY < hero.offsetHeight - 80) {
+        nav.classList.add('nav-transparent');
+      } else {
+        nav.classList.remove('nav-transparent');
+      }
+    }
+    tick();
+    window.addEventListener('scroll', tick, { passive: true });
+  })();
+  </script>
+
 </body>
 </html>
