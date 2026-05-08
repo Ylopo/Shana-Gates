@@ -2924,7 +2924,7 @@ body.property-page { background: var(--dark); color: var(--text-light); }
 }
 .btg-hero-bg {
   position: absolute; inset: 0;
-  background: #0a1a1c url('/images/gated/behind-the-gates-hero.png') right center / cover no-repeat;
+  background: #0a1a1c url('/images/gated/behind-the-gates-hero.png') center center / cover no-repeat;
 }
 .btg-hero-bg::after {
   content: '';
