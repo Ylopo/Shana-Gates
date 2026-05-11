@@ -760,7 +760,7 @@
         mapboxgl.accessToken = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
         var map = new mapboxgl.Map({
           container: el,
-          style: 'mapbox://styles/mapbox/standard',
+          style: 'mapbox://styles/mapbox/dark-v11',
           center: [-116.37, 33.795],
           zoom: 9.6,
           pitch: 0,
@@ -770,21 +770,20 @@
         });
         map.addControl(new mapboxgl.NavigationControl({ visualizePitch: false }), 'top-right');
         map.on('load', function() {
-          try { map.setConfigProperty('basemap', 'lightPreset', 'night'); } catch(e) {}
           map.addSource('vc-i10', { type:'geojson', data:{type:'Feature',geometry:{type:'LineString',coordinates:I10},properties:{}} });
-          map.addLayer({ id:'vc-i10-glow', type:'line', source:'vc-i10', slot:'top', paint:{'line-color':'#5ba4ff','line-width':6,'line-opacity':0.22,'line-blur':4} });
-          map.addLayer({ id:'vc-i10-line', type:'line', source:'vc-i10', slot:'top', paint:{'line-color':'#7dbfff','line-width':2,'line-opacity':0.70} });
+          map.addLayer({ id:'vc-i10-glow', type:'line', source:'vc-i10', paint:{'line-color':'#5ba4ff','line-width':6,'line-opacity':0.22,'line-blur':4} });
+          map.addLayer({ id:'vc-i10-line', type:'line', source:'vc-i10', paint:{'line-color':'#7dbfff','line-width':2,'line-opacity':0.70} });
           map.addSource('vc-hwy111', { type:'geojson', data:{type:'Feature',geometry:{type:'LineString',coordinates:HWY111},properties:{}} });
-          map.addLayer({ id:'vc-hwy111-glow', type:'line', source:'vc-hwy111', slot:'top', paint:{'line-color':BRONZE,'line-width':6,'line-opacity':0.18,'line-blur':4} });
-          map.addLayer({ id:'vc-hwy111-line', type:'line', source:'vc-hwy111', slot:'top', paint:{'line-color':BRONZE,'line-width':2,'line-opacity':0.55} });
+          map.addLayer({ id:'vc-hwy111-glow', type:'line', source:'vc-hwy111', paint:{'line-color':BRONZE,'line-width':6,'line-opacity':0.18,'line-blur':4} });
+          map.addLayer({ id:'vc-hwy111-line', type:'line', source:'vc-hwy111', paint:{'line-color':BRONZE,'line-width':2,'line-opacity':0.55} });
           CITIES.forEach(function(c, i) {
             var isCurrent = c.slug === CURRENT_SLUG;
             map.addSource('vc-city-'+i, { type:'geojson', data:{type:'Feature',geometry:{type:'Polygon',coordinates:[c.boundary]},properties:{}} });
-            map.addLayer({ id:'vc-fill-'+i, type:'fill', source:'vc-city-'+i, slot:'top', paint:{'fill-color': isCurrent ? YELLOW : CREAM, 'fill-opacity': isCurrent ? 0.14 : 0.05} });
+            map.addLayer({ id:'vc-fill-'+i, type:'fill', source:'vc-city-'+i, paint:{'fill-color': isCurrent ? YELLOW : CREAM, 'fill-opacity': isCurrent ? 0.14 : 0.05} });
             if (isCurrent) {
-              map.addLayer({ id:'vc-glow-'+i, type:'line', source:'vc-city-'+i, slot:'top', paint:{'line-color':YELLOW,'line-width':12,'line-opacity':0.30,'line-blur':8} });
+              map.addLayer({ id:'vc-glow-'+i, type:'line', source:'vc-city-'+i, paint:{'line-color':YELLOW,'line-width':12,'line-opacity':0.30,'line-blur':8} });
             }
-            map.addLayer({ id:'vc-line-'+i, type:'line', source:'vc-city-'+i, slot:'top', paint:{'line-color': isCurrent ? YELLOW : CREAM, 'line-width': isCurrent ? 3.5 : 1, 'line-opacity': isCurrent ? 1 : 0.30} });
+            map.addLayer({ id:'vc-line-'+i, type:'line', source:'vc-city-'+i, paint:{'line-color': isCurrent ? YELLOW : CREAM, 'line-width': isCurrent ? 3.5 : 1, 'line-opacity': isCurrent ? 1 : 0.30} });
             var lbl = document.createElement('div');
             lbl.className = 'vc-city-label' + (isCurrent ? ' vc-city-label-active' : '');
             lbl.textContent = c.name;
