@@ -128,7 +128,7 @@
     <div class="valley-loc-map-wrap">
       <div id="valley-context-map"></div>
       <div class="valley-loc-legend">
-        <span class="valley-loc-legend-active">&#9632; Palm Springs</span>
+        <span class="valley-loc-legend-active" style="color:#FFE14D">&#9632; Palm Springs</span>
         <span class="valley-loc-legend-other">&#9633; Other CV Cities</span>
         <span class="valley-loc-legend-road valley-loc-legend-i10">&#9644; I-10</span>
         <span class="valley-loc-legend-road valley-loc-legend-hwy">&#9644; Hwy 111</span>
@@ -154,40 +154,6 @@
         <span class="valley-loc-card-time">~2 hrs</span>
         <span class="valley-loc-card-dest">to San Diego</span>
         <span class="valley-loc-card-via">via I-10 / I-15 South</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- DEMOGRAPHICS -->
-  <section id="demographics">
-    <div class="demo-header reveal">
-      <p class="demo-eyebrow">Community Demographics</p>
-      <p class="demo-source-note">Source: U.S. Census Bureau, ACS 5-Year Estimates</p>
-    </div>
-    <div class="demo-stats reveal">
-      <div class="demo-stat">
-        <span class="demo-value">47,100</span>
-        <span class="demo-label">Population</span>
-      </div>
-      <div class="demo-divider-v"></div>
-      <div class="demo-stat">
-        <span class="demo-value">44.8</span>
-        <span class="demo-label">Median Age</span>
-      </div>
-      <div class="demo-divider-v"></div>
-      <div class="demo-stat">
-        <span class="demo-value">$78,900</span>
-        <span class="demo-label">Avg Household Income</span>
-      </div>
-      <div class="demo-divider-v"></div>
-      <div class="demo-stat">
-        <span class="demo-value">22,400</span>
-        <span class="demo-label">Total Households</span>
-      </div>
-      <div class="demo-divider-v"></div>
-      <div class="demo-stat">
-        <span class="demo-value">43.8%</span>
-        <span class="demo-label">Ownership Rate</span>
       </div>
     </div>
   </section>
@@ -246,6 +212,40 @@
       <div class="quick-fact">
         <span class="fact-label">Drive to LA</span>
         <span class="fact-value">~2 hours</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMOGRAPHICS -->
+  <section id="demographics">
+    <div class="demo-header reveal">
+      <p class="demo-eyebrow">Community Demographics</p>
+      <p class="demo-source-note">Source: U.S. Census Bureau, ACS 5-Year Estimates</p>
+    </div>
+    <div class="demo-stats reveal">
+      <div class="demo-stat">
+        <span class="demo-value">47,100</span>
+        <span class="demo-label">Population</span>
+      </div>
+      <div class="demo-divider-v"></div>
+      <div class="demo-stat">
+        <span class="demo-value">44.8</span>
+        <span class="demo-label">Median Age</span>
+      </div>
+      <div class="demo-divider-v"></div>
+      <div class="demo-stat">
+        <span class="demo-value">$78,900</span>
+        <span class="demo-label">Avg Household Income</span>
+      </div>
+      <div class="demo-divider-v"></div>
+      <div class="demo-stat">
+        <span class="demo-value">22,400</span>
+        <span class="demo-label">Total Households</span>
+      </div>
+      <div class="demo-divider-v"></div>
+      <div class="demo-stat">
+        <span class="demo-value">43.8%</span>
+        <span class="demo-label">Ownership Rate</span>
       </div>
     </div>
   </section>
@@ -859,6 +859,7 @@
     if (!el || typeof mapboxgl === 'undefined') return;
     var BRONZE = '#B8975A';
     var CREAM  = '#F2EDE4';
+    var YELLOW = '#FFE14D';
     var CURRENT_SLUG = 'palm-springs';
     var CITIES = [
       { slug:'palm-springs',     name:'Palm Springs',    center:[-116.545, 33.830], boundary:[[-116.635,33.885],[-116.510,33.885],[-116.488,33.862],[-116.484,33.800],[-116.505,33.773],[-116.560,33.772],[-116.630,33.796],[-116.645,33.840],[-116.635,33.885]] },
@@ -903,8 +904,11 @@
           CITIES.forEach(function(c, i) {
             var isCurrent = c.slug === CURRENT_SLUG;
             map.addSource('vc-city-'+i, { type:'geojson', data:{type:'Feature',geometry:{type:'Polygon',coordinates:[c.boundary]},properties:{}} });
-            map.addLayer({ id:'vc-fill-'+i, type:'fill', source:'vc-city-'+i, paint:{'fill-color': isCurrent ? BRONZE : CREAM, 'fill-opacity': isCurrent ? 0.18 : 0.05} });
-            map.addLayer({ id:'vc-line-'+i, type:'line', source:'vc-city-'+i, paint:{'line-color': isCurrent ? BRONZE : CREAM, 'line-width': isCurrent ? 2.5 : 1, 'line-opacity': isCurrent ? 0.95 : 0.30} });
+            map.addLayer({ id:'vc-fill-'+i, type:'fill', source:'vc-city-'+i, paint:{'fill-color': isCurrent ? YELLOW : CREAM, 'fill-opacity': isCurrent ? 0.12 : 0.05} });
+            if (isCurrent) {
+              map.addLayer({ id:'vc-glow-'+i, type:'line', source:'vc-city-'+i, paint:{'line-color':YELLOW,'line-width':10,'line-opacity':0.22,'line-blur':6} });
+            }
+            map.addLayer({ id:'vc-line-'+i, type:'line', source:'vc-city-'+i, paint:{'line-color': isCurrent ? YELLOW : CREAM, 'line-width': isCurrent ? 3 : 1, 'line-opacity': isCurrent ? 1 : 0.30} });
             // Label marker
             var lbl = document.createElement('div');
             lbl.className = 'vc-city-label' + (isCurrent ? ' vc-city-label-active' : '');
