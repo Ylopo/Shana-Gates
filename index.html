@@ -811,6 +811,158 @@
     }
 
     /* ============================================================
+       WHERE IS THE COACHELLA VALLEY
+    ============================================================ */
+    #location {
+      background: var(--dark-2);
+      padding: 100px 52px 80px;
+      border-top: 1px solid rgba(184,151,90,0.12);
+    }
+
+    .location-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .location-intro {
+      max-width: 620px;
+      margin-bottom: 52px;
+    }
+
+    .location-intro .section-eyebrow {
+      color: var(--bronze);
+    }
+
+    .location-heading {
+      font-family: var(--serif);
+      font-size: clamp(36px, 4vw, 52px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--cream);
+      margin-bottom: 18px;
+    }
+
+    .location-heading em {
+      font-style: italic;
+      color: var(--bronze-light);
+    }
+
+    .location-sub {
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-width: 540px;
+    }
+
+    .location-map-wrap {
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 440px;
+      border: 1px solid rgba(184,151,90,0.15);
+      margin-bottom: 24px;
+    }
+
+    #location-map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .location-callout {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      background: rgba(13,13,13,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(184,151,90,0.35);
+      border-radius: 3px;
+      padding: 14px 20px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .location-callout-title {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      margin-bottom: 5px;
+    }
+
+    .location-callout-sub {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(242,237,228,0.65);
+      letter-spacing: 0.04em;
+    }
+
+    .location-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .location-card {
+      background: var(--dark-3);
+      border: 1px solid rgba(184,151,90,0.12);
+      border-top: 2px solid var(--bronze);
+      border-radius: 3px;
+      padding: 22px 20px 20px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .location-card:hover {
+      background: rgba(184,151,90,0.06);
+      border-color: rgba(184,151,90,0.25);
+      border-top-color: var(--bronze-light);
+    }
+
+    .location-card-time {
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .location-card-dest {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    .location-card-via {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 900px) {
+      #location { padding: 80px 32px 64px; }
+      .location-cards { grid-template-columns: repeat(2, 1fr); }
+      .location-map-wrap { height: 360px; }
+    }
+
+    @media (max-width: 600px) {
+      #location { padding: 64px 20px 56px; }
+      .location-cards { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .location-map-wrap { height: 300px; }
+      .location-callout { left: 12px; bottom: 12px; padding: 10px 14px; }
+    }
+
+    /* ============================================================
        ABOUT SHANA
     ============================================================ */
     #about {
@@ -1988,7 +2140,52 @@
     </div>
   </section>
 
+  <!-- ============================================================
+       WHERE IS THE COACHELLA VALLEY
+  ============================================================ -->
+  <section id="location">
+    <div class="location-inner">
 
+      <div class="location-intro reveal">
+        <p class="section-eyebrow">Location</p>
+        <h2 class="location-heading">Where is the<br><em>Coachella Valley?</em></h2>
+        <p class="location-sub">Tucked between the San Jacinto and Santa Rosa mountains in Southern California — roughly two hours east of Los Angeles. A sun-drenched desert enclave where world-class golf, spa culture, and year-round warmth converge.</p>
+      </div>
+
+      <div class="location-map-wrap reveal">
+        <div id="location-map"></div>
+        <div class="location-callout">
+          <div class="location-callout-title">Coachella Valley, CA</div>
+          <div class="location-callout-sub">Riverside County &nbsp;·&nbsp; Inland Desert</div>
+        </div>
+      </div>
+
+      <div class="location-cards reveal">
+        <div class="location-card">
+          <div class="location-card-time">~2 hrs</div>
+          <div class="location-card-dest">to Los Angeles</div>
+          <div class="location-card-via">via I-10 W</div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-time">~2.5 hrs</div>
+          <div class="location-card-dest">to San Diego</div>
+          <div class="location-card-via">via I-15 S</div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-time">~3.5 hrs</div>
+          <div class="location-card-dest">to Las Vegas</div>
+          <div class="location-card-via">via I-15 N</div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-time">~40 min</div>
+          <div class="location-card-dest">to PSP Airport</div>
+          <div class="location-card-via">Palm Springs Intl</div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
 
   <!-- ============================================================
        ABOUT SHANA
@@ -2847,8 +3044,25 @@
       },
     ];
 
-    // --- Map init ---
+    // --- Location section map ---
     mapboxgl.accessToken = MAPBOX_TOKEN;
+    (function() {
+      const locMap = new mapboxgl.Map({
+        container: 'location-map',
+        style: 'mapbox://styles/mapbox/standard',
+        center: [-116.37, 33.73],
+        zoom: 9.2,
+        pitch: 30,
+        bearing: -10,
+        interactive: false,
+        attributionControl: false,
+      });
+      locMap.on('style.load', function() {
+        locMap.setConfigProperty('basemap', 'lightPreset', 'night');
+      });
+    })();
+
+    // --- Main valley overview map ---
 
     const map = new mapboxgl.Map({
       container: 'valley-map',
