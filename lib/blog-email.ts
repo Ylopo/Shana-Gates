@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 import type { ScoredArticle } from './blog-store'
 import type { WeeklyTopic } from './blog-store'
+import type { IdeaCandidate } from './types'
 
 const resend = new Resend(process.env.RESEND_API_KEY!)
 const FROM = process.env.FROM_EMAIL ?? 'noreply@shanasells.com'
@@ -179,6 +180,93 @@ export async function sendWeeklyDigest(topics: WeeklyTopic[]): Promise<void> {
     from: FROM,
     to: TO,
     subject: `✍️ Weekly Blog Topics Ready — ${topics.length} ideas across 5 categories`,
+    html,
+  })
+}
+
+// ── Idea digest email ─────────────────────────────────────────────────────────
+
+const IDEA_CATEGORY_COLORS: Record<string, string> = {
+  'market-update':   '#2563eb',
+  'investor-tips':   '#FF9800',
+  'seller-tips':     '#0ea5e9',
+  'community':       '#9C27B0',
+  'trending-topics': '#e11d48',
+}
+
+const IDEA_URGENCY_COLORS: Record<string, string> = {
+  breaking: '#ef4444',
+  timely:   '#f59e0b',
+  evergreen:'#6b7280',
+}
+
+export async function sendIdeaDigest(ideas: IdeaCandidate[]): Promise<void> {
+  if (ideas.length === 0) return
+
+  const reviewUrl = `${SITE}/admin/idea-review/?secret=${ADMIN_SECRET}`
+  const topIdeas = ideas.slice(0, 8)
+
+  const ideaRows = topIdeas.map((idea) => {
+    const catColor = IDEA_CATEGORY_COLORS[idea.category] ?? '#607D8B'
+    const urgColor = IDEA_URGENCY_COLORS[idea.urgency] ?? '#6b7280'
+    const isTopPick = idea.score.total >= 75
+    return `
+    <tr>
+      <td style="padding:16px; border-bottom:1px solid #222;">
+        <div style="display:flex; align-items:flex-start; gap:12px;">
+          <div style="min-width:44px; text-align:center;">
+            <div style="font-size:20px; font-weight:800; color:${isTopPick ? '#B8975A' : '#fff'};">${idea.score.total}</div>
+            <div style="font-size:10px; color:#555; letter-spacing:0.05em;">/ 100</div>
+          </div>
+          <div style="flex:1;">
+            <div style="margin-bottom:6px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+              ${isTopPick ? '<span style="background:#B8975A22; color:#B8975A; font-size:10px; padding:2px 7px; border-radius:20px; font-weight:700;">★ TOP PICK</span>' : ''}
+              <span style="background:${catColor}22; color:${catColor}; font-size:10px; padding:2px 7px; border-radius:20px; text-transform:uppercase; letter-spacing:0.05em;">${idea.category.replace('-', ' ')}</span>
+              <span style="background:${urgColor}22; color:${urgColor}; font-size:10px; padding:2px 7px; border-radius:20px;">${idea.urgency}</span>
+            </div>
+            <div style="color:#fff; font-size:14px; font-weight:600; margin-bottom:5px;">${idea.title}</div>
+            <div style="color:#999; font-size:12px; line-height:1.5; margin-bottom:5px;">${idea.angle}</div>
+            <div style="color:#666; font-size:11px;">Sources: ${idea.sourceLabels.join(', ')}</div>
+          </div>
+        </div>
+      </td>
+    </tr>`
+  }).join('')
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="background:#0a0a0a; font-family:system-ui, -apple-system, sans-serif; margin:0; padding:0;">
+  <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
+
+    <div style="text-align:center; margin-bottom:32px;">
+      <div style="color:#B8975A; font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Shana Gates · Craft &amp; Bauer</div>
+      <h1 style="color:#fff; font-size:22px; font-weight:700; margin:0 0 8px;">New Blog Ideas Ready</h1>
+      <p style="color:#888; font-size:14px; margin:0;">${ideas.length} ideas scored and queued — approve the ones you want written.</p>
+    </div>
+
+    <div style="background:#141414; border:1px solid #222; border-radius:12px; overflow:hidden; margin-bottom:24px;">
+      <table style="width:100%; border-collapse:collapse;">
+        ${ideaRows}
+      </table>
+    </div>
+
+    <div style="text-align:center;">
+      <a href="${reviewUrl}" style="display:inline-block; background:#B8975A; color:#000; font-size:15px; font-weight:700; padding:16px 40px; border-radius:8px; text-decoration:none;">
+        Review &amp; Approve Ideas →
+      </a>
+      <p style="color:#555; font-size:12px; margin-top:16px;">Click Approve on any idea, then Write &amp; Publish to generate the full post instantly.</p>
+    </div>
+
+  </div>
+</body>
+</html>`
+
+  await resend.emails.send({
+    from: FROM,
+    to: TO,
+    subject: `💡 ${ideas.length} blog ideas ready — ${topIdeas.filter((i) => i.score.total >= 75).length} top picks`,
     html,
   })
 }

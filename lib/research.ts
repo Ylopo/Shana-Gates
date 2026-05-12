@@ -267,10 +267,14 @@ export async function runDailyResearch(date: string): Promise<ScoredArticle[]> {
   const scored = await scoreArticles(toScore)
   const top10 = scored.sort((a, b) => b.score - a.score).slice(0, 10)
 
-  // Generate IdeaCandidates for the new idea pipeline (fire-and-forget)
-  articlesToIdeas(top10, uniqueResults)
-    .then((ideas) => Promise.all(ideas.map((idea) => saveIdea(idea))))
-    .catch((err) => console.error('[research] Failed to save ideas:', err))
+  // Generate IdeaCandidates for the idea pipeline
+  try {
+    const ideas = await articlesToIdeas(top10, uniqueResults)
+    await Promise.all(ideas.map((idea) => saveIdea(idea)))
+    console.log(`[research] Saved ${ideas.length} idea candidates`)
+  } catch (err) {
+    console.error('[research] Failed to save ideas:', err)
+  }
 
   return top10
 }

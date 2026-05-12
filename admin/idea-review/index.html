@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Idea Review — Shana Gates</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bronze: #B8975A;
+      --bronze-dim: rgba(184,151,90,0.15);
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface2: #1c1c1c;
+      --border: rgba(255,255,255,0.08);
+      --text: #fff;
+      --muted: rgba(255,255,255,0.45);
+      --font: system-ui, -apple-system, sans-serif;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --purple: #a855f7;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .header-left {}
+    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+    .header-title { color: var(--text); font-size: 18px; font-weight: 700; }
+    .header-meta { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .header-nav { display: flex; gap: 12px; align-items: center; }
+    .nav-link { color: var(--muted); font-size: 13px; text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); transition: color 0.15s, border-color 0.15s; }
+    .nav-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── Filters ── */
+    .filters { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .filter-btn { background: none; border: 1px solid var(--border); color: var(--muted); font-size: 13px; padding: 6px 14px; border-radius: 20px; cursor: pointer; transition: all 0.15s; }
+    .filter-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+    .filter-btn.active { background: var(--bronze-dim); border-color: var(--bronze); color: var(--bronze); }
+    .filter-count { font-size: 11px; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+
+    /* ── Main ── */
+    main { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    /* ── Empty / loading ── */
+    .state-msg { text-align: center; padding: 80px 24px; color: var(--muted); font-size: 15px; }
+    .state-msg .icon { font-size: 40px; margin-bottom: 16px; }
+    .state-msg strong { display: block; color: var(--text); font-size: 17px; margin-bottom: 8px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--bronze); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Idea card ── */
+    .idea-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      transition: border-color 0.15s;
+    }
+    .idea-card.status-approved { border-color: rgba(34,197,94,0.35); }
+    .idea-card.status-skipped  { opacity: 0.45; }
+    .idea-card.status-deferred { border-color: rgba(249,115,22,0.25); }
+
+    .card-top { display: flex; gap: 16px; align-items: flex-start; }
+
+    /* Score ring */
+    .score-ring {
+      flex-shrink: 0;
+      width: 52px;
+      text-align: center;
+    }
+    .score-num { font-size: 22px; font-weight: 800; line-height: 1; }
+    .score-denom { font-size: 10px; color: var(--muted); letter-spacing: 0.05em; }
+    .score-ring.top-pick .score-num { color: var(--bronze); }
+    .score-ring.good .score-num { color: #22c55e; }
+    .score-ring.ok .score-num { color: var(--muted); }
+
+    .card-body { flex: 1; min-width: 0; }
+
+    .card-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; }
+    .badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+    .badge-top-pick { background: rgba(184,151,90,0.2); color: var(--bronze); }
+    .badge-market-update   { background: rgba(37,99,235,0.2);  color: #60a5fa; }
+    .badge-investor-tips   { background: rgba(255,152,0,0.2);  color: #fbbf24; }
+    .badge-seller-tips     { background: rgba(14,165,233,0.2); color: #38bdf8; }
+    .badge-community       { background: rgba(168,85,247,0.2); color: #c084fc; }
+    .badge-trending-topics { background: rgba(225,29,72,0.2);  color: #fb7185; }
+    .badge-breaking  { background: rgba(239,68,68,0.2);  color: #f87171; }
+    .badge-timely    { background: rgba(245,158,11,0.2); color: #fcd34d; }
+    .badge-evergreen { background: rgba(107,114,128,0.2);color: #9ca3af; }
+
+    .card-title { font-size: 16px; font-weight: 700; line-height: 1.35; margin-bottom: 6px; }
+    .card-angle { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 10px; }
+
+    .card-sources { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .source-label { font-size: 11px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; }
+
+    /* Score breakdown */
+    .score-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; margin-bottom: 14px; }
+    .score-bar-row { display: flex; align-items: center; gap: 6px; }
+    .score-bar-label { font-size: 11px; color: var(--muted); width: 88px; flex-shrink: 0; }
+    .score-bar-track { flex: 1; height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 2px; background: var(--bronze); transition: width 0.3s; }
+    .score-bar-val { font-size: 10px; color: var(--muted); width: 22px; text-align: right; flex-shrink: 0; }
+
+    /* Actions */
+    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .btn { font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; transition: all 0.15s; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-approve { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.3); color: #4ade80; }
+    .btn-approve:hover:not(:disabled) { background: rgba(34,197,94,0.2); }
+    .btn-skip   { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.25); color: #f87171; }
+    .btn-skip:hover:not(:disabled) { background: rgba(239,68,68,0.18); }
+    .btn-defer  { background: rgba(249,115,22,0.1); border-color: rgba(249,115,22,0.25); color: #fb923c; }
+    .btn-defer:hover:not(:disabled) { background: rgba(249,115,22,0.18); }
+    .btn-write  { background: var(--bronze); color: #000; border-color: var(--bronze); }
+    .btn-write:hover:not(:disabled) { background: #c9a96a; }
+    .btn-undo   { background: none; border-color: var(--border); color: var(--muted); font-size: 12px; padding: 6px 12px; }
+    .btn-undo:hover:not(:disabled) { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    .status-pill { font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+    .status-pill.approved { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .status-pill.skipped  { background: rgba(239,68,68,0.1);  color: #f87171; }
+    .status-pill.deferred { background: rgba(249,115,22,0.1); color: #fb923c; }
+
+    .write-result { font-size: 13px; color: #4ade80; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 8px; padding: 8px 14px; margin-top: 10px; }
+    .write-result a { color: var(--bronze); text-decoration: none; }
+    .write-result a:hover { text-decoration: underline; }
+    .write-error { font-size: 13px; color: #f87171; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 8px; padding: 8px 14px; margin-top: 10px; }
+    .fh-warning { font-size: 12px; color: #fcd34d; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); border-radius: 6px; padding: 6px 12px; margin-top: 8px; }
+
+    /* Toast */
+    #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--surface); border: 1px solid var(--border); color: var(--text); font-size: 14px; padding: 12px 22px; border-radius: 10px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; white-space: nowrap; z-index: 999; }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-brand">Shana Gates · Craft &amp; Bauer</div>
+    <div class="header-title">Idea Review</div>
+    <div class="header-meta" id="header-meta">Loading ideas…</div>
+  </div>
+  <nav class="header-nav">
+    <a href="/admin/blog-picker/" class="nav-link">Blog Picker</a>
+    <a href="/admin/assistant/" class="nav-link">Assistant</a>
+  </nav>
+</header>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-filter="pending" onclick="setFilter('pending')">Pending <span class="filter-count" id="count-pending">0</span></button>
+  <button class="filter-btn" data-filter="approved" onclick="setFilter('approved')">Approved <span class="filter-count" id="count-approved">0</span></button>
+  <button class="filter-btn" data-filter="all" onclick="setFilter('all')">All <span class="filter-count" id="count-all">0</span></button>
+</div>
+
+<main id="main">
+  <div class="state-msg">
+    <div class="spinner"></div>
+    <div>Loading ideas…</div>
+  </div>
+</main>
+
+<div id="toast"></div>
+
+<script>
+  const secret = new URLSearchParams(location.search).get('secret') || ''
+  const apiBase = secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas'
+
+  let allIdeas = []
+  let currentFilter = 'pending'
+
+  // ── Fetch ────────────────────────────────────────────────────────────────────
+  async function loadIdeas() {
+    try {
+      const res = await fetch(apiBase + (secret ? '&filter=all' : '?filter=all'))
+      if (res.status === 401) {
+        document.getElementById('main').innerHTML = `<div class="state-msg"><div class="icon">🔒</div><strong>Not authorized</strong>Open this page from the link in your email digest.</div>`
+        return
+      }
+      const data = await res.json()
+      allIdeas = data.ideas ?? []
+      updateCounts()
+      renderIdeas()
+    } catch {
+      document.getElementById('main').innerHTML = `<div class="state-msg"><div class="icon">⚠️</div><strong>Failed to load</strong>Check your connection and reload.</div>`
+    }
+  }
+
+  function updateCounts() {
+    document.getElementById('count-pending').textContent  = allIdeas.filter(i => i.status === 'pending').length
+    document.getElementById('count-approved').textContent = allIdeas.filter(i => i.status === 'approved').length
+    document.getElementById('count-all').textContent      = allIdeas.length
+    const pending = allIdeas.filter(i => i.status === 'pending').length
+    document.getElementById('header-meta').textContent = `${allIdeas.length} total ideas · ${pending} pending review`
+  }
+
+  function setFilter(f) {
+    currentFilter = f
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f))
+    renderIdeas()
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────────
+  function renderIdeas() {
+    const main = document.getElementById('main')
+    const filtered = currentFilter === 'all' ? allIdeas
+      : currentFilter === 'approved' ? allIdeas.filter(i => i.status === 'approved')
+      : allIdeas.filter(i => i.status === 'pending')
+
+    if (filtered.length === 0) {
+      const msgs = {
+        pending:  { icon: '✅', title: 'All caught up!', body: 'No pending ideas right now. Check back after the daily 6 AM cron runs.' },
+        approved: { icon: '📝', title: 'None approved yet', body: 'Approve ideas from the Pending tab to see them here.' },
+        all:      { icon: '💡', title: 'No ideas yet', body: 'Ideas appear here after the 6 AM daily research cron runs.' },
+      }
+      const m = msgs[currentFilter] || msgs.all
+      main.innerHTML = `<div class="state-msg"><div class="icon">${m.icon}</div><strong>${m.title}</strong>${m.body}</div>`
+      return
+    }
+
+    main.innerHTML = filtered.map(idea => renderCard(idea)).join('')
+  }
+
+  function scoreClass(total) {
+    if (total >= 75) return 'top-pick'
+    if (total >= 55) return 'good'
+    return 'ok'
+  }
+
+  function catBadgeClass(cat) {
+    return 'badge badge-' + (cat || 'market-update')
+  }
+
+  function renderScoreBars(score) {
+    const dims = [
+      { label: 'Local Focus',  val: score.localRelevance,    max: 25 },
+      { label: 'Timeliness',   val: score.timeliness,         max: 20 },
+      { label: 'Format Fit',   val: score.formatFit,          max: 15 },
+      { label: 'Audience',     val: score.audienceValue,       max: 15 },
+      { label: 'Credibility',  val: score.sourceCredibility,  max: 10 },
+      { label: 'Novelty',      val: score.novelty,            max: 10 },
+    ]
+    return `<div class="score-bars">${dims.map(d => `
+      <div class="score-bar-row">
+        <div class="score-bar-label">${d.label}</div>
+        <div class="score-bar-track"><div class="score-bar-fill" style="width:${Math.round(d.val / d.max * 100)}%"></div></div>
+        <div class="score-bar-val">${d.val}</div>
+      </div>`).join('')}</div>`
+  }
+
+  function renderActions(idea) {
+    if (idea.status === 'pending') {
+      return `
+        <button class="btn btn-approve" onclick="setStatus('${idea.id}', 'approved')">✓ Approve</button>
+        <button class="btn btn-skip"    onclick="setStatus('${idea.id}', 'skipped')">✗ Skip</button>
+        <button class="btn btn-defer"   onclick="setStatus('${idea.id}', 'deferred')">⏸ Defer</button>`
+    }
+    if (idea.status === 'approved') {
+      return `
+        <span class="status-pill approved">Approved</span>
+        <button class="btn btn-write" id="write-btn-${idea.id}" onclick="writePost('${idea.id}')">Write &amp; Publish →</button>
+        <button class="btn btn-undo" onclick="setStatus('${idea.id}', 'pending')">Undo</button>`
+    }
+    if (idea.status === 'skipped') {
+      return `<span class="status-pill skipped">Skipped</span><button class="btn btn-undo" onclick="setStatus('${idea.id}', 'pending')">Undo</button>`
+    }
+    if (idea.status === 'deferred') {
+      return `<span class="status-pill deferred">Deferred</span><button class="btn btn-approve" onclick="setStatus('${idea.id}', 'approved')">Approve Now</button><button class="btn btn-undo" onclick="setStatus('${idea.id}', 'pending')">Undo</button>`
+    }
+    return ''
+  }
+
+  function renderCard(idea) {
+    const isTopPick = idea.score.total >= 75
+    return `
+    <div class="idea-card status-${idea.status}" id="card-${idea.id}">
+      <div class="card-top">
+        <div class="score-ring ${scoreClass(idea.score.total)}">
+          <div class="score-num">${idea.score.total}</div>
+          <div class="score-denom">/ 100</div>
+        </div>
+        <div class="card-body">
+          <div class="card-badges">
+            ${isTopPick ? '<span class="badge badge-top-pick">★ Top Pick</span>' : ''}
+            <span class="${catBadgeClass(idea.category)}">${(idea.category || '').replace(/-/g, ' ')}</span>
+            <span class="badge badge-${idea.urgency}">${idea.urgency}</span>
+          </div>
+          <div class="card-title">${escHtml(idea.title)}</div>
+          <div class="card-angle">${escHtml(idea.angle)}</div>
+          <div class="card-sources">${(idea.sourceLabels || []).map(l => `<span class="source-label">${escHtml(l)}</span>`).join('')}</div>
+          ${renderScoreBars(idea.score)}
+          <div class="card-actions" id="actions-${idea.id}">${renderActions(idea)}</div>
+          <div id="result-${idea.id}"></div>
+        </div>
+      </div>
+    </div>`
+  }
+
+  // ── Actions ────────────────────────────────────────────────────────────────
+  async function setStatus(id, status) {
+    // Optimistic update
+    const idea = allIdeas.find(i => i.id === id)
+    if (idea) { idea.status = status; updateCounts(); renderIdeas() }
+
+    try {
+      const res = await fetch(secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+      if (!res.ok) throw new Error('Server error')
+      const labels = { approved: 'Approved ✓', skipped: 'Skipped', deferred: 'Deferred', pending: 'Reset to pending' }
+      showToast(labels[status] || status)
+    } catch {
+      showToast('Failed to update — reload and try again', true)
+      await loadIdeas() // revert
+    }
+  }
+
+  async function writePost(id) {
+    const btn = document.getElementById(`write-btn-${id}`)
+    const resultEl = document.getElementById(`result-${id}`)
+    if (btn) { btn.disabled = true; btn.textContent = 'Writing…' }
+    if (resultEl) resultEl.innerHTML = ''
+
+    try {
+      const res = await fetch(secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+      const data = await res.json()
+
+      if (!res.ok) {
+        if (res.status === 422 && data.violations) {
+          const msgs = data.violations.map(v => `<div>• ${escHtml(v.reason)}: <em>${escHtml(v.excerpt)}</em></div>`).join('')
+          if (resultEl) resultEl.innerHTML = `<div class="write-error"><strong>Fair Housing violation — not published</strong>${msgs}</div>`
+        } else {
+          if (resultEl) resultEl.innerHTML = `<div class="write-error">${escHtml(data.error || 'Write failed')}</div>`
+        }
+        if (btn) { btn.disabled = false; btn.textContent = 'Write & Publish →' }
+        return
+      }
+
+      const blogUrl = `https://shanasells.com/blog/post.html?slug=${encodeURIComponent(data.slug)}`
+      let resultHtml = `<div class="write-result">✓ Published: <strong>${escHtml(data.title)}</strong> — <a href="${blogUrl}" target="_blank">View post →</a></div>`
+      if (data.fhSeverity === 'warning') {
+        resultHtml += `<div class="fh-warning">⚠️ Fair Housing review: warnings flagged — review before sharing</div>`
+      }
+      if (resultEl) resultEl.innerHTML = resultHtml
+      if (btn) btn.remove()
+
+      // Update idea in memory
+      const idea = allIdeas.find(i => i.id === id)
+      if (idea) { idea.status = 'approved' }
+      updateCounts()
+      showToast('Post published to blog ✓')
+    } catch (err) {
+      if (resultEl) resultEl.innerHTML = `<div class="write-error">Network error — try again</div>`
+      if (btn) { btn.disabled = false; btn.textContent = 'Write & Publish →' }
+    }
+  }
+
+  // ── Utils ──────────────────────────────────────────────────────────────────
+  function escHtml(str) {
+    if (!str) return ''
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+  }
+
+  let toastTimer
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast')
+    t.textContent = msg
+    t.style.background = isError ? '#1f0a0a' : '#141414'
+    t.style.borderColor = isError ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.08)'
+    t.classList.add('show')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3000)
+  }
+
+  loadIdeas()
+</script>
+</body>
+</html>

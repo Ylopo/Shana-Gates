@@ -1,6 +1,7 @@
 import { runDailyResearch } from '../../lib/research'
 import { storeDailyArticles, incrementShownCount } from '../../lib/blog-store'
-import { sendDailyDigest } from '../../lib/blog-email'
+import { sendDailyDigest, sendIdeaDigest } from '../../lib/blog-email'
+import { getPendingIdeas } from '../../lib/idea-store'
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET' && req.method !== 'POST') {
@@ -41,11 +42,18 @@ export default async function handler(req: any, res: any) {
     await storeDailyArticles(today, articles)
     console.log(`[research] Stored ${articles.length} articles in Redis`)
 
-    // Send digest email
+    // Send article digest email (for blog picker)
     await sendDailyDigest(today, articles)
     console.log('[research] Sent daily digest email')
 
-    return res.status(200).json({ ok: true, articlesFound: articles.length, date: today })
+    // Send idea digest email (for idea review)
+    const ideas = await getPendingIdeas()
+    if (ideas.length > 0) {
+      await sendIdeaDigest(ideas)
+      console.log(`[research] Sent idea digest email (${ideas.length} ideas)`)
+    }
+
+    return res.status(200).json({ ok: true, articlesFound: articles.length, ideasQueued: ideas?.length ?? 0, date: today })
   } catch (err) {
     console.error('[research] Error:', err)
     return res.status(500).json({ error: err instanceof Error ? err.message : 'Unknown error' })
