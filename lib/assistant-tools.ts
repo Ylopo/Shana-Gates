@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { getCommunityOverride, setCommunityOverride, uploadImageAsset, type CommunityOverride } from './blog-redis'
+import { getCommunityOverride, setCommunityOverride, type CommunityOverride } from './sanity'
+import { uploadImageAsset } from './blog-redis'
 
 // ─── Community registry ───────────────────────────────────────────────────────
 
