@@ -63,12 +63,12 @@ export async function generateHeyGenVideo(script: string): Promise<string> {
     }),
   })
 
+  const data = await res.json()
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`HeyGen generate failed (${res.status}): ${body}`)
+    const msg = data?.error?.message ?? data?.message ?? JSON.stringify(data)
+    throw new Error(`HeyGen generate failed (${res.status}): ${msg}`)
   }
 
-  const data = await res.json()
   const videoId = data?.data?.video_id
   if (!videoId) throw new Error(`HeyGen response missing video_id: ${JSON.stringify(data)}`)
   return String(videoId)
@@ -80,12 +80,11 @@ export async function getHeyGenVideoStatus(videoId: string): Promise<HeyGenVideo
     headers: getHeaders(),
   })
 
-  if (!res.ok) {
-    const body = await res.text()
-    throw new Error(`HeyGen status check failed (${res.status}): ${body}`)
-  }
-
   const data = await res.json()
+  if (!res.ok) {
+    const msg = data?.error?.message ?? data?.message ?? JSON.stringify(data)
+    throw new Error(`HeyGen status check failed (${res.status}): ${msg}`)
+  }
   const status = data?.data?.status
 
   if (status === 'completed') {
@@ -95,7 +94,9 @@ export async function getHeyGenVideoStatus(videoId: string): Promise<HeyGenVideo
   }
 
   if (status === 'failed') {
-    return { status: 'failed', error: data?.data?.error ?? 'Unknown error' }
+    const errVal = data?.data?.error
+    const errMsg = typeof errVal === 'object' ? JSON.stringify(errVal) : (errVal ?? 'Unknown error')
+    return { status: 'failed', error: errMsg }
   }
 
   return { status: 'processing' }
