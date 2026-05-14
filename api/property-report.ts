@@ -57,12 +57,12 @@ async function runDiscovery(address: string) {
     tv.search(`${address} comparable sales recent sold 2024 2025 price per sqft`, { maxResults: 6 }),
     tv.search(`${address.split(',').slice(1).join(',').trim()} real estate market conditions 2025 median price days on market inventory`, { maxResults: 5 }),
   ])
-  const propImageUrl: string | null = ((propRes as any).images || [])[0] || null
+  const propImageUrls: string[] = ((propRes as any).images || []).slice(0, 4)
   return {
     propContext: propRes.results.map(r => `${r.title}\n${r.content}`).join('\n\n'),
     compContext: compRes.results.map(r => `${r.title}\n${r.content}`).join('\n\n'),
     mktContext: mktRes.results.map(r => `${r.title}\n${r.content}`).join('\n\n'),
-    propImageUrl,
+    propImageUrls,
   }
 }
 
@@ -268,10 +268,10 @@ async function generatePdf(address: string, data: {
     // fall back to Helvetica
   }
 
-  // Load Shana headshot (100K pro shot — safe to embed)
+  // Load Shana green photo (pre-resized to 320×320, 20KB — safe to embed)
   let shanaImageBase64: string | null = null
   try {
-    const shanaPath = path.join(process.cwd(), 'images', 'shana pro.JPG')
+    const shanaPath = path.join(process.cwd(), 'images', 'shana-green-pdf.jpg')
     if (fs.existsSync(shanaPath)) {
       shanaImageBase64 = `data:image/jpeg;base64,${fs.readFileSync(shanaPath).toString('base64')}`
     }
@@ -463,24 +463,33 @@ async function generatePdf(address: string, data: {
         ],
         margin: [0, 0, 0, 40],
       },
-      // Shana credit on cover — headshot + name/contact
+      // Shana credit on cover — rule spans full block width, then photo + text side by side
+      {
+        columns: [
+          { text: '', width: '*' },
+          {
+            canvas: [{ type: 'line', x1: 0, y1: 0, x2: shanaImageBase64 ? 236 : 172, y2: 0, lineWidth: 0.5, lineColor: BRONZE }],
+            width: shanaImageBase64 ? 236 : 172,
+          },
+        ],
+        margin: [0, 0, 0, 10],
+      },
       {
         columns: [
           { text: '', width: '*' },
           ...(shanaImageBase64 ? [{
             image: 'shana',
-            fit: [52, 58],
-            width: 52,
-            margin: [0, 6, 12, 0],
+            fit: [56, 56],
+            width: 56,
+            margin: [0, 2, 14, 0],
           }] : []),
           {
             stack: [
-              { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 168, y2: 0, lineWidth: 0.5, lineColor: BRONZE }], margin: [0, 0, 0, 8] },
-              { text: 'Prepared by Shana Gates', font: serif, fontSize: 10, color: CREAM },
-              { text: 'Craft & Bauer | Real Broker', font: sans, fontSize: 8, color: '#999' },
+              { text: 'Prepared by Shana Gates', font: serif, fontSize: 10, color: CREAM, margin: [0, 0, 0, 3] },
+              { text: 'Craft & Bauer | Real Broker', font: sans, fontSize: 8, color: '#999', margin: [0, 0, 0, 2] },
               { text: 'shana@craftbauer.com  ·  760.232.4054', font: sans, fontSize: 8, color: '#888' },
             ],
-            width: 168,
+            width: 172,
           },
         ],
         margin: [0, 0, 0, 20],
@@ -776,9 +785,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // Step 1: Discovery
     step(res, 'discovery', 'running', 'Researching property data…')
-    const { propContext, compContext, mktContext, propImageUrl } = await runDiscovery(addr)
-    // Fetch property image in background while analysis runs (best-effort, non-blocking)
-    const propImagePromise = propImageUrl ? fetchImageAsBase64(propImageUrl) : Promise.resolve(null)
+    const { propContext, compContext, mktContext, propImageUrls } = await runDiscovery(addr)
+    // Try each candidate image URL in order; runs concurrently with analysis steps
+    const propImagePromise: Promise<string | null> = (async () => {
+      for (const url of propImageUrls) {
+        const b64 = await fetchImageAsBase64(url)
+        if (b64) return b64
+      }
+      return null
+    })()
     step(res, 'discovery', 'done', 'Property data collected')
 
     // Step 2: Comps
