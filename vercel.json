@@ -35,6 +35,9 @@
     },
     "api/blog/fix-broken-links.ts": {
       "maxDuration": 60
+    },
+    "api/property-report.ts": {
+      "maxDuration": 300
     }
   },
   "crons": [
