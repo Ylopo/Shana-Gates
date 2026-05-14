@@ -301,15 +301,25 @@ Return ONLY valid JSON, no markdown fences.`,
     }],
   })
 
-  const text = response.content[0].type === 'text' ? response.content[0].text.trim() : '{}'
+  const rawText = response.content[0].type === 'text' ? response.content[0].text.trim() : '{}'
+  // Strip markdown code fences if Claude wrapped the JSON despite instructions
+  const text = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
 
   let raw: Record<string, string>
   try {
     raw = JSON.parse(text)
   } catch {
-    const match = text.match(/\{[\s\S]*"title"\s*:\s*"([^"]+)"/)
-    if (!match) throw new Error(`Failed to parse post JSON (stop_reason: ${response.stop_reason}). Try approving again.`)
-    throw new Error(`Post generation was cut off mid-response (stop_reason: ${response.stop_reason}). Try again.`)
+    // Try greedy extraction of the first complete JSON object in the response
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      try {
+        raw = JSON.parse(jsonMatch[0])
+      } catch {
+        throw new Error(`Failed to parse post JSON (stop_reason: ${response.stop_reason}). Try approving again.`)
+      }
+    } else {
+      throw new Error(`Failed to parse post JSON (stop_reason: ${response.stop_reason}). Try approving again.`)
+    }
   }
 
   const blocks = bodyTextToBlocks(raw.body ?? '')
