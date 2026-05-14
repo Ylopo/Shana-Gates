@@ -35,19 +35,34 @@ function parseJson<T>(text: string, fallback: T): T {
   try { return JSON.parse(match[0]) } catch { return fallback }
 }
 
+async function fetchImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(7000) })
+    if (!res.ok) return null
+    const ct = res.headers.get('content-type') || ''
+    if (!ct.startsWith('image/')) return null
+    const buf = await res.arrayBuffer()
+    return `data:${ct.split(';')[0]};base64,${Buffer.from(buf).toString('base64')}`
+  } catch {
+    return null
+  }
+}
+
 // ─── Research step ───────────────────────────────────────────────────────────
 
 async function runDiscovery(address: string) {
   const tv = tavily({ apiKey: process.env.TAVILY_API_KEY || '' })
   const [propRes, compRes, mktRes] = await Promise.all([
-    tv.search(`${address} property details beds baths sqft year built`, { maxResults: 5 }),
+    tv.search(`${address} property details beds baths sqft year built`, { maxResults: 5, includeImages: true }),
     tv.search(`${address} comparable sales recent sold 2024 2025 price per sqft`, { maxResults: 6 }),
     tv.search(`${address.split(',').slice(1).join(',').trim()} real estate market conditions 2025 median price days on market inventory`, { maxResults: 5 }),
   ])
+  const propImageUrl: string | null = ((propRes as any).images || [])[0] || null
   return {
     propContext: propRes.results.map(r => `${r.title}\n${r.content}`).join('\n\n'),
     compContext: compRes.results.map(r => `${r.title}\n${r.content}`).join('\n\n'),
     mktContext: mktRes.results.map(r => `${r.title}\n${r.content}`).join('\n\n'),
+    propImageUrl,
   }
 }
 
@@ -223,6 +238,7 @@ async function generatePdf(address: string, data: {
   overallScore: number
   grade: string
   signal: string
+  propImageBase64?: string | null
 }): Promise<string> {
   const pdfMake = require('pdfmake/src/printer')
 
@@ -251,6 +267,15 @@ async function generatePdf(address: string, data: {
   } catch (_) {
     // fall back to Helvetica
   }
+
+  // Load Shana headshot (100K pro shot — safe to embed)
+  let shanaImageBase64: string | null = null
+  try {
+    const shanaPath = path.join(process.cwd(), 'images', 'shana pro.JPG')
+    if (fs.existsSync(shanaPath)) {
+      shanaImageBase64 = `data:image/jpeg;base64,${fs.readFileSync(shanaPath).toString('base64')}`
+    }
+  } catch (_) {}
 
   const useMarcellus = fonts.Marcellus !== undefined
   const serif = useMarcellus ? 'Marcellus' : 'Helvetica'
@@ -321,11 +346,16 @@ async function generatePdf(address: string, data: {
     strategiesRows.push(tableRow([inv.best_strategy || 'Buy & Hold', inv.projected_roi_5yr || 'N/A', '7-10 yrs', inv.risk_level || 'Moderate'], false))
   }
 
+  const docImages: Record<string, string> = {}
+  if (data.propImageBase64) docImages['property'] = data.propImageBase64
+  if (shanaImageBase64) docImages['shana'] = shanaImageBase64
+
   const docDef: any = {
     pageSize: 'LETTER',
     pageMargins: [50, 60, 50, 50],
     defaultStyle: { font: sans, fontSize: 10, color: DARK },
     fonts,
+    images: docImages,
 
     // Full-bleed dark background on cover page only
     background: (currentPage: number, pageSize: any) => {
@@ -358,6 +388,15 @@ async function generatePdf(address: string, data: {
     content: [
       // ── COVER PAGE ────────────────────────────────────────────────────────
       // (dark background handled by `background` callback above)
+
+      // Property photo — shown when Tavily returns an image for the address
+      ...(data.propImageBase64 ? [{
+        image: 'property',
+        fit: [512, 172],
+        alignment: 'center',
+        margin: [0, 0, 0, 18],
+      }] : []),
+
       {
         text: 'PROPERTY ANALYSIS REPORT',
         font: serif,
@@ -365,7 +404,7 @@ async function generatePdf(address: string, data: {
         color: BRONZE,
         letterSpacing: 3,
         alignment: 'center',
-        margin: [0, 32, 0, 4],
+        margin: [0, data.propImageBase64 ? 0 : 32, 0, 4],
       },
       {
         canvas: [{ type: 'line', x1: 160, y1: 0, x2: 352, y2: 0, lineWidth: 0.5, lineColor: BRONZE }],
@@ -424,18 +463,24 @@ async function generatePdf(address: string, data: {
         ],
         margin: [0, 0, 0, 40],
       },
-      // Shana credit on cover
+      // Shana credit on cover — headshot + name/contact
       {
         columns: [
           { text: '', width: '*' },
+          ...(shanaImageBase64 ? [{
+            image: 'shana',
+            fit: [52, 58],
+            width: 52,
+            margin: [0, 6, 12, 0],
+          }] : []),
           {
             stack: [
-              { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 200, y2: 0, lineWidth: 0.5, lineColor: BRONZE }], margin: [0, 0, 0, 8] },
+              { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 168, y2: 0, lineWidth: 0.5, lineColor: BRONZE }], margin: [0, 0, 0, 8] },
               { text: 'Prepared by Shana Gates', font: serif, fontSize: 10, color: CREAM },
               { text: 'Craft & Bauer | Real Broker', font: sans, fontSize: 8, color: '#999' },
               { text: 'shana@craftbauer.com  ·  760.232.4054', font: sans, fontSize: 8, color: '#888' },
             ],
-            width: 200,
+            width: 168,
           },
         ],
         margin: [0, 0, 0, 20],
@@ -731,7 +776,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // Step 1: Discovery
     step(res, 'discovery', 'running', 'Researching property data…')
-    const { propContext, compContext, mktContext } = await runDiscovery(addr)
+    const { propContext, compContext, mktContext, propImageUrl } = await runDiscovery(addr)
+    // Fetch property image in background while analysis runs (best-effort, non-blocking)
+    const propImagePromise = propImageUrl ? fetchImageAsBase64(propImageUrl) : Promise.resolve(null)
     step(res, 'discovery', 'done', 'Property data collected')
 
     // Step 2: Comps
@@ -763,7 +810,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     step(res, 'pdf', 'running', 'Generating your branded PDF…')
     const overallScore = computeScore(compsData, rentalData, nbrData, invData, mktData)
     const { grade, signal } = gradeSignal(overallScore)
-    const pdfBase64 = await generatePdf(addr, { comps: compsData, rental: rentalData, neighborhood: nbrData, investment: invData, market: mktData, overallScore, grade, signal })
+    const propImageBase64 = await propImagePromise
+    const pdfBase64 = await generatePdf(addr, { comps: compsData, rental: rentalData, neighborhood: nbrData, investment: invData, market: mktData, overallScore, grade, signal, propImageBase64 })
     step(res, 'pdf', 'done', 'PDF report ready', { pdfBase64 })
     send(res, { step: 'complete' })
 
