@@ -520,6 +520,25 @@
     /* ── STATE: ERROR ───────────────────────────────────────── */
     #state-error { display: none; text-align: center; max-width: 480px; }
 
+    /* ── Shana photo strip (right column, idle state) ──────── */
+    .pr-shana-photo-wrap {
+      margin-top: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      width: 100%;
+      height: 168px;
+      position: relative;
+      border: 1px solid rgba(26,68,76,0.28);
+    }
+
+    .pr-shana-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 18%;
+      display: block;
+    }
+
     /* ── Shana CTA band ─────────────────────────────────────── */
     .pr-shana-band {
       width: 100%;
@@ -715,7 +734,11 @@
             <p class="pr-disclaimer">Free. No account needed. For educational purposes only — not financial advice.</p>
           </div>
 
-          <div class="pr-shana-band" style="margin-top:36px;padding-top:32px;">
+          <div class="pr-shana-photo-wrap">
+            <img src="/images/Shana Gates Green.jpeg" alt="Shana Gates — Craft &amp; Bauer | Real Broker" class="pr-shana-photo" />
+          </div>
+
+          <div class="pr-shana-band" style="margin-top:28px;padding-top:28px;">
             <h2 style="font-size:20px;">Ready to make a move?</h2>
             <p style="font-size:13px;">Shana Gates brings deep Coachella Valley expertise to every transaction.</p>
             <div class="pr-cta-row">
