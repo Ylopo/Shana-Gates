@@ -21,82 +21,91 @@
   <link rel="stylesheet" href="/community.css" />
 
   <style>
-    /* ── Page-specific overrides ─────────────────────────────── */
+    /* ── Shana Green palette (overrides bronze for this page) ── */
+    :root {
+      --sg:        #1A444C;
+      --sg-hover:  #255a65;
+      --sg-dim:    rgba(26,68,76,0.14);
+      --sg-border: rgba(26,68,76,0.30);
+    }
+
     body { background: var(--dark); }
 
-    .pr-hero {
+    /* ── Page hero wrapper ─────────────────────────────────── */
+    .pr-page {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       padding: 120px 24px 80px;
-      text-align: center;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(184,151,90,0.08) 0%, transparent 70%), var(--dark);
+      background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(26,68,76,0.12) 0%, transparent 68%), var(--dark);
     }
 
+    /* ── Eyebrow / Headline ─────────────────────────────────── */
     .pr-eyebrow {
       font-family: var(--sans);
       font-size: 11px;
       font-weight: 500;
       letter-spacing: 3px;
       text-transform: uppercase;
-      color: var(--bronze);
+      color: var(--sg-hover);
       margin-bottom: 20px;
+      text-align: center;
     }
 
     .pr-headline {
       font-family: var(--serif);
-      font-size: clamp(36px, 6vw, 64px);
+      font-size: clamp(34px, 5.5vw, 60px);
       font-weight: 400;
       color: var(--cream);
       line-height: 1.1;
-      margin-bottom: 20px;
-      max-width: 780px;
+      margin-bottom: 18px;
+      max-width: 740px;
+      text-align: center;
     }
 
-    .pr-headline em { font-style: italic; color: var(--bronze-light); }
+    .pr-headline em { font-style: italic; color: #8ab8bf; }
 
     .pr-sub {
       font-family: var(--sans);
       font-size: 16px;
       font-weight: 300;
       color: var(--text-muted);
-      max-width: 520px;
-      line-height: 1.7;
-      margin-bottom: 48px;
+      max-width: 500px;
+      line-height: 1.75;
+      margin-bottom: 44px;
+      text-align: center;
     }
 
-    /* Value pills */
+    /* ── Value pills ────────────────────────────────────────── */
     .pr-values {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
-      margin-bottom: 52px;
-      max-width: 700px;
+      margin-bottom: 48px;
+      max-width: 680px;
     }
 
-    .pr-value-pill {
+    .pr-pill {
       font-family: var(--sans);
       font-size: 12px;
       font-weight: 500;
       color: var(--cream);
-      background: rgba(184,151,90,0.12);
-      border: 1px solid rgba(184,151,90,0.3);
+      background: var(--sg-dim);
+      border: 1px solid var(--sg-border);
       border-radius: 100px;
       padding: 7px 16px;
     }
 
-    /* Form card */
+    /* ── Form card ──────────────────────────────────────────── */
     .pr-card {
-      background: rgba(255,255,255,0.035);
-      border: 1px solid rgba(184,151,90,0.18);
-      border-radius: 16px;
-      padding: 40px 44px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(26,68,76,0.25);
+      border-radius: 14px;
+      padding: 36px 40px 28px;
       width: 100%;
-      max-width: 560px;
-      backdrop-filter: blur(12px);
+      max-width: 540px;
     }
 
     .pr-card-label {
@@ -105,21 +114,14 @@
       font-weight: 500;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--bronze);
-      margin-bottom: 20px;
-    }
-
-    .pr-input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-bottom: 20px;
+      color: var(--sg-hover);
+      margin-bottom: 18px;
     }
 
     .pr-input {
       width: 100%;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(184,151,90,0.25);
+      background: rgba(255,255,255,0.055);
+      border: 1px solid rgba(26,68,76,0.30);
       border-radius: 8px;
       padding: 14px 18px;
       font-family: var(--sans);
@@ -127,79 +129,77 @@
       color: var(--cream);
       outline: none;
       transition: border-color 0.2s;
+      margin-bottom: 14px;
     }
 
-    .pr-input::placeholder { color: rgba(242,237,228,0.35); }
-    .pr-input:focus { border-color: var(--bronze); }
+    .pr-input::placeholder { color: rgba(242,237,228,0.32); }
+    .pr-input:focus { border-color: var(--sg-hover); }
 
     .pr-btn {
       width: 100%;
-      background: var(--bronze);
+      background: var(--sg);
       border: none;
       border-radius: 8px;
-      padding: 16px 24px;
+      padding: 15px 24px;
       font-family: var(--sans);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: var(--dark);
+      color: #fff;
       cursor: pointer;
       transition: background 0.2s, transform 0.15s;
     }
 
-    .pr-btn:hover { background: var(--bronze-light); transform: translateY(-1px); }
+    .pr-btn:hover:not(:disabled) { background: var(--sg-hover); transform: translateY(-1px); }
     .pr-btn:active { transform: translateY(0); }
-    .pr-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .pr-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
     .pr-disclaimer {
       font-family: var(--sans);
       font-size: 11px;
-      color: rgba(242,237,228,0.3);
+      color: rgba(242,237,228,0.28);
       text-align: center;
       margin-top: 14px;
       line-height: 1.5;
     }
 
-    /* ── Analyzing state ─────────────────────────────────────── */
-    #state-analyzing { display: none; }
+    /* ── STATE: ANALYZING ───────────────────────────────────── */
+    #state-analyzing { display: none; width: 100%; max-width: 540px; }
 
-    .pr-analyzing-wrap {
-      width: 100%;
-      max-width: 560px;
-      margin: 0 auto;
-    }
-
-    .pr-analyzing-address {
+    .pr-running-address {
       font-family: var(--serif);
-      font-size: 18px;
+      font-size: 20px;
       color: var(--cream);
-      margin-bottom: 8px;
+      text-align: center;
+      margin-bottom: 6px;
     }
 
-    .pr-analyzing-email-note {
+    .pr-running-sub {
       font-family: var(--sans);
       font-size: 13px;
-      color: var(--bronze);
+      font-weight: 300;
+      color: rgba(242,237,228,0.45);
+      text-align: center;
       margin-bottom: 32px;
     }
 
     /* Progress bar */
     .pr-progress-track {
       width: 100%;
-      height: 3px;
-      background: rgba(184,151,90,0.15);
+      height: 2px;
+      background: rgba(26,68,76,0.18);
       border-radius: 100px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       overflow: hidden;
     }
 
     .pr-progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--bronze), var(--bronze-light));
+      background: linear-gradient(90deg, var(--sg), var(--sg-hover));
       border-radius: 100px;
       width: 0%;
-      transition: width 0.6s ease;
+      transition: width 0.55s ease;
     }
 
     /* Step list */
@@ -207,48 +207,66 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 32px;
+      gap: 0;
+      border: 1px solid rgba(26,68,76,0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 0;
     }
 
     .pr-step {
       display: flex;
       align-items: center;
       gap: 14px;
+      padding: 13px 18px;
+      border-bottom: 1px solid rgba(26,68,76,0.15);
       font-family: var(--sans);
-      font-size: 14px;
-      color: rgba(242,237,228,0.35);
-      transition: color 0.3s;
+      font-size: 13.5px;
+      color: rgba(242,237,228,0.30);
+      background: rgba(255,255,255,0.02);
+      transition: color 0.3s, background 0.3s;
     }
 
-    .pr-step.is-running { color: var(--cream); }
-    .pr-step.is-done { color: rgba(242,237,228,0.65); }
-    .pr-step.is-error { color: #ef5350; }
+    .pr-step:last-child { border-bottom: none; }
 
+    .pr-step.is-running {
+      color: var(--cream);
+      background: rgba(26,68,76,0.10);
+    }
+
+    .pr-step.is-done {
+      color: rgba(242,237,228,0.55);
+    }
+
+    .pr-step.is-error { color: #ef9a9a; }
+
+    /* Step icon circle */
     .pr-step-icon {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      border: 1.5px solid rgba(184,151,90,0.2);
+      border: 1.5px solid rgba(26,68,76,0.2);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(242,237,228,0.35);
       transition: all 0.3s;
     }
 
     .pr-step.is-running .pr-step-icon {
-      border-color: var(--bronze);
-      background: rgba(184,151,90,0.1);
+      border-color: var(--sg-hover);
+      color: var(--sg-hover);
       animation: pr-pulse 1.4s ease-in-out infinite;
     }
 
     .pr-step.is-done .pr-step-icon {
-      border-color: var(--bronze);
-      background: var(--bronze);
-      color: var(--dark);
-      font-weight: 700;
+      border-color: var(--sg);
+      background: var(--sg);
+      color: #fff;
+      font-size: 12px;
     }
 
     .pr-step.is-error .pr-step-icon {
@@ -259,89 +277,220 @@
 
     @keyframes pr-pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      50% { opacity: 0.45; }
     }
 
     .pr-step-spinner {
-      width: 12px;
-      height: 12px;
-      border: 2px solid rgba(184,151,90,0.3);
-      border-top-color: var(--bronze);
+      width: 11px;
+      height: 11px;
+      border: 2px solid rgba(26,68,76,0.3);
+      border-top-color: var(--sg-hover);
       border-radius: 50%;
-      animation: pr-spin 0.8s linear infinite;
+      animation: pr-spin 0.75s linear infinite;
     }
 
     @keyframes pr-spin { to { transform: rotate(360deg); } }
 
-    .pr-step-label { flex: 1; }
+    /* ── Email capture (slides in after step 1 completes) ───── */
+    #email-capture {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.55s ease, opacity 0.4s ease 0.15s;
+      margin-top: 0;
+    }
 
-    /* ── Done state ──────────────────────────────────────────── */
-    #state-done { display: none; }
+    #email-capture.is-visible {
+      max-height: 240px;
+      opacity: 1;
+      margin-top: 20px;
+    }
 
-    .pr-done-icon {
-      width: 72px;
-      height: 72px;
+    .pr-email-box {
+      background: rgba(26,68,76,0.10);
+      border: 1px solid rgba(26,68,76,0.35);
+      border-radius: 10px;
+      padding: 20px 20px 16px;
+    }
+
+    .pr-email-heading {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+
+    .pr-email-sub {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(242,237,228,0.5);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .pr-email-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .pr-email-input {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(26,68,76,0.35);
+      border-radius: 7px;
+      padding: 11px 14px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--cream);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .pr-email-input::placeholder { color: rgba(242,237,228,0.3); }
+    .pr-email-input:focus { border-color: var(--sg-hover); }
+
+    .pr-email-btn {
+      background: var(--sg);
+      border: none;
+      border-radius: 7px;
+      padding: 11px 18px;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .pr-email-btn:hover:not(:disabled) { background: var(--sg-hover); }
+    .pr-email-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Email confirmed state (replaces email form) ─────────── */
+    #email-confirmed {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .pr-confirmed-box {
+      background: rgba(26,68,76,0.10);
+      border: 1px solid rgba(26,68,76,0.35);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .pr-confirmed-check {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
-      background: rgba(184,151,90,0.12);
-      border: 2px solid var(--bronze);
+      background: var(--sg);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
+      font-size: 13px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .pr-confirmed-msg {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+
+    .pr-confirmed-sub {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 300;
+      color: rgba(242,237,228,0.5);
+      line-height: 1.55;
+    }
+
+    /* ── Keep-alive note below steps ────────────────────────── */
+    .pr-keepalive {
+      font-family: var(--sans);
+      font-size: 11px;
+      color: rgba(242,237,228,0.22);
+      text-align: center;
+      margin-top: 14px;
+    }
+
+    /* ── STATE: DONE ────────────────────────────────────────── */
+    #state-done { display: none; text-align: center; max-width: 480px; }
+
+    .pr-done-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: var(--sg-dim);
+      border: 2px solid var(--sg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      color: var(--sg-hover);
       margin: 0 auto 24px;
     }
 
     .pr-done-headline {
       font-family: var(--serif);
-      font-size: 32px;
+      font-size: 30px;
       color: var(--cream);
       margin-bottom: 12px;
     }
 
-    .pr-done-sub {
+    .pr-done-body {
       font-family: var(--sans);
       font-size: 14px;
       font-weight: 300;
       color: var(--text-muted);
-      line-height: 1.7;
-      max-width: 420px;
-      margin: 0 auto 36px;
+      line-height: 1.75;
+      margin-bottom: 32px;
     }
 
-    .pr-done-sub strong { color: var(--bronze); }
+    .pr-done-body strong { color: var(--sg-hover); font-weight: 500; }
 
     .pr-restart-btn {
       background: transparent;
-      border: 1px solid rgba(184,151,90,0.4);
+      border: 1px solid rgba(26,68,76,0.4);
       border-radius: 8px;
       padding: 12px 28px;
       font-family: var(--sans);
       font-size: 13px;
       font-weight: 500;
-      color: var(--bronze);
+      color: var(--sg-hover);
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .pr-restart-btn:hover { background: rgba(184,151,90,0.08); }
+    .pr-restart-btn:hover { background: var(--sg-dim); }
 
-    /* ── Error state ─────────────────────────────────────────── */
-    #state-error { display: none; }
+    /* ── STATE: ERROR ───────────────────────────────────────── */
+    #state-error { display: none; text-align: center; max-width: 480px; }
 
-    /* ── Shana CTA band ──────────────────────────────────────── */
+    /* ── Shana CTA band ─────────────────────────────────────── */
     .pr-shana-band {
+      width: 100%;
+      max-width: 540px;
       margin-top: 80px;
-      padding: 60px 24px;
-      border-top: 1px solid rgba(184,151,90,0.15);
+      padding-top: 48px;
+      border-top: 1px solid rgba(26,68,76,0.2);
       text-align: center;
     }
 
     .pr-shana-band h2 {
       font-family: var(--serif);
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 400;
       color: var(--cream);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .pr-shana-band p {
@@ -349,17 +498,18 @@
       font-size: 14px;
       font-weight: 300;
       color: var(--text-muted);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
+      line-height: 1.65;
     }
 
-    .pr-shana-contacts {
+    .pr-cta-row {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       justify-content: center;
       flex-wrap: wrap;
     }
 
-    .pr-shana-contact-btn {
+    .pr-cta-btn {
       font-family: var(--sans);
       font-size: 13px;
       font-weight: 500;
@@ -367,26 +517,30 @@
       border-radius: 8px;
       text-decoration: none;
       transition: all 0.2s;
+      letter-spacing: 0.5px;
     }
 
-    .pr-shana-contact-btn.primary {
-      background: var(--bronze);
-      color: var(--dark);
+    .pr-cta-btn.primary {
+      background: var(--sg);
+      color: #fff;
+      border: 1px solid var(--sg);
     }
 
-    .pr-shana-contact-btn.secondary {
+    .pr-cta-btn.primary:hover { background: var(--sg-hover); border-color: var(--sg-hover); }
+
+    .pr-cta-btn.secondary {
       background: transparent;
-      border: 1px solid rgba(184,151,90,0.4);
-      color: var(--bronze);
+      border: 1px solid rgba(26,68,76,0.4);
+      color: var(--sg-hover);
     }
 
-    .pr-shana-contact-btn.primary:hover { background: var(--bronze-light); }
-    .pr-shana-contact-btn.secondary:hover { background: rgba(184,151,90,0.08); }
+    .pr-cta-btn.secondary:hover { background: var(--sg-dim); }
 
-    /* ── Responsive ──────────────────────────────────────────── */
-    @media (max-width: 600px) {
-      .pr-card { padding: 28px 20px; }
-      .pr-analyzing-wrap { padding: 0 8px; }
+    /* ── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 580px) {
+      .pr-card { padding: 24px 18px 20px; }
+      .pr-email-row { flex-direction: column; }
+      .pr-email-btn { width: 100%; }
     }
   </style>
 </head>
@@ -442,121 +596,144 @@
     <a href="tel:7602324054" class="nav-cta">760.232.4054</a>
   </nav>
 
-  <!-- MAIN -->
-  <main class="pr-hero">
+  <main class="pr-page">
 
     <!-- ── STATE: IDLE ──────────────────────────────────────── -->
     <div id="state-idle">
       <p class="pr-eyebrow">Coachella Valley &nbsp;·&nbsp; AI Property Intelligence</p>
       <h1 class="pr-headline">Residential Property<br><em>Analysis Report</em></h1>
-      <p class="pr-sub">Enter any property address and receive a comprehensive investment-grade report — delivered to your inbox in minutes, completely free.</p>
+      <p class="pr-sub">Enter any Coachella Valley property address and receive a comprehensive investment-grade report — completely free.</p>
 
       <div class="pr-values">
-        <span class="pr-value-pill">Comparable Sales</span>
-        <span class="pr-value-pill">Cash Flow Projections</span>
-        <span class="pr-value-pill">Neighborhood Scorecard</span>
-        <span class="pr-value-pill">Investment Scenarios</span>
-        <span class="pr-value-pill">Market Conditions</span>
-        <span class="pr-value-pill">Buy / Watch / Avoid Signal</span>
+        <span class="pr-pill">Comparable Sales</span>
+        <span class="pr-pill">Cash Flow Projections</span>
+        <span class="pr-pill">Neighborhood Scorecard</span>
+        <span class="pr-pill">Investment Scenarios</span>
+        <span class="pr-pill">Market Conditions</span>
+        <span class="pr-pill">Buy / Watch / Avoid Signal</span>
       </div>
 
       <div class="pr-card">
         <p class="pr-card-label">Get Your Free Report</p>
-        <div class="pr-input-group">
-          <input
-            id="input-address"
-            class="pr-input"
-            type="text"
-            placeholder="123 Desert Rose Dr, Palm Springs, CA"
-            autocomplete="street-address"
-          />
-          <input
-            id="input-email"
-            class="pr-input"
-            type="email"
-            placeholder="your@email.com"
-            autocomplete="email"
-          />
-        </div>
+        <input
+          id="input-address"
+          class="pr-input"
+          type="text"
+          placeholder="123 Desert Rose Dr, Palm Springs, CA"
+          autocomplete="street-address"
+        />
         <button id="btn-analyze" class="pr-btn">Analyze This Property</button>
-        <p class="pr-disclaimer">For educational purposes only. Not financial or investment advice. Your email is used only to deliver the report.</p>
+        <p class="pr-disclaimer">Free. No account needed. For educational purposes only — not financial advice.</p>
       </div>
-    </div>
 
-    <!-- ── STATE: ANALYZING ────────────────────────────────── -->
-    <div id="state-analyzing">
-      <div class="pr-analyzing-wrap">
-        <p class="pr-eyebrow">Running Your Analysis</p>
-        <p class="pr-analyzing-address" id="analyzing-address-text"></p>
-        <p class="pr-analyzing-email-note" id="analyzing-email-note"></p>
-
-        <div class="pr-progress-track">
-          <div class="pr-progress-fill" id="progress-fill"></div>
+      <div class="pr-shana-band">
+        <h2>Ready to make a move?</h2>
+        <p>These reports are a starting point. Shana Gates brings deep Coachella Valley expertise to every transaction.</p>
+        <div class="pr-cta-row">
+          <a href="tel:7602324054" class="pr-cta-btn primary">Call 760.232.4054</a>
+          <a href="mailto:shana@craftbauer.com" class="pr-cta-btn secondary">Email Shana</a>
         </div>
-
-        <ul class="pr-steps" id="steps-list">
-          <li class="pr-step" data-step="discovery">
-            <span class="pr-step-icon">1</span>
-            <span class="pr-step-label">Researching property data</span>
-          </li>
-          <li class="pr-step" data-step="comps">
-            <span class="pr-step-icon">2</span>
-            <span class="pr-step-label">Pulling comparable sales</span>
-          </li>
-          <li class="pr-step" data-step="rental">
-            <span class="pr-step-icon">3</span>
-            <span class="pr-step-label">Estimating rental income &amp; cash flow</span>
-          </li>
-          <li class="pr-step" data-step="neighborhood">
-            <span class="pr-step-icon">4</span>
-            <span class="pr-step-label">Scoring the neighborhood</span>
-          </li>
-          <li class="pr-step" data-step="investment">
-            <span class="pr-step-icon">5</span>
-            <span class="pr-step-label">Running investment models</span>
-          </li>
-          <li class="pr-step" data-step="market">
-            <span class="pr-step-icon">6</span>
-            <span class="pr-step-label">Analyzing market conditions</span>
-          </li>
-          <li class="pr-step" data-step="pdf">
-            <span class="pr-step-icon">7</span>
-            <span class="pr-step-label">Generating your branded PDF report</span>
-          </li>
-          <li class="pr-step" data-step="email">
-            <span class="pr-step-icon">8</span>
-            <span class="pr-step-label">Sending report to your inbox</span>
-          </li>
-        </ul>
-
-        <p style="font-family:var(--sans);font-size:12px;color:rgba(242,237,228,0.3);text-align:center;">This usually takes 1–3 minutes. Please keep this page open.</p>
       </div>
     </div>
 
-    <!-- ── STATE: DONE ─────────────────────────────────────── -->
+    <!-- ── STATE: ANALYZING ─────────────────────────────────── -->
+    <div id="state-analyzing">
+      <p class="pr-eyebrow">Running Your Analysis</p>
+      <p class="pr-running-address" id="analyzing-address-text"></p>
+      <p class="pr-running-sub">Researching live data — this takes 1–3 minutes</p>
+
+      <div class="pr-progress-track">
+        <div class="pr-progress-fill" id="progress-fill"></div>
+      </div>
+
+      <ul class="pr-steps" id="steps-list">
+        <li class="pr-step" data-step="discovery">
+          <span class="pr-step-icon">1</span>
+          <span>Researching property data</span>
+        </li>
+        <li class="pr-step" data-step="comps">
+          <span class="pr-step-icon">2</span>
+          <span>Pulling comparable sales</span>
+        </li>
+        <li class="pr-step" data-step="rental">
+          <span class="pr-step-icon">3</span>
+          <span>Estimating rental income &amp; cash flow</span>
+        </li>
+        <li class="pr-step" data-step="neighborhood">
+          <span class="pr-step-icon">4</span>
+          <span>Scoring the neighborhood</span>
+        </li>
+        <li class="pr-step" data-step="investment">
+          <span class="pr-step-icon">5</span>
+          <span>Running investment models</span>
+        </li>
+        <li class="pr-step" data-step="market">
+          <span class="pr-step-icon">6</span>
+          <span>Analyzing market conditions</span>
+        </li>
+        <li class="pr-step" data-step="pdf">
+          <span class="pr-step-icon">7</span>
+          <span>Generating your branded PDF report</span>
+        </li>
+        <li class="pr-step" data-step="email">
+          <span class="pr-step-icon">8</span>
+          <span>Sending report to your inbox</span>
+        </li>
+      </ul>
+
+      <!-- Email capture — slides in after discovery completes -->
+      <div id="email-capture">
+        <div class="pr-email-box">
+          <p class="pr-email-heading">Your report is generating. Where should we send it?</p>
+          <p class="pr-email-sub">Enter your email and we'll deliver the full PDF the moment it's ready.</p>
+          <div class="pr-email-row">
+            <input
+              id="input-email"
+              class="pr-email-input"
+              type="email"
+              placeholder="your@email.com"
+              autocomplete="email"
+            />
+            <button id="btn-email-submit" class="pr-email-btn">Send My Report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmed — replaces email capture after email submitted -->
+      <div id="email-confirmed">
+        <div class="pr-confirmed-box">
+          <div class="pr-confirmed-check">✓</div>
+          <p class="pr-confirmed-msg">We're processing your report in real time.</p>
+          <p class="pr-confirmed-sub">Expect it in your inbox at <span id="confirmed-email-text" style="color:rgba(138,184,191,0.9)"></span> within the next 5 minutes. Keep this tab open.</p>
+        </div>
+      </div>
+
+      <p class="pr-keepalive">Please keep this page open while your report generates.</p>
+    </div>
+
+    <!-- ── STATE: DONE ───────────────────────────────────────── -->
     <div id="state-done">
       <div class="pr-done-icon">✓</div>
-      <h2 class="pr-done-headline">Your report is on its way.</h2>
-      <p class="pr-done-sub">Check your inbox at <strong id="done-email-text"></strong> — if you don't see it in 5 minutes, check your spam folder.</p>
+      <h2 class="pr-done-headline">Report on its way.</h2>
+      <p class="pr-done-body">Check your inbox at <strong id="done-email-text"></strong> — if you don't see it within 5 minutes, check your spam folder.</p>
       <button class="pr-restart-btn" id="btn-restart">Analyze another property</button>
-    </div>
 
-    <!-- ── STATE: ERROR ────────────────────────────────────── -->
-    <div id="state-error">
-      <div class="pr-done-icon" style="border-color:#ef5350;background:rgba(239,83,80,0.08);">✕</div>
-      <h2 class="pr-done-headline" style="color:#ef9a9a;">Something went wrong</h2>
-      <p class="pr-done-sub" id="error-message-text">An unexpected error occurred. Please try again.</p>
-      <button class="pr-restart-btn" id="btn-error-retry">Try again</button>
-    </div>
-
-    <!-- ── Shana CTA ───────────────────────────────────────── -->
-    <div class="pr-shana-band">
-      <h2>Ready to make a move?</h2>
-      <p>These reports are a starting point. Shana Gates brings 15+ years of Coachella Valley expertise to every transaction.</p>
-      <div class="pr-shana-contacts">
-        <a href="tel:7602324054" class="pr-shana-contact-btn primary">Call 760.232.4054</a>
-        <a href="mailto:shana@craftbauer.com" class="pr-shana-contact-btn secondary">Email Shana</a>
+      <div class="pr-shana-band">
+        <h2>Questions about this property?</h2>
+        <p>Shana can walk you through the findings and help you decide on your next move.</p>
+        <div class="pr-cta-row">
+          <a href="tel:7602324054" class="pr-cta-btn primary">Call 760.232.4054</a>
+          <a href="mailto:shana@craftbauer.com" class="pr-cta-btn secondary">Email Shana</a>
+        </div>
       </div>
+    </div>
+
+    <!-- ── STATE: ERROR ──────────────────────────────────────── -->
+    <div id="state-error">
+      <div class="pr-done-icon" style="border-color:#ef5350;background:rgba(239,83,80,0.07);color:#ef9a9a;">✕</div>
+      <h2 class="pr-done-headline" style="color:#ef9a9a;">Something went wrong</h2>
+      <p class="pr-done-body" id="error-message-text">An unexpected error occurred. Please try again.</p>
+      <button class="pr-restart-btn" id="btn-error-retry">Try again</button>
     </div>
 
   </main>
@@ -591,7 +768,7 @@
       <div>
         <p class="footer-col-heading">Quick Links</p>
         <ul class="footer-links">
-          <li><a href="/property-report.html" style="color:var(--bronze)">Free Property Report</a></li>
+          <li><a href="/property-report.html" style="color:var(--sg-hover)">Free Property Report</a></li>
           <li><a href="/#search-listings">Search All Homes</a></li>
           <li><a href="/#about">About Shana</a></li>
           <li><a href="mailto:shana@craftbauer.com">Contact</a></li>
@@ -613,64 +790,140 @@
   </footer>
 
   <script>
-    const STEPS = ['discovery','comps','rental','neighborhood','investment','market','pdf','email']
-    const TOTAL = STEPS.length
+    // ─── Step order (discovery through pdf — email is step 8, triggered after email submit) ──
+    const ANALYSIS_STEPS = ['discovery','comps','rental','neighborhood','investment','market','pdf']
+    const TOTAL_STEPS = 8  // includes email step in progress bar
 
-    let currentAddress = ''
-    let currentEmail = ''
+    let pdfBase64 = null
+    let userEmail = null
+    let emailFormRevealed = false
 
+    // ─── State display ────────────────────────────────────────
     function show(id) {
-      ['state-idle','state-analyzing','state-done','state-error'].forEach(s => {
+      ;['state-idle','state-analyzing','state-done','state-error'].forEach(s => {
         document.getElementById(s).style.display = s === id ? '' : 'none'
       })
     }
 
-    function setStepState(stepKey, state) {
-      const el = document.querySelector(`[data-step="${stepKey}"]`)
+    // ─── Step state management ────────────────────────────────
+    function setStep(key, state) {
+      const el = document.querySelector(`[data-step="${key}"]`)
       if (!el) return
       el.classList.remove('is-running','is-done','is-error')
       if (state) el.classList.add(`is-${state}`)
 
       const icon = el.querySelector('.pr-step-icon')
-      const idx = STEPS.indexOf(stepKey) + 1
+      const idx = [...document.querySelectorAll('.pr-step')].indexOf(el) + 1
 
       if (state === 'running') {
         icon.innerHTML = '<span class="pr-step-spinner"></span>'
       } else if (state === 'done') {
-        icon.innerHTML = '✓'
+        icon.textContent = '✓'
       } else if (state === 'error') {
-        icon.innerHTML = '✕'
+        icon.textContent = '✕'
       } else {
-        icon.innerHTML = idx
+        icon.textContent = idx
       }
     }
 
-    function setProgress(doneCount) {
-      document.getElementById('progress-fill').style.width = `${Math.round((doneCount / TOTAL) * 100)}%`
+    function setProgress(done) {
+      document.getElementById('progress-fill').style.width =
+        `${Math.round((done / TOTAL_STEPS) * 100)}%`
     }
 
-    async function runAnalysis() {
-      const address = document.getElementById('input-address').value.trim()
+    // ─── Email capture reveal ──────────────────────────────────
+    function revealEmailCapture() {
+      if (emailFormRevealed) return
+      emailFormRevealed = true
+      const cap = document.getElementById('email-capture')
+      cap.classList.add('is-visible')
+      // Focus email input after transition
+      setTimeout(() => document.getElementById('input-email').focus(), 600)
+    }
+
+    // ─── Email submitted ───────────────────────────────────────
+    function handleEmailSubmit() {
       const email = document.getElementById('input-email').value.trim()
-
-      if (!address) {
-        document.getElementById('input-address').focus()
-        return
-      }
       if (!email || !email.includes('@')) {
         document.getElementById('input-email').focus()
         return
       }
 
-      currentAddress = address
-      currentEmail = email
+      document.getElementById('btn-email-submit').disabled = true
+      userEmail = email
+
+      // Swap form → confirmed message
+      document.getElementById('email-capture').style.display = 'none'
+      document.getElementById('email-capture').classList.remove('is-visible')
+      document.getElementById('confirmed-email-text').textContent = email
+      document.getElementById('email-confirmed').style.display = ''
+
+      // If PDF is already ready, fire the send now
+      if (pdfBase64) {
+        sendReport()
+      }
+    }
+
+    // ─── Send report via dedicated endpoint ───────────────────
+    async function sendReport() {
+      if (!pdfBase64 || !userEmail) return
+
+      setStep('email', 'running')
+
+      try {
+        const res = await fetch('/api/property-report-send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: userEmail,
+            pdfBase64,
+            address: document.getElementById('analyzing-address-text').textContent,
+          }),
+        })
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}))
+          throw new Error(err.error || `Send failed (${res.status})`)
+        }
+
+        setStep('email', 'done')
+        setProgress(TOTAL_STEPS)
+
+        // Brief pause so user sees step 8 check, then transition
+        setTimeout(() => {
+          document.getElementById('done-email-text').textContent = userEmail
+          show('state-done')
+        }, 900)
+
+      } catch (err) {
+        setStep('email', 'error')
+        // Still show done state — user was told to expect email, we don't want to alarm them
+        setTimeout(() => {
+          document.getElementById('done-email-text').textContent = userEmail
+          show('state-done')
+        }, 1200)
+      }
+    }
+
+    // ─── Main analysis stream ──────────────────────────────────
+    async function startAnalysis(address) {
+      pdfBase64 = null
+      userEmail = null
+      emailFormRevealed = false
 
       document.getElementById('analyzing-address-text').textContent = address
-      document.getElementById('analyzing-email-note').textContent = `Report will be sent to: ${email}`
+      document.getElementById('email-capture').classList.remove('is-visible')
+      document.getElementById('email-capture').style.display = ''
+      document.getElementById('email-confirmed').style.display = 'none'
+      document.getElementById('input-email').value = ''
+      document.getElementById('btn-email-submit').disabled = false
+      document.getElementById('progress-fill').style.width = '0%'
 
       // Reset all steps
-      STEPS.forEach(s => setStepState(s, null))
-      setProgress(0)
+      ;[...document.querySelectorAll('.pr-step')].forEach((el, i) => {
+        el.classList.remove('is-running','is-done','is-error')
+        el.querySelector('.pr-step-icon').textContent = i + 1
+      })
 
       show('state-analyzing')
 
@@ -680,7 +933,7 @@
         const response = await fetch('/api/property-report', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address, email }),
+          body: JSON.stringify({ address }),
         })
 
         if (!response.ok) {
@@ -690,15 +943,15 @@
 
         const reader = response.body.getReader()
         const decoder = new TextDecoder()
-        let buffer = ''
+        let buf = ''
 
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
 
-          buffer += decoder.decode(value, { stream: true })
-          const lines = buffer.split('\n')
-          buffer = lines.pop() // keep incomplete line
+          buf += decoder.decode(value, { stream: true })
+          const lines = buf.split('\n')
+          buf = lines.pop()
 
           for (const line of lines) {
             if (!line.startsWith('data: ')) continue
@@ -706,8 +959,9 @@
             try { evt = JSON.parse(line.slice(6)) } catch { continue }
 
             if (evt.step === 'complete') {
-              document.getElementById('done-email-text').textContent = email
-              show('state-done')
+              // Analysis finished — step 8 waits for email
+              // If email already submitted, trigger send immediately
+              if (userEmail && pdfBase64) sendReport()
               return
             }
 
@@ -716,44 +970,63 @@
             }
 
             if (evt.status === 'running') {
-              setStepState(evt.step, 'running')
+              setStep(evt.step, 'running')
+
             } else if (evt.status === 'done') {
-              setStepState(evt.step, 'done')
+              setStep(evt.step, 'done')
               doneCount++
               setProgress(doneCount)
+
+              // Capture PDF data when pdf step completes
+              if (evt.step === 'pdf' && evt.pdfBase64) {
+                pdfBase64 = evt.pdfBase64
+                if (userEmail) sendReport()
+              }
+
+              // Reveal email form after discovery (step 1) completes
+              if (evt.step === 'discovery') {
+                revealEmailCapture()
+              }
             }
           }
         }
 
-        // Stream ended without 'complete' — treat as done
-        document.getElementById('done-email-text').textContent = email
-        show('state-done')
-
       } catch (err) {
-        document.getElementById('error-message-text').textContent = err.message || 'An unexpected error occurred. Please try again.'
+        document.getElementById('error-message-text').textContent =
+          err.message || 'An unexpected error occurred. Please try again.'
         show('state-error')
       }
     }
 
+    // ─── Reset ──────────────────────────────────────────────────
     function reset() {
+      pdfBase64 = null
+      userEmail = null
+      emailFormRevealed = false
       document.getElementById('input-address').value = ''
-      document.getElementById('input-email').value = ''
       show('state-idle')
     }
 
+    // ─── Event listeners ────────────────────────────────────────
     document.getElementById('btn-analyze').addEventListener('click', () => {
+      const addr = document.getElementById('input-address').value.trim()
+      if (!addr || addr.length < 5) {
+        document.getElementById('input-address').focus()
+        return
+      }
       document.getElementById('btn-analyze').disabled = true
-      runAnalysis().finally(() => {
+      startAnalysis(addr).finally(() => {
         document.getElementById('btn-analyze').disabled = false
       })
     })
 
     document.getElementById('input-address').addEventListener('keydown', e => {
-      if (e.key === 'Enter') document.getElementById('input-email').focus()
+      if (e.key === 'Enter') document.getElementById('btn-analyze').click()
     })
 
+    document.getElementById('btn-email-submit').addEventListener('click', handleEmailSubmit)
     document.getElementById('input-email').addEventListener('keydown', e => {
-      if (e.key === 'Enter') runAnalysis()
+      if (e.key === 'Enter') handleEmailSubmit()
     })
 
     document.getElementById('btn-restart').addEventListener('click', reset)

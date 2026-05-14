@@ -1,12 +1,10 @@
 import { VercelRequest, VercelResponse } from '@vercel/node'
 import Anthropic from '@anthropic-ai/sdk'
 import { tavily } from '@tavily/core'
-import { Resend } from 'resend'
 import * as fs from 'fs'
 import * as path from 'path'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 // ─── SSE helpers ────────────────────────────────────────────────────────────
 
@@ -707,16 +705,12 @@ function gradeSignal(score: number): { grade: string; signal: string } {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { address, email } = req.body || {}
+  const { address } = req.body || {}
   if (!address || typeof address !== 'string' || address.trim().length < 5) {
     return res.status(400).json({ error: 'A valid property address is required.' })
   }
-  if (!email || typeof email !== 'string' || !email.includes('@')) {
-    return res.status(400).json({ error: 'A valid email address is required.' })
-  }
 
   const addr = address.trim()
-  const userEmail = email.trim().toLowerCase()
 
   res.setHeader('Content-Type', 'text/event-stream')
   res.setHeader('Cache-Control', 'no-cache')
@@ -767,41 +761,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { grade, signal } = gradeSignal(overallScore)
     const pdfBase64 = await generatePdf(addr, { comps: compsData, rental: rentalData, neighborhood: nbrData, investment: invData, market: mktData, overallScore, grade, signal })
     step(res, 'pdf', 'done', 'PDF report ready', { pdfBase64 })
-
-    // Step 8: Email
-    step(res, 'email', 'running', 'Sending your report…')
-    const shortAddr = addr.split(',')[0]
-    await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'shana@craftbauer.com',
-      to: userEmail,
-      subject: `Your Property Analysis: ${shortAddr}`,
-      html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
-        <h2 style="color:#131313">Your Property Analysis Report is Ready</h2>
-        <p>Hi there,</p>
-        <p>Attached is your full analysis report for <strong>${addr}</strong>. It includes comparable sales, rental income projections, neighborhood scoring, investment strategy recommendations, and current market conditions.</p>
-        <p>This report is for educational purposes only and is not financial or investment advice. I'm happy to walk you through any of the findings personally.</p>
-        <p>Feel free to reach out anytime:</p>
-        <p><strong>Shana Gates</strong><br>Craft &amp; Bauer | Real Broker<br><a href="tel:7602324054">760.232.4054</a><br><a href="mailto:shana@craftbauer.com">shana@craftbauer.com</a></p>
-        <p style="font-size:11px;color:#999;margin-top:32px">For educational purposes only. Not financial or investment advice. CalDRE #02224632.</p>
-      </div>`,
-      attachments: [{
-        filename: `Property-Analysis-${shortAddr.replace(/\s+/g, '-')}.pdf`,
-        content: pdfBase64,
-      }],
-    })
-
-    // Lead notification to Shana
-    await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'shana@craftbauer.com',
-      to: 'shana@craftbauer.com',
-      subject: `New lead — Property Analysis: ${shortAddr}`,
-      html: `<p><strong>${userEmail}</strong> requested a property analysis report for:</p>
-        <p><strong>${addr}</strong></p>
-        <p>Score: ${overallScore}/100 — ${grade} — ${signal}</p>
-        <p>Requested at: ${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })} PT</p>`,
-    })
-
-    step(res, 'email', 'done', 'Report sent to your inbox')
     send(res, { step: 'complete' })
 
   } catch (err: any) {
