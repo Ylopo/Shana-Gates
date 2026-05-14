@@ -238,13 +238,13 @@ async function generatePdf(address: string, data: {
     if (fs.existsSync(marcellusPath)) {
       fonts = {
         Marcellus: {
-          normal: fs.readFileSync(marcellusPath).buffer as ArrayBuffer,
-          bold: fs.readFileSync(marcellusPath).buffer as ArrayBuffer,
+          normal: fs.readFileSync(marcellusPath),
+          bold: fs.readFileSync(marcellusPath),
         },
         Montserrat: {
-          normal: fs.readFileSync(montRegPath).buffer as ArrayBuffer,
-          bold: fs.readFileSync(montBoldPath).buffer as ArrayBuffer,
-          italics: fs.readFileSync(montLightPath).buffer as ArrayBuffer,
+          normal: fs.readFileSync(montRegPath),
+          bold: fs.readFileSync(montBoldPath),
+          italics: fs.readFileSync(montLightPath),
         },
       }
     }
@@ -323,37 +323,41 @@ async function generatePdf(address: string, data: {
 
   const docDef: any = {
     pageSize: 'LETTER',
-    pageMargins: [50, 70, 50, 60],
+    pageMargins: [50, 60, 50, 50],
     defaultStyle: { font: sans, fontSize: 10, color: DARK },
     fonts,
 
+    // Full-bleed dark background on cover page only
+    background: (currentPage: number, pageSize: any) => {
+      if (currentPage === 1) {
+        return { canvas: [{ type: 'rect', x: 0, y: 0, w: pageSize.width, h: pageSize.height, color: DARK }] }
+      }
+      return null
+    },
+
     header: (currentPage: number) => {
-      if (currentPage === 1) return {}
+      if (currentPage === 1) return null
       return {
         columns: [
-          { text: 'PROPERTY ANALYSIS REPORT', font: serif, fontSize: 9, color: BRONZE, margin: [50, 18, 0, 0] },
-          { text: 'Shana Gates · Craft & Bauer | Real Broker · 760.232.4054', font: sans, fontSize: 8, color: CREAM, alignment: 'right', margin: [0, 18, 50, 0] },
+          { text: 'PROPERTY ANALYSIS REPORT', font: serif, fontSize: 9, color: BRONZE, margin: [50, 20, 0, 0] },
+          { text: 'Shana Gates  ·  Craft & Bauer | Real Broker  ·  760.232.4054', font: sans, fontSize: 8, color: '#888', alignment: 'right', margin: [0, 20, 50, 0] },
         ],
-        canvas: [{ type: 'rect', x: 0, y: 0, w: 612, h: 50, color: DARK }],
       }
     },
 
     footer: (currentPage: number, pageCount: number) => {
-      if (currentPage === 1) return {}
+      if (currentPage === 1) return null
       return {
         columns: [
-          { text: 'For educational purposes only. Not financial or investment advice.', font: sans, fontSize: 7, color: '#888', margin: [50, 12, 0, 0] },
-          { text: `Page ${currentPage} of ${pageCount}`, font: sans, fontSize: 8, color: BRONZE, alignment: 'right', margin: [0, 12, 50, 0] },
+          { text: 'For educational purposes only. Not financial or investment advice.', font: sans, fontSize: 7, color: '#aaa', margin: [50, 10, 0, 0] },
+          { text: `Page ${currentPage} of ${pageCount}`, font: sans, fontSize: 8, color: BRONZE, alignment: 'right', margin: [0, 10, 50, 0] },
         ],
       }
     },
 
     content: [
       // ── COVER PAGE ────────────────────────────────────────────────────────
-      {
-        canvas: [{ type: 'rect', x: -50, y: -70, w: 662, h: 792, color: DARK }],
-        margin: [0, 0, 0, 0],
-      },
+      // (dark background handled by `background` callback above)
       {
         text: 'PROPERTY ANALYSIS REPORT',
         font: serif,
