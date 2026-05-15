@@ -237,7 +237,7 @@ function bodyTextToBlocks(bodyText: string): PortableTextBlock[] {
 
 export async function writePostFromIdea(
   idea: IdeaCandidate,
-  learningsContext: string,
+  learningsContext: string = '',
 ): Promise<BlogPostDraft> {
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
   const cityFocus = idea.cityTarget ?? 'Coachella Valley'
