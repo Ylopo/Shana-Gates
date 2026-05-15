@@ -5,6 +5,7 @@ import type { IdeaCandidate, IdeaAudience, ArticleCategory } from './types'
 import { computeTimeliness, computeSourceCredibility, computeNovelty, assembleScore, SCORE_THRESHOLD } from './scoring'
 import { sourceTypeLabel } from './source-rules'
 import { saveIdea, getCoveredTopics, buildWeekId } from './idea-store'
+import { seedEvergreenHistoryIdeas } from './history-seeds'
 
 // ── Coachella Valley topic queries ───────────────────────────────────────────
 // 8 real estate queries rotate daily from this pool; 2 history slots are always
@@ -313,6 +314,14 @@ export async function runDailyResearch(date: string): Promise<ScoredArticle[]> {
     console.log(`[research] Saved ${ideas.length} idea candidates`)
   } catch (err) {
     console.error('[research] Failed to save ideas:', err)
+  }
+
+  // Always seed evergreen Palm Springs history/celebrity stories
+  try {
+    const historyCount = await seedEvergreenHistoryIdeas()
+    console.log(`[research] Seeded ${historyCount} evergreen history ideas`)
+  } catch (err) {
+    console.error('[research] Failed to seed history ideas:', err)
   }
 
   return topScored
