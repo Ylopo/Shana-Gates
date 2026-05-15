@@ -87,6 +87,17 @@
     .post-arrow { color: rgba(255,255,255,0.2); font-size: 18px; flex-shrink: 0; }
     .post-card:hover .post-arrow { color: var(--bronze); }
 
+    /* Delete button */
+    .post-card-wrap { position: relative; margin-bottom: 10px; }
+    .post-card-wrap .post-card { margin-bottom: 0; padding-right: 52px; }
+    .post-delete-btn {
+      position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+      background: none; border: none; color: rgba(255,255,255,0.18);
+      cursor: pointer; font-size: 15px; padding: 6px 8px; border-radius: 6px;
+      transition: color 0.15s, background 0.15s; line-height: 1;
+    }
+    .post-delete-btn:hover { color: #ef4444; background: rgba(239,68,68,0.12); }
+
     /* Success banner */
     .success-banner {
       background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
@@ -187,19 +198,23 @@
       const statusClass = `status-${post.workflowStatus || 'media_pending'}`
       const statusLabel = post.workflowStatus === 'media_ready' ? 'Ready' : 'Needs Review'
       const catLabel = CATEGORY_LABELS[post.category] || post.category
+      const safeTitle = post.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')
       return `
-        <a class="post-card" href="/admin/va-queue/editor.html?slug=${encodeURIComponent(post.slug)}">
-          ${thumb}
-          <div class="post-body">
-            <div class="post-title">${post.title}</div>
-            <div class="post-meta">
-              <span class="status-badge ${statusClass}">${statusLabel}</span>
-              <span class="cat-badge">${catLabel}</span>
-              <span class="post-date">${formatDate(post.publishedAt)}</span>
+        <div class="post-card-wrap">
+          <a class="post-card" href="/admin/va-queue/editor.html?slug=${encodeURIComponent(post.slug)}">
+            ${thumb}
+            <div class="post-body">
+              <div class="post-title">${post.title}</div>
+              <div class="post-meta">
+                <span class="status-badge ${statusClass}">${statusLabel}</span>
+                <span class="cat-badge">${catLabel}</span>
+                <span class="post-date">${formatDate(post.publishedAt)}</span>
+              </div>
             </div>
-          </div>
-          <div class="post-arrow">›</div>
-        </a>`
+            <div class="post-arrow">›</div>
+          </a>
+          <button class="post-delete-btn" title="Delete post" onclick="deletePost(event,'${encodeURIComponent(post.slug)}','${safeTitle}')">✕</button>
+        </div>`
     }
 
     async function loadQueue() {
@@ -236,6 +251,31 @@
       } catch (err) {
         document.getElementById('loadingState').innerHTML =
           `<div class="empty-msg"><strong>Error loading queue</strong>${err.message}</div>`
+      }
+    }
+
+    async function deletePost(e, encodedSlug, title) {
+      e.preventDefault()
+      e.stopPropagation()
+      if (!confirm(`Delete "${decodeURIComponent(title)}"?\n\nThis cannot be undone.`)) return
+      const slug = decodeURIComponent(encodedSlug)
+      try {
+        const res = await fetch('/api/blog/queue-delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug }),
+        })
+        if (res.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Delete failed') }
+        // Remove the card from DOM
+        const btn = e.currentTarget
+        btn.closest('.post-card-wrap')?.remove()
+        // Update header count
+        const remaining = document.querySelectorAll('.post-card-wrap').length
+        document.getElementById('headerMeta').textContent =
+          `${remaining} post${remaining !== 1 ? 's' : ''} awaiting review`
+      } catch (err) {
+        alert(`Could not delete: ${err.message}`)
       }
     }
 

@@ -193,6 +193,17 @@ export async function publishQueuedPost(slug: string): Promise<void> {
   await redis.set('blog_posts_index', JSON.stringify(filteredIndex))
 }
 
+export async function deleteQueuedPost(slug: string): Promise<void> {
+  // Remove from queue list
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  if (qRaw) {
+    const queue: BlogPostSummary[] = typeof qRaw === 'string' ? JSON.parse(qRaw) : qRaw
+    await redis.set('blog_posts_queue', JSON.stringify(queue.filter((p) => p.slug !== slug)))
+  }
+  // Delete the post document itself
+  await redis.del(`blog_post:${slug}`)
+}
+
 // ── Community page overrides ───────────────────────────────────────────────
 
 export interface CommunityOverride {
