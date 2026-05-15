@@ -331,23 +331,39 @@
     .upload-zone.has-upload { border-color: var(--bronze); border-style: solid; }
     .upload-zone.has-upload .upload-zone-title { color: var(--bronze); }
 
-    /* ── Category filter bar ── */
-    .filter-bar {
+    /* ── Category filter toolbar ── */
+    .filter-toolbar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 32px;
+      padding: 10px 32px;
       display: flex;
       align-items: center;
-      gap: 4px;
-      overflow-x: auto;
-      scrollbar-width: none;
+      gap: 12px;
     }
-    .filter-bar::-webkit-scrollbar { display: none; }
+    .cat-select {
+      flex: 1;
+      max-width: 320px;
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: var(--font);
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      transition: border-color 0.15s;
+    }
+    .cat-select:focus { border-color: rgba(184,151,90,0.5); }
     .select-all-btn {
-      margin-left: auto;
       flex-shrink: 0;
-      padding: 6px 12px;
-      font-size: 11px;
+      padding: 8px 14px;
+      font-size: 12px;
       font-weight: 600;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -361,42 +377,10 @@
       white-space: nowrap;
     }
     .select-all-btn:hover { color: var(--bronze); border-color: rgba(184,151,90,0.4); }
-    .filter-tab {
-      flex-shrink: 0;
-      padding: 14px 16px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--muted);
-      cursor: pointer;
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      font-family: var(--font);
-      transition: color 0.15s, border-color 0.15s;
-      white-space: nowrap;
-    }
-    .filter-tab:hover { color: rgba(255,255,255,0.7); }
-    .filter-tab.active { color: var(--bronze); border-bottom-color: var(--bronze); }
-    .filter-tab .tab-count {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 6px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 100px;
-      font-size: 10px;
-      font-weight: 700;
-      min-width: 18px;
-      height: 18px;
-      padding: 0 5px;
-    }
-    .filter-tab.active .tab-count { background: rgba(184,151,90,0.2); color: var(--bronze); }
 
     @media (max-width: 640px) {
       header { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px; }
-      .filter-bar { padding: 0 16px; }
+      .filter-toolbar { padding: 10px 16px; }
       main { padding: 24px 16px 100px; }
       .publish-bar { padding: 12px 16px; }
       .photo-grid { gap: 6px; }
@@ -413,13 +397,17 @@
     <div class="header-meta" id="headerMeta">Loading today's articles…</div>
   </header>
 
-  <div class="filter-bar" id="filterBar">
-    <button class="filter-tab active" data-cat="" onclick="setFilter(this,'')">All <span class="tab-count" id="cnt-all">—</span></button>
-    <button class="filter-tab" data-cat="market-update" onclick="setFilter(this,'market-update')">Market Updates <span class="tab-count" id="cnt-market-update">0</span></button>
-    <button class="filter-tab" data-cat="investor-tips" onclick="setFilter(this,'investor-tips')">Investor Tips <span class="tab-count" id="cnt-investor-tips">0</span></button>
-    <button class="filter-tab" data-cat="seller-tips" onclick="setFilter(this,'seller-tips')">Seller Tips <span class="tab-count" id="cnt-seller-tips">0</span></button>
-    <button class="filter-tab" data-cat="community" onclick="setFilter(this,'community')">Community <span class="tab-count" id="cnt-community">0</span></button>
-    <button class="filter-tab" data-cat="trending-topics" onclick="setFilter(this,'trending-topics')">Trending Topics <span class="tab-count" id="cnt-trending-topics">0</span></button>
+  <div class="filter-toolbar">
+    <select class="cat-select" id="catFilter" onchange="setFilter()">
+      <option value="">All</option>
+      <option value="market-update">Market Updates</option>
+      <option value="investor-tips">Investor Tips</option>
+      <option value="seller-tips">Seller Tips</option>
+      <option value="community">Community</option>
+      <option value="trending-topics">Trending Topics</option>
+      <option value="local-history">Local History</option>
+      <option value="local-interest">Local Interest</option>
+    </select>
     <button class="select-all-btn" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
   </div>
 
@@ -449,13 +437,14 @@
   </div>
 
   <script>
-    // New 5-category taxonomy
     const CATEGORY_COLORS = {
       'market-update':    '#2563eb',
       'investor-tips':    '#FF9800',
       'seller-tips':      '#0ea5e9',
       'community':        '#16A34A',
       'trending-topics':  '#9C27B0',
+      'local-history':    '#B8975A',
+      'local-interest':   '#E67E22',
       // legacy → keep display consistent
       'buying-tips':        '#2563eb',
       'selling-tips':       '#0ea5e9',
@@ -473,6 +462,8 @@
       'seller-tips':      'Seller Tips',
       'community':        'Community',
       'trending-topics':  'Trending Topics',
+      'local-history':    'Local History',
+      'local-interest':   'Local Interest',
       // legacy
       'buying-tips':        'Market Update',
       'selling-tips':       'Seller Tips',
@@ -485,7 +476,7 @@
       'market-insight':     'Market Update',
     }
 
-    // Maps legacy and new category values to the 5 canonical tab keys
+    // Maps legacy and new category values to canonical filter keys
     function normalizeCategory(cat) {
       const map = {
         'market-insight':     'market-update',
@@ -515,29 +506,35 @@
     let imageSuggestions = []
     let imageApprovals = {}         // key: "${itemId}_${sectionIndex}", value: {sectionIndex, altText, photo} | null
 
-    function setFilter(btn, cat) {
+    function setFilter() {
+      const cat = document.getElementById('catFilter').value
       activeCategory = cat
-      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'))
-      btn.classList.add('active')
       filteredArticles = cat
         ? articles.filter(a => normalizeCategory(a.category) === cat)
         : articles
       renderArticleList(filteredArticles)
+      updatePublishBar()
     }
 
     function updateTabCounts(arts) {
-      const tabs = ['market-update', 'investor-tips', 'seller-tips', 'community', 'trending-topics']
+      const cats = ['market-update', 'investor-tips', 'seller-tips', 'community', 'trending-topics', 'local-history', 'local-interest']
       const counts = {}
-      tabs.forEach(t => counts[t] = 0)
+      cats.forEach(t => counts[t] = 0)
       arts.forEach(a => {
         const norm = normalizeCategory(a.category)
         if (counts[norm] !== undefined) counts[norm]++
       })
-      document.getElementById('cnt-all').textContent = arts.length
-      tabs.forEach(t => {
-        const el = document.getElementById('cnt-' + t)
-        if (el) el.textContent = counts[t]
-      })
+      const sel = document.getElementById('catFilter')
+      if (sel) {
+        for (const opt of sel.options) {
+          if (opt.value === '') {
+            opt.text = `All (${arts.length})`
+          } else if (counts[opt.value] !== undefined) {
+            const label = CATEGORY_LABELS[opt.value] || opt.value
+            opt.text = `${label} (${counts[opt.value]})`
+          }
+        }
+      }
     }
 
     const params = new URLSearchParams(window.location.search)
@@ -1002,6 +999,6 @@
     })
   </script>
 
-  <a id="_dash_link" href="/admin/" style="position:fixed;bottom:20px;right:20px;background:#141414;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;padding:8px 16px;border-radius:8px;text-decoration:none;z-index:9998;font-family:system-ui,-apple-system,sans-serif;letter-spacing:0.02em">&#9635; Dashboard</a>
+  <script src="/admin/admin-nav.js" defer></script>
 </body>
 </html>
