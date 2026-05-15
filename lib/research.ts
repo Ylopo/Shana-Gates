@@ -6,7 +6,9 @@ import { computeTimeliness, computeSourceCredibility, computeNovelty, assembleSc
 import { sourceTypeLabel } from './source-rules'
 import { saveIdea, getCoveredTopics, buildWeekId } from './idea-store'
 
-// ── Coachella Valley topic queries (rotate 10 per day) ────────────────────────
+// ── Coachella Valley topic queries ───────────────────────────────────────────
+// 8 real estate queries rotate daily from this pool; 2 history slots are always
+// filled from HISTORY_QUERIES so local history surfaces every single day.
 
 const TOPIC_QUERIES = [
   // Market Updates
@@ -49,7 +51,9 @@ const TOPIC_QUERIES = [
   'luxury celebrity estate auction notable home',
   'Coachella Valley notable development project 2026',
   'California housing news trending real estate story',
-  // Local History & Stories — community authority content beyond real estate
+]
+
+const HISTORY_QUERIES = [
   'Palm Springs Coachella Valley historical anniversary milestone 2026',
   'Coachella Valley famous historical event anniversary 2026',
   'Palm Springs significant local history 50th 100th anniversary',
@@ -64,9 +68,19 @@ const TOPIC_QUERIES = [
 
 function getDailyQueries(date: string): string[] {
   const seed = date.replace(/-/g, '')
-  const offset = parseInt(seed.slice(-2), 10) % TOPIC_QUERIES.length
-  const rotated = [...TOPIC_QUERIES.slice(offset), ...TOPIC_QUERIES.slice(0, offset)]
-  return rotated.slice(0, 10)
+  const offset = parseInt(seed.slice(-2), 10)
+
+  // 8 real estate queries from rotating pool
+  const reOffset = offset % TOPIC_QUERIES.length
+  const reRotated = [...TOPIC_QUERIES.slice(reOffset), ...TOPIC_QUERIES.slice(0, reOffset)]
+  const reQueries = reRotated.slice(0, 8)
+
+  // 2 history queries guaranteed every day, rotating through the history pool
+  const histOffset = Math.floor(offset / 2) % HISTORY_QUERIES.length
+  const histRotated = [...HISTORY_QUERIES.slice(histOffset), ...HISTORY_QUERIES.slice(0, histOffset)]
+  const histQueries = histRotated.slice(0, 2)
+
+  return [...reQueries, ...histQueries]
 }
 
 // ── Tavily search ─────────────────────────────────────────────────────────────
