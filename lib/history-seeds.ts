@@ -11,6 +11,7 @@
  */
 
 import type { IdeaCandidate } from './types'
+import type { ScoredArticle } from './blog-store'
 import { saveIdea, getIdea, buildWeekId } from './idea-store'
 
 interface SeedStory {
@@ -163,4 +164,22 @@ export async function seedEvergreenHistoryIdeas(): Promise<number> {
   }
 
   return saved
+}
+
+// ── ScoredArticle format for the blog picker ─────────────────────────────────
+// The blog picker reads ScoredArticle[] from daily_articles:{date}.
+// This converts the curated stories into that format so they appear in the picker.
+
+export function getHistoryAsScoredArticles(): ScoredArticle[] {
+  return PALM_SPRINGS_STORIES.map((story) => ({
+    id: `history-${story.slug}`,
+    url: '',
+    title: story.title,
+    source: 'Palm Springs History',
+    publishedDate: '',
+    summary: story.angle,
+    score: 9,
+    category: 'local-history',
+    whyItMatters: story.whyItMatters,
+  }))
 }

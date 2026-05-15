@@ -2,6 +2,7 @@ import { runDailyResearch } from '../../lib/research'
 import { storeDailyArticles, incrementShownCount } from '../../lib/blog-store'
 import { sendDailyDigest, sendIdeaDigest } from '../../lib/blog-email'
 import { getPendingIdeas } from '../../lib/idea-store'
+import { getHistoryAsScoredArticles } from '../../lib/history-seeds'
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET' && req.method !== 'POST') {
@@ -38,9 +39,14 @@ export default async function handler(req: any, res: any) {
     // Track shown counts
     await Promise.all(articles.map((a) => incrementShownCount(a.id)))
 
+    // Merge in evergreen history/celebrity stories so they always appear in the picker
+    const historyArticles = getHistoryAsScoredArticles()
+    const existingIds = new Set(articles.map((a) => a.id))
+    const merged = [...articles, ...historyArticles.filter((a) => !existingIds.has(a.id))]
+
     // Store in Redis
-    await storeDailyArticles(today, articles)
-    console.log(`[research] Stored ${articles.length} articles in Redis`)
+    await storeDailyArticles(today, merged)
+    console.log(`[research] Stored ${merged.length} articles in Redis (${articles.length} research + ${historyArticles.length} history)`)
 
     // Send article digest email (for blog picker)
     await sendDailyDigest(today, articles)
