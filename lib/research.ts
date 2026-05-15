@@ -49,6 +49,17 @@ const TOPIC_QUERIES = [
   'luxury celebrity estate auction notable home',
   'Coachella Valley notable development project 2026',
   'California housing news trending real estate story',
+  // Local History & Stories — community authority content beyond real estate
+  'Palm Springs Coachella Valley historical anniversary milestone 2026',
+  'Coachella Valley famous historical event anniversary 2026',
+  'Palm Springs significant local history 50th 100th anniversary',
+  'Coachella Valley famous unsolved crime murder mystery cold case',
+  'Palm Springs notable politician leader local figure history legacy',
+  'Coachella Valley famous storm flood disaster anniversary',
+  'Palm Springs landmark history milestone anniversary 2026',
+  'Coachella Valley local legend famous story notable history',
+  'Palm Springs military history famous event anniversary',
+  'Coachella Valley local news big story anniversary notable event',
 ]
 
 function getDailyQueries(date: string): string[] {
@@ -96,6 +107,16 @@ CATEGORIES (pick the single best fit):
 - seller-tips: seller strategy, staging, pricing, timing, listing advice, preparing a home to sell
 - community: Coachella Valley events, things to do, farmers markets, festivals, community news, city spotlights, local lifestyle, dining, outdoor recreation
 - trending-topics: celebrity real estate news, viral or pop-culture real estate stories, notable property sales, interesting housing trends making national news, major development announcements
+- local-history: historical anniversaries, significant past events, cold cases, unsolved crimes, notable local figures, landmarks, battles, disasters tied to a specific date and place in the Coachella Valley / Palm Springs area
+- local-interest: local legends, famous stories, notable people born or based in the Coachella Valley, community moments that put the area on the map
+
+HIGH-VALUE LOCAL INTEREST TOPICS (does NOT need to be real estate):
+- Historical anniversaries: significant events in Palm Springs / Coachella Valley history (storms, floods, civic milestones, 25th/50th/75th/100th anniversaries of major events)
+- Famous local stories: notable crimes, unsolved mysteries, cold cases that locals remember, local legends
+- Notable local figures: politicians, military heroes, celebrities, famous residents past and present
+- Big community moments: things that put Palm Springs or the Coachella Valley on the map nationally
+
+For local-history/local-interest articles: score based on how specific and memorable the story is to Coachella Valley residents. Score 8–10 if the event has a real date, named people, and a specific Palm Springs or CV location. Use category "local-history" or "local-interest". Do NOT drop these for being non-real-estate — they score on localRelevance (20–25 if very CV-specific) and audienceValue (10–13 if locals genuinely care).
 
 COMPLIANCE — never select or recommend articles that mention:
 - School quality, ratings, or test scores
@@ -153,6 +174,8 @@ const AUDIENCE_MAP: Record<string, IdeaAudience[]> = {
   'seller-tips':     ['seller', 'homeowner'],
   'community':       ['buyer', 'local'],
   'trending-topics': ['buyer', 'seller', 'local'],
+  'local-history':   ['local', 'buyer'],
+  'local-interest':  ['local', 'buyer'],
 }
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
@@ -161,6 +184,8 @@ const CONTENT_TYPE_MAP: Record<string, string> = {
   'seller-tips':     'Seller Tips',
   'community':       'Community',
   'trending-topics': 'Trending',
+  'local-history':   'Local History',
+  'local-interest':  'Local Interest',
 }
 
 const CV_CITIES = [

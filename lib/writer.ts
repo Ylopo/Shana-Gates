@@ -250,6 +250,31 @@ export async function writePostFromIdea(
   const slugifySimple = (text: string) =>
     text.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim().slice(0, 96)
 
+  const isLocalHistory = idea.contentType === 'Local History' || idea.contentType === 'Local Interest'
+
+  const writingRules = isLocalHistory
+    ? `WRITING RULES (LOCAL HISTORY — STORYTELLING FORMAT):
+- Voice: vivid, narrative, journalistic. Shana Gates is a proud Coachella Valley local who genuinely loves the area's history. Write like you're telling a story over coffee, not like a Wikipedia article.
+- Open with the most dramatic or surprising fact — a scene, a date, a specific detail that makes the reader stop. Drop them into the moment before explaining who, what, where. Example: "February 1, 1937. A desert windstorm tore through Palm Springs with enough force to strip the roofs off a dozen homes on Tahquitz Canyon Way." Then explain what happened.
+- NEVER start with "Did you know..." — that's overused. Start with the scene or fact itself.
+- Structure: dramatic opening hook → historical context (who, what, when, where) → 2–3 ## sections going deeper → ## Why It Still Matters Today (connect the history to living in the Coachella Valley now) → ## Frequently Asked Questions
+- 600–900 words — earns longer reads because the story is genuinely interesting
+- NO seller CTA for local history/interest posts — this is community authority content, not lead gen
+- Tie the history back to a specific neighborhood, park, landmark, golf course, or mountain that Coachella Valley residents recognize today
+- Use real names, dates, and specific details — precision builds credibility
+- Avoid: vague generalities, "the Coachella Valley has a rich history", "you might be surprised to learn"`
+    : `WRITING RULES:
+- Voice: knowledgeable, warm, direct. Feels like advice from a trusted neighbor who knows the market cold.
+- Open with 1–2 sentences that directly answer the reader's most likely question — short, factual, CV-specific. This is the featured snippet hook.
+- Always tie insights back to what they mean for Coachella Valley buyers/sellers/homeowners specifically
+- Structure: intro (with direct answer) → 2–3 body sections with ## headings → ## What This Means For You (3–4 bullet points) → brief closing → ## Frequently Asked Questions
+- 500–700 words total
+- Avoid: salesy language, generic "tips", excessive CTAs`
+
+  const closingCta = isLocalHistory
+    ? ''
+    : `\n8. *Ready to make your move in the Coachella Valley? Reach out to Shana Gates at Craft & Bauer — she knows this market inside and out. [Contact Shana →](mailto:shana@craftbauer.com)*`
+
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: 6000,
@@ -273,19 +298,13 @@ ${researchSection}
 
 ${FAIR_HOUSING_RULES}
 
-WRITING RULES:
-- Voice: knowledgeable, warm, direct. Feels like advice from a trusted neighbor who knows the market cold.
-- Open with 1–2 sentences that directly answer the reader's most likely question — short, factual, CV-specific. This is the featured snippet hook.
-- Always tie insights back to what they mean for Coachella Valley buyers/sellers/homeowners specifically
-- Structure: intro (with direct answer) → 2–3 body sections with ## headings → ## What This Means For You (3–4 bullet points) → brief closing → ## Frequently Asked Questions
-- 500–700 words total
-- Avoid: salesy language, generic "tips", excessive CTAs
+${writingRules}
 
 SEO RULES:
 1. Target keyword is: ${keyword} — use it naturally in the opening paragraph, in at least one ## heading, and 2–3 times in the body.
-2. End with ## Frequently Asked Questions — exactly 3 questions as ### headings, each with a 2–3 sentence answer.
+2. End with ## Frequently Asked Questions — exactly 3 questions as ### headings, each with a 2–3 sentence answer. Choose questions a local resident or visitor would actually search for.
 3. Add 1 internal link where it genuinely helps the reader. Use markdown link syntax.
-4. COMMUNITY LINK RULE: On the FIRST mention of any CV city by name, format as a markdown link: [Palm Springs](/palm-springs.html), [Palm Desert](/palm-desert.html), [Rancho Mirage](/rancho-mirage.html), [Indian Wells](/indian-wells.html), [La Quinta](/la-quinta.html), [Indio](/indio.html), [Cathedral City](/cathedral-city.html), [Desert Hot Springs](/desert-hot-springs.html), [Coachella](/coachella.html). Only the first mention of each.
+4. COMMUNITY LINK RULE: On the FIRST mention of any CV city by name, format as a markdown link: [Palm Springs](/palm-springs.html), [Palm Desert](/palm-desert.html), [Rancho Mirage](/rancho-mirage.html), [Indian Wells](/indian-wells.html), [La Quinta](/la-quinta.html), [Indio](/indio.html), [Cathedral City](/cathedral-city.html), [Desert Hot Springs](/desert-hot-springs.html), [Coachella](/coachella.html). Only the first mention of each.${closingCta}
 
 Return a JSON object with EXACTLY these fields:
 {

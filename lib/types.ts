@@ -6,6 +6,8 @@ export type ArticleCategory =
   | 'seller-tips'
   | 'community'
   | 'trending-topics'
+  | 'local-history'
+  | 'local-interest'
 
 export interface RawArticle {
   id: string
