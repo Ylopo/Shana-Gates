@@ -97,7 +97,7 @@ async function searchTavily(query: string): Promise<TavilyResult[]> {
   const client = tavily({ apiKey: process.env.TAVILY_API_KEY! })
   const result = await client.search(query, {
     searchDepth: 'basic',
-    maxResults: 5,
+    maxResults: 10,
   })
   return (result.results ?? []) as TavilyResult[]
 }
@@ -302,18 +302,18 @@ export async function runDailyResearch(date: string): Promise<ScoredArticle[]> {
     return true
   })
 
-  const toScore = uniqueResults.slice(0, 30)
+  const toScore = uniqueResults.slice(0, 100)
   const scored = await scoreArticles(toScore)
-  const top10 = scored.sort((a, b) => b.score - a.score).slice(0, 10)
+  const topScored = scored.sort((a, b) => b.score - a.score).slice(0, 50)
 
   // Generate IdeaCandidates for the idea pipeline
   try {
-    const ideas = await articlesToIdeas(top10, uniqueResults)
+    const ideas = await articlesToIdeas(topScored, uniqueResults)
     await Promise.all(ideas.map((idea) => saveIdea(idea)))
     console.log(`[research] Saved ${ideas.length} idea candidates`)
   } catch (err) {
     console.error('[research] Failed to save ideas:', err)
   }
 
-  return top10
+  return topScored
 }
