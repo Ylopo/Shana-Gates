@@ -1,8 +1,15 @@
 import { createHmac } from 'crypto'
 import { getPostBySlug, publishQueuedPost } from '../../lib/blog-redis'
-
-// Phase B: import and wire in Blotato here
-// import { publishToFacebook } from '../../lib/blotato-client'
+import {
+  publishToFacebook, publishToInstagram, publishToLinkedIn,
+  publishToX, publishToThreads,
+} from '../../lib/blotato-client'
+import {
+  generatePlatformCaptions,
+  buildLinkedInCaption, buildXCaption,
+  buildThreadsCaption, buildInstagramCaption,
+  SITE_URL,
+} from '../../lib/publish-service'
 
 const COOKIE_NAME = 'sg_assistant_session'
 
@@ -52,20 +59,54 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    // Phase A: publish to website only
+    // Publish to website
     await publishQueuedPost(slug)
 
-    // Phase B: also post to Facebook
-    // Uncomment when BLOTATO_KEY, BLOTATO_ACCOUNT_ID, BLOTATO_FACEBOOK_PAGE_ID are set
-    //
-    // if (post.heroImageUrl && post.socialCopy && process.env.BLOTATO_KEY) {
-    //   const appUrl = process.env.APP_URL ?? 'https://shanasells.com'
-    //   const caption = `${post.socialCopy}\n\n${appUrl}/blog/post/${post.slug}`
-    //   const { postSubmissionId } = await publishToFacebook(caption, post.heroImageUrl)
-    //   return res.status(200).json({ ok: true, postSubmissionId })
-    // }
+    // Publish to social platforms when the post has a hero image and Blotato is configured
+    let social: Record<string, unknown> = {}
+    if (post.heroImageUrl && process.env.BLOTATO_API_KEY) {
+      const articleUrl = `${SITE_URL}/blog/post.html?slug=${post.slug}`
 
-    return res.status(200).json({ ok: true, postSubmissionId: null })
+      const captions = post.socialCopy
+        ? {
+            facebook:  post.socialCopy,
+            linkedin:  post.socialCopy,
+            twitter:   post.title,
+            threads:   post.socialCopy,
+            instagram: post.socialCopy,
+          }
+        : await generatePlatformCaptions(post)
+
+      const fbCopy = `${captions.facebook}\n\n${articleUrl}`
+      const liCopy = buildLinkedInCaption(captions.linkedin, post.category, articleUrl)
+      const twCopy = buildXCaption(captions.twitter, post.category, articleUrl)
+      const thCopy = buildThreadsCaption(captions.threads, articleUrl)
+      const igCopy = buildInstagramCaption(captions.instagram, post.category, articleUrl)
+
+      const [fbOut, liOut, twOut, thOut, igOut] = await Promise.allSettled([
+        publishToFacebook(fbCopy,   post.heroImageUrl),
+        publishToLinkedIn(liCopy,   post.heroImageUrl),
+        publishToX(twCopy,          post.heroImageUrl),
+        publishToThreads(thCopy,    post.heroImageUrl),
+        publishToInstagram(igCopy,  post.heroImageUrl),
+      ])
+
+      function outcome(r: PromiseSettledResult<{ postSubmissionId: string }>, label: string) {
+        return r.status === 'fulfilled'
+          ? { postSubmissionId: r.value.postSubmissionId }
+          : { error: r.reason instanceof Error ? r.reason.message : `${label} failed` }
+      }
+
+      social = {
+        facebook:  outcome(fbOut, 'Facebook'),
+        linkedin:  outcome(liOut, 'LinkedIn'),
+        twitter:   outcome(twOut, 'X / Twitter'),
+        threads:   outcome(thOut, 'Threads'),
+        instagram: outcome(igOut, 'Instagram'),
+      }
+    }
+
+    return res.status(200).json({ ok: true, social })
   } catch (err: any) {
     return res.status(500).json({ error: err?.message ?? 'Publish failed' })
   }
