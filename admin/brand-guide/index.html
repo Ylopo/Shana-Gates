@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/images/favcon.png" />
+  <title>Brand Style Guide — Shana Gates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --midnight:    #0D0D0D;
+      --obsidian:    #0A0A0A;
+      --surface:     #141414;
+      --surface2:    #1A1A1A;
+      --surface3:    #222222;
+      --bronze:      #B8975A;
+      --bronze-light:#CEB07A;
+      --bronze-dim:  rgba(184,151,90,0.18);
+      --cream:       #F2EDE4;
+      --cream-muted: rgba(242,237,228,0.55);
+      --cb-navy:     #0D1B2A;
+      --cb-teal:     #1A4447;
+      --cb-teal-mid: #1A3A3C;
+      --teal-bright: #4ECDC4;
+      --border:      rgba(255,255,255,0.08);
+      --border-bronze: rgba(184,151,90,0.3);
+      --font-serif:  'Cormorant Garamond', Georgia, serif;
+      --font-sans:   'Jost', system-ui, sans-serif;
+      --font-display:'Montserrat', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--obsidian);
+      color: var(--cream);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* ── Layout ── */
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 0 32px 120px; }
+
+    section { margin-bottom: 80px; }
+
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--cream);
+      margin-bottom: 6px;
+    }
+    .section-desc {
+      font-size: 14px;
+      color: var(--cream-muted);
+      margin-bottom: 32px;
+      max-width: 560px;
+    }
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+
+    /* ── Hero header ── */
+    .guide-hero {
+      padding: 72px 0 64px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 72px;
+    }
+    .guide-hero-eyebrow {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      margin-bottom: 16px;
+    }
+    .guide-hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--cream);
+      margin-bottom: 20px;
+    }
+    .guide-hero-title em {
+      font-style: italic;
+      color: var(--bronze);
+    }
+    .guide-hero-sub {
+      font-size: 15px;
+      color: var(--cream-muted);
+      max-width: 540px;
+      line-height: 1.7;
+    }
+    .guide-hero-meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    .guide-hero-meta span {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+    }
+
+    /* ── Nav ── */
+    .toc {
+      position: sticky;
+      top: 48px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      z-index: 100;
+      margin: 0 -32px 64px;
+    }
+    .toc::-webkit-scrollbar { display: none; }
+    .toc a {
+      flex-shrink: 0;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      text-decoration: none;
+      padding: 14px 16px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .toc a:hover { color: var(--cream); }
+    .toc a.active { color: var(--bronze); border-bottom-color: var(--bronze); }
+
+    /* ── Color Swatches ── */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .swatch {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .swatch-color {
+      height: 80px;
+      width: 100%;
+    }
+    .swatch-info {
+      background: var(--surface);
+      padding: 12px 14px;
+    }
+    .swatch-name {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--cream);
+      margin-bottom: 3px;
+    }
+    .swatch-hex {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      color: var(--cream-muted);
+    }
+    .swatch-role {
+      font-size: 10px;
+      color: rgba(242,237,228,0.35);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .swatch-group-label {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+      margin: 32px 0 14px;
+    }
+    .swatch-group-label:first-child { margin-top: 0; }
+
+    /* ── Typography ── */
+    .type-specimen {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 36px;
+      margin-bottom: 16px;
+    }
+    .type-specimen-meta {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .type-specimen-meta span {
+      color: var(--cream-muted);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      text-transform: none;
+      margin-left: 12px;
+      font-size: 11px;
+    }
+
+    .t-display-xl {
+      font-family: var(--font-serif);
+      font-size: 64px;
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--cream);
+      letter-spacing: -0.01em;
+    }
+    .t-display-lg {
+      font-family: var(--font-serif);
+      font-size: 48px;
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--cream);
+    }
+    .t-display-italic {
+      font-family: var(--font-serif);
+      font-size: 48px;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.1;
+      color: var(--bronze);
+    }
+    .t-heading {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--cream);
+    }
+    .t-eyebrow {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--bronze);
+    }
+    .t-nav {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.20em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+    }
+    .t-body-lg {
+      font-family: var(--font-sans);
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.7;
+      max-width: 600px;
+    }
+    .t-body {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--cream-muted);
+      line-height: 1.6;
+      max-width: 600px;
+    }
+    .t-caption {
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(242,237,228,0.4);
+    }
+
+    /* Thumbnail typography */
+    .thumb-specimen {
+      background: linear-gradient(135deg, var(--cb-navy) 0%, #0a1520 100%);
+      border-radius: 12px;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .thumb-specimen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, rgba(10,26,28,0.92) 0%, rgba(10,26,28,0.6) 60%, transparent 100%);
+    }
+    .thumb-specimen > * { position: relative; z-index: 1; }
+    .thumb-eyebrow {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+    .thumb-main {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 6vw, 54px);
+      font-weight: 900;
+      text-transform: uppercase;
+      line-height: 0.95;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .thumb-script {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--teal-bright);
+      line-height: 1;
+    }
+    .thumb-badge {
+      display: inline-flex;
+      flex-direction: column;
+      background: rgba(26,68,71,0.85);
+      border: 1px solid rgba(78,205,196,0.3);
+      border-radius: 8px;
+      padding: 10px 18px;
+      margin-top: 8px;
+      width: fit-content;
+    }
+    .thumb-badge-top {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+    .thumb-badge-bottom {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal-bright);
+    }
+
+    /* ── Buttons ── */
+    .btn-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+    .btn-primary {
+      background: var(--bronze);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 32px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--bronze);
+      border: 1.5px solid var(--bronze);
+      border-radius: 8px;
+      padding: 13px 32px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-secondary:hover { background: rgba(184,151,90,0.08); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--cream-muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .btn-ghost:hover { color: var(--cream); border-color: rgba(255,255,255,0.2); }
+    .btn-teal {
+      background: var(--cb-teal);
+      color: var(--cream);
+      border: none;
+      border-radius: 8px;
+      padding: 14px 32px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.15s;
+    }
+    .btn-teal:hover { opacity: 0.85; }
+
+    /* ── Badges ── */
+    .badge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .badge {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: border-color 0.15s;
+    }
+    .card:hover { border-color: var(--border-bronze); }
+    .card-eyebrow {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--cream);
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+    .card-body {
+      font-size: 13px;
+      color: var(--cream-muted);
+      line-height: 1.6;
+    }
+    .card.featured {
+      border-color: var(--border-bronze);
+      background: rgba(184,151,90,0.04);
+      box-shadow: 0 0 20px rgba(184,151,90,0.1);
+    }
+
+    /* Stat card */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .stat-value {
+      font-family: var(--font-serif);
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--bronze);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--cream-muted);
+    }
+
+    /* ── Gradients ── */
+    .gradient-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .gradient-swatch {
+      height: 120px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .gradient-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 9px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+
+    /* ── Voice examples ── */
+    .voice-example {
+      background: var(--surface);
+      border-left: 3px solid var(--bronze);
+      border-radius: 0 10px 10px 0;
+      padding: 20px 24px;
+      margin-bottom: 12px;
+    }
+    .voice-platform {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      margin-bottom: 8px;
+    }
+    .voice-text {
+      font-size: 14px;
+      color: var(--cream);
+      line-height: 1.7;
+    }
+    .voice-tags {
+      font-size: 12px;
+      color: var(--teal-bright);
+      margin-top: 8px;
+      opacity: 0.7;
+    }
+
+    .do-dont-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .do-box, .dont-box {
+      border-radius: 10px;
+      padding: 20px 24px;
+    }
+    .do-box {
+      background: rgba(78,205,196,0.06);
+      border: 1px solid rgba(78,205,196,0.2);
+    }
+    .dont-box {
+      background: rgba(239,68,68,0.05);
+      border: 1px solid rgba(239,68,68,0.15);
+    }
+    .do-label {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal-bright);
+      margin-bottom: 12px;
+    }
+    .dont-label {
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #ef4444;
+      margin-bottom: 12px;
+    }
+    .do-box li, .dont-box li {
+      font-size: 13px;
+      line-height: 1.7;
+      list-style: none;
+      padding-left: 16px;
+      position: relative;
+      color: var(--cream-muted);
+    }
+    .do-box li::before { content: '✓'; position: absolute; left: 0; color: var(--teal-bright); }
+    .dont-box li::before { content: '✕'; position: absolute; left: 0; color: #ef4444; }
+
+    /* ── LLM prompt box ── */
+    .prompt-box {
+      background: var(--surface2);
+      border: 1px solid var(--border-bronze);
+      border-radius: 12px;
+      padding: 28px 32px;
+      position: relative;
+    }
+    .prompt-box-label {
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      background: var(--surface2);
+      padding: 0 8px;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bronze);
+    }
+    .prompt-box-text {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      color: var(--cream);
+      white-space: pre-wrap;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(184,151,90,0.12);
+      border: 1px solid var(--border-bronze);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--bronze);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .copy-btn:hover { background: rgba(184,151,90,0.2); }
+    .copy-btn.copied { color: var(--teal-bright); border-color: rgba(78,205,196,0.3); }
+
+    @media (max-width: 640px) {
+      .page-wrap { padding: 0 20px 80px; }
+      .do-dont-grid { grid-template-columns: 1fr; }
+      .guide-hero { padding: 48px 0 40px; }
+      .t-display-xl { font-size: 40px; }
+      .t-display-lg, .t-display-italic { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-wrap">
+
+    <!-- Hero -->
+    <div class="guide-hero">
+      <div class="guide-hero-eyebrow">Brand Style Guide · Version 1.0</div>
+      <h1 class="guide-hero-title">Shana Gates<br><em>Real Estate</em></h1>
+      <p class="guide-hero-sub">The visual language, voice, and rules that keep every touchpoint consistent — from shanasells.com to social media, video, and print. Feed this to any AI tool before generating branded content.</p>
+      <div class="guide-hero-meta">
+        <span>Craft &amp; Bauer | Real Broker</span>
+        <span>Coachella Valley, CA</span>
+        <span>shanasells.com</span>
+      </div>
+    </div>
+
+    <!-- TOC nav -->
+    <nav class="toc">
+      <a href="#colors">Colors</a>
+      <a href="#typography">Typography</a>
+      <a href="#thumbnails">Thumbnails</a>
+      <a href="#buttons">Buttons</a>
+      <a href="#badges">Badges</a>
+      <a href="#cards">Cards</a>
+      <a href="#gradients">Gradients</a>
+      <a href="#voice">Voice</a>
+      <a href="#prompt">AI Prompt</a>
+    </nav>
+
+    <!-- ── Colors ── -->
+    <section id="colors">
+      <div class="section-label">01 — Foundation</div>
+      <h2 class="section-title">Color Palette</h2>
+      <p class="section-desc">All brand colors with exact hex values. Never use bronze on white. Never use teal-bright as a background — accent text only.</p>
+
+      <div class="swatch-group-label">Primary — Website &amp; UI</div>
+      <div class="swatch-grid">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0A0A0A;border-bottom:1px solid rgba(255,255,255,0.1)"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Obsidian</div>
+            <div class="swatch-hex">#0A0A0A</div>
+            <div class="swatch-role">Page background</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#141414"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Surface</div>
+            <div class="swatch-hex">#141414</div>
+            <div class="swatch-role">Cards, panels</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#1A1A1A"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Surface 2</div>
+            <div class="swatch-hex">#1A1A1A</div>
+            <div class="swatch-role">Nested cards</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#B8975A"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Bronze</div>
+            <div class="swatch-hex">#B8975A</div>
+            <div class="swatch-role">Primary accent, CTAs, active states</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#CEB07A"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Bronze Light</div>
+            <div class="swatch-hex">#CEB07A</div>
+            <div class="swatch-role">Hover states</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#F2EDE4"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cream</div>
+            <div class="swatch-hex">#F2EDE4</div>
+            <div class="swatch-role">Primary text on dark</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group-label">Craft &amp; Bauer Brand Colors</div>
+      <div class="swatch-grid">
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0D1B2A"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">C&amp;B Navy</div>
+            <div class="swatch-hex">#0D1B2A</div>
+            <div class="swatch-role">Co-branded backgrounds</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#1A4447"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">C&amp;B Teal</div>
+            <div class="swatch-hex">#1A4447</div>
+            <div class="swatch-role">Logo color, brand identity</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#0D2A2E"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">C&amp;B Teal Dark</div>
+            <div class="swatch-hex">#0D2A2E</div>
+            <div class="swatch-role">Gradient base</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-color" style="background:#4ECDC4"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Turquoise</div>
+            <div class="swatch-hex">#4ECDC4</div>
+            <div class="swatch-role">Script accents, thumbnail highlights</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swatch-group-label">Content Category Colors</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#2563EB"></div><div class="swatch-info"><div class="swatch-name">Market Update</div><div class="swatch-hex">#2563EB</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#FF9800"></div><div class="swatch-info"><div class="swatch-name">Investor Tips</div><div class="swatch-hex">#FF9800</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#0EA5E9"></div><div class="swatch-info"><div class="swatch-name">Seller Tips</div><div class="swatch-hex">#0EA5E9</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#16A34A"></div><div class="swatch-info"><div class="swatch-name">Community</div><div class="swatch-hex">#16A34A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#9C27B0"></div><div class="swatch-info"><div class="swatch-name">Trending Topics</div><div class="swatch-hex">#9C27B0</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#B8975A"></div><div class="swatch-info"><div class="swatch-name">Local History</div><div class="swatch-hex">#B8975A</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#E67E22"></div><div class="swatch-info"><div class="swatch-name">Local Interest</div><div class="swatch-hex">#E67E22</div></div></div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── Typography ── -->
+    <section id="typography">
+      <div class="section-label">02 — Typography</div>
+      <h2 class="section-title">Type System</h2>
+      <p class="section-desc">Three font families. Each has a defined role — never swap them arbitrarily.</p>
+
+      <div class="type-specimen">
+        <div class="type-specimen-meta">Cormorant Garamond <span>Serif · Display &amp; Headlines · Weight 300–400</span></div>
+        <div class="t-display-xl">Coachella Valley</div>
+        <div style="margin-top:12px"><div class="t-display-lg">Your Desert Expert</div></div>
+        <div style="margin-top:8px"><div class="t-display-italic">The House That Built Palm Springs</div></div>
+        <div style="margin-top:12px"><div class="t-heading">Market insights that matter to you</div></div>
+      </div>
+
+      <div class="type-specimen">
+        <div class="type-specimen-meta">Montserrat <span>Display Sans · Eyebrows, Buttons, Nav · Weight 500–900</span></div>
+        <div class="t-eyebrow">Coachella Valley · Palm Springs</div>
+        <div style="margin-top:14px"><div class="t-nav">Communities · Buyers · Sellers · Investors</div></div>
+        <div style="margin-top:16px">
+          <span style="font-family:var(--font-display);font-size:48px;font-weight:900;color:#fff;letter-spacing:-0.02em;text-transform:uppercase;">PALM SPRINGS</span>
+        </div>
+        <div style="margin-top:8px">
+          <span style="font-family:var(--font-display);font-size:18px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--bronze);">Explore the Market →</span>
+        </div>
+      </div>
+
+      <div class="type-specimen">
+        <div class="type-specimen-meta">Jost <span>Body Sans · Paragraphs, Captions, UI · Weight 300–500</span></div>
+        <div class="t-body-lg">The Coachella Valley real estate market is unlike any other in California. From mid-century modern estates in Palm Springs to golf-course communities in La Quinta, every neighborhood has its own story.</div>
+        <div style="margin-top:14px"><div class="t-body">Ready to make your move? Shana knows this market inside and out — from the first showing to the final signature. Reach out at shana@craftbauer.com.</div></div>
+        <div style="margin-top:12px"><div class="t-caption">Last updated · May 2026 · shanasells.com</div></div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── Thumbnails ── -->
+    <section id="thumbnails">
+      <div class="section-label">03 — Video &amp; Social Graphics</div>
+      <h2 class="section-title">Thumbnail Typography Formula</h2>
+      <p class="section-desc">The layered hierarchy used on all video thumbnails: eyebrow → bold condensed name → italic script accent → subtitle badge.</p>
+
+      <div class="thumb-specimen">
+        <div class="thumb-eyebrow">Inside</div>
+        <div class="thumb-main">Frank Sinatra's</div>
+        <div class="thumb-script">Palm Springs Estate</div>
+        <div class="thumb-badge">
+          <div class="thumb-badge-top">The House That Defined</div>
+          <div class="thumb-badge-bottom">Rat Pack Glamour</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="thumb-specimen" style="padding:28px">
+          <div class="thumb-eyebrow" style="font-size:11px">Palm Springs</div>
+          <div class="thumb-main" style="font-size:clamp(22px,3.5vw,38px)">Housing Market</div>
+          <div class="thumb-script" style="font-size:clamp(18px,3vw,32px)">What You Need to Know</div>
+          <div class="thumb-badge" style="margin-top:6px">
+            <div class="thumb-badge-top">Buyers &amp; Sellers</div>
+            <div class="thumb-badge-bottom" style="font-size:12px">2026 Market Update</div>
+          </div>
+        </div>
+        <div class="thumb-specimen" style="padding:28px;background:linear-gradient(135deg,#0D1B2A 0%,#0d2a2e 100%)">
+          <div class="thumb-eyebrow" style="font-size:11px">Coachella Valley</div>
+          <div class="thumb-main" style="font-size:clamp(22px,3.5vw,38px)">Gated Living</div>
+          <div class="thumb-script" style="font-size:clamp(18px,3vw,32px)">Behind the Gates</div>
+          <div class="thumb-badge" style="margin-top:6px">
+            <div class="thumb-badge-top">Exclusive Communities</div>
+            <div class="thumb-badge-bottom" style="font-size:12px">PGA West · The Madison Club</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── Buttons ── -->
+    <section id="buttons">
+      <div class="section-label">04 — Actions</div>
+      <h2 class="section-title">Buttons</h2>
+      <p class="section-desc">Four button styles. Primary (bronze) is the main CTA. Secondary (outline) for secondary actions. Ghost for tertiary. Teal for C&B co-branded contexts.</p>
+
+      <div class="btn-grid">
+        <a class="btn-primary" href="#">Explore Listings →</a>
+        <a class="btn-secondary" href="#">View Market Report</a>
+        <a class="btn-ghost" href="#">Learn More</a>
+        <a class="btn-teal" href="#">Craft &amp; Bauer</a>
+      </div>
+
+      <div style="margin-top:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;color:var(--cream-muted)">
+          <thead>
+            <tr style="border-bottom:1px solid var(--border)">
+              <th style="text-align:left;padding:8px 12px;font-family:var(--font-display);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--bronze);font-weight:600">Style</th>
+              <th style="text-align:left;padding:8px 12px;font-family:var(--font-display);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--bronze);font-weight:600">Background</th>
+              <th style="text-align:left;padding:8px 12px;font-family:var(--font-display);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--bronze);font-weight:600">Text</th>
+              <th style="text-align:left;padding:8px 12px;font-family:var(--font-display);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--bronze);font-weight:600">Use For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Primary</td><td style="padding:10px 12px;font-family:monospace">#B8975A</td><td style="padding:10px 12px;font-family:monospace">#000000</td><td style="padding:10px 12px">Main CTA, publish, submit</td></tr>
+            <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Secondary</td><td style="padding:10px 12px;font-family:monospace">transparent</td><td style="padding:10px 12px;font-family:monospace">#B8975A</td><td style="padding:10px 12px">Secondary action, learn more</td></tr>
+            <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 12px">Ghost</td><td style="padding:10px 12px;font-family:monospace">transparent</td><td style="padding:10px 12px;font-family:monospace">rgba cream</td><td style="padding:10px 12px">Tertiary, cancel, skip</td></tr>
+            <tr><td style="padding:10px 12px">Teal</td><td style="padding:10px 12px;font-family:monospace">#1A4447</td><td style="padding:10px 12px;font-family:monospace">#F2EDE4</td><td style="padding:10px 12px">C&amp;B co-branded contexts only</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── Badges ── -->
+    <section id="badges">
+      <div class="section-label">05 — Labels</div>
+      <h2 class="section-title">Badges &amp; Pills</h2>
+      <p class="section-desc">Content category badges use their own color palette. Always pill-shaped (border-radius: 100px). Montserrat, 10px, weight 700, letter-spacing 0.08em.</p>
+
+      <div class="badge-grid">
+        <span class="badge" style="background:rgba(37,99,235,0.15);color:#2563EB;border:1px solid rgba(37,99,235,0.3)">Market Update</span>
+        <span class="badge" style="background:rgba(255,152,0,0.15);color:#FF9800;border:1px solid rgba(255,152,0,0.3)">Investor Tips</span>
+        <span class="badge" style="background:rgba(14,165,233,0.15);color:#0EA5E9;border:1px solid rgba(14,165,233,0.3)">Seller Tips</span>
+        <span class="badge" style="background:rgba(22,163,74,0.15);color:#16A34A;border:1px solid rgba(22,163,74,0.3)">Community</span>
+        <span class="badge" style="background:rgba(156,39,176,0.15);color:#9C27B0;border:1px solid rgba(156,39,176,0.3)">Trending Topics</span>
+        <span class="badge" style="background:rgba(184,151,90,0.15);color:#B8975A;border:1px solid rgba(184,151,90,0.3)">Local History</span>
+        <span class="badge" style="background:rgba(230,126,34,0.15);color:#E67E22;border:1px solid rgba(230,126,34,0.3)">Local Interest</span>
+      </div>
+      <div class="badge-grid">
+        <span class="badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;border:1px solid rgba(245,158,11,0.25)">Needs Review</span>
+        <span class="badge" style="background:rgba(59,130,246,0.15);color:#3B82F6;border:1px solid rgba(59,130,246,0.25)">Ready to Publish</span>
+        <span class="badge" style="background:rgba(34,197,94,0.15);color:#22C55E;border:1px solid rgba(34,197,94,0.25)">Published</span>
+        <span class="badge" style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45)">Draft</span>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── Cards ── -->
+    <section id="cards">
+      <div class="section-label">06 — Components</div>
+      <h2 class="section-title">Cards &amp; Stats</h2>
+
+      <div class="card-grid" style="margin-bottom:24px">
+        <div class="card featured">
+          <div class="card-eyebrow">Palm Springs · Local History</div>
+          <div class="card-title">Inside Frank Sinatra's Palm Springs Estate</div>
+          <div class="card-body">Twin Palms at 1148 E Alejo Rd is still the most glamorous address in Palm Springs. The piano-shaped pool, the Rat Pack, and a proposal that changed everything.</div>
+        </div>
+        <div class="card">
+          <div class="card-eyebrow">Market Update · 2026</div>
+          <div class="card-title">Coachella Valley Housing Market: What Buyers Need to Know</div>
+          <div class="card-body">Inventory is up 12% year-over-year, but the luxury segment remains competitive. Here's what that means for your search.</div>
+        </div>
+        <div class="card">
+          <div class="card-eyebrow">Community · La Quinta</div>
+          <div class="card-title">PGA West: Living Inside the Gates</div>
+          <div class="card-body">Six championship courses, 24-hour security, and some of the most architecturally distinct homes in the desert. A complete guide to buying in PGA West.</div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value">$785K</div>
+          <div class="stat-label">Median Home Price</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">247</div>
+          <div class="stat-label">Active Listings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">9 Cities</div>
+          <div class="stat-label">CV Communities</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">28°</div>
+          <div class="stat-label">Avg Sunny Days / Mo</div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── Gradients ── -->
+    <section id="gradients">
+      <div class="section-label">07 — Texture</div>
+      <h2 class="section-title">Gradients</h2>
+      <p class="section-desc">All gradients go dark-to-darker. Never light-to-light. Use for hero overlays, section backgrounds, and thumbnail bases.</p>
+
+      <div class="gradient-grid">
+        <div class="gradient-swatch" style="background:linear-gradient(135deg,#0d2a2e 0%,#1a3a3c 100%)">
+          <div class="gradient-label">Dark Teal<br>Hero sections</div>
+        </div>
+        <div class="gradient-swatch" style="background:linear-gradient(135deg,#0D1B2A 0%,#0d2a2e 100%)">
+          <div class="gradient-label">Navy → Teal<br>Co-branded pieces</div>
+        </div>
+        <div class="gradient-swatch" style="background:linear-gradient(105deg,rgba(10,26,28,0.94) 0%,rgba(10,26,28,0.28) 100%),url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&q=60') center/cover">
+          <div class="gradient-label">Overlay on photo<br>105° left-to-right fade</div>
+        </div>
+        <div class="gradient-swatch" style="background:linear-gradient(to bottom,rgba(13,13,13,0.5) 0%,rgba(13,13,13,0.97) 100%)">
+          <div class="gradient-label">Bottom scrim<br>Hero map / text legibility</div>
+        </div>
+        <div class="gradient-swatch" style="background:linear-gradient(to top,rgba(0,0,0,0.88) 25%,rgba(0,0,0,0.35) 60%,rgba(0,0,0,0.12) 100%)">
+          <div class="gradient-label">Top-from-bottom<br>Card hover overlays</div>
+        </div>
+        <div class="gradient-swatch" style="background:radial-gradient(ellipse at 30% 50%,rgba(184,151,90,0.15) 0%,transparent 70%),#0A0A0A">
+          <div class="gradient-label">Bronze radial glow<br>Featured / active states</div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── Voice ── -->
+    <section id="voice">
+      <div class="section-label">08 — Communication</div>
+      <h2 class="section-title">Voice &amp; Tone</h2>
+      <p class="section-desc">Expert local neighbor. Never salesperson. Specific, warm, direct. Always Coachella Valley-anchored.</p>
+
+      <div class="voice-example">
+        <div class="voice-platform">Instagram Caption</div>
+        <div class="voice-text">Frank Sinatra spent $150,000 building Twin Palms in 1947 — that's over $2 million today. Piano-shaped pool, a bar for 40 guests, and the room where he proposed to Ava Gardner.<br><br>It's still standing at 1148 E Alejo Rd, and you can rent it for the weekend. Some addresses carry history that no renovation can touch.<br><br>What's your favorite piece of Palm Springs history?</div>
+        <div class="voice-tags">#PalmSprings #PalmSpringsHistory #MidCenturyModern #CoachellaValley #ShanaGates</div>
+      </div>
+
+      <div class="voice-example" style="border-left-color:var(--teal-bright)">
+        <div class="voice-platform" style="color:var(--teal-bright)">Blog Opening (Local History)</div>
+        <div class="voice-text">February 1947. A crooner from Hoboken handed his architect a simple brief: build me the most glamorous house in the desert. E. Stewart Williams delivered Twin Palms Estate at 1148 E Alejo Road — and Palm Springs was never the same.</div>
+      </div>
+
+      <div class="voice-example" style="border-left-color:#2563EB">
+        <div class="voice-platform" style="color:#2563EB">Market Update Blog Opening</div>
+        <div class="voice-text">Inventory in the Coachella Valley is up 12% year-over-year, but don't mistake that for a buyer's market across the board. In Palm Springs, homes priced under $900K are still moving in under 30 days. Here's what the data actually means for you.</div>
+      </div>
+
+      <div style="margin-top:32px">
+        <div class="do-dont-grid">
+          <div class="do-box">
+            <div class="do-label">✓ Do Write This</div>
+            <ul>
+              <li>"Inventory is up 12% year-over-year in Palm Springs"</li>
+              <li>"Twin Palms at 1148 E Alejo Rd"</li>
+              <li>"Homes in La Quinta's gated communities"</li>
+              <li>"What this means for your search"</li>
+              <li>Opening with a date, scene, or specific number</li>
+            </ul>
+          </div>
+          <div class="dont-box">
+            <div class="dont-label">✕ Never Write This</div>
+            <ul>
+              <li>"Did you know the Coachella Valley has rich history?"</li>
+              <li>"Amazing opportunity!" or "Super excited!"</li>
+              <li>"Seamless, synergy, game-changing, leverage"</li>
+              <li>School ratings or neighborhood safety commentary</li>
+              <li>Generic content not anchored to a CV city or address</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <!-- ── AI Prompt ── -->
+    <section id="prompt">
+      <div class="section-label">09 — AI Tools</div>
+      <h2 class="section-title">Quick-Start LLM Prompt</h2>
+      <p class="section-desc">Paste this at the start of any AI session before generating branded content. It primes the model with the full brand context.</p>
+
+      <div class="prompt-box">
+        <div class="prompt-box-label">Copy &amp; Paste</div>
+        <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">Copy</button>
+        <div class="prompt-box-text" id="promptText">You are creating content for Shana Gates, REALTOR® at Craft & Bauer | Real Broker in the Coachella Valley, CA. Website: shanasells.com. Contact: shana@craftbauer.com.
+
+BRAND COLORS: Background #0A0A0A, Bronze accent #B8975A, Cream text #F2EDE4, C&B Teal #1A4447, Turquoise bright #4ECDC4.
+
+FONTS: Cormorant Garamond (elegant serif headlines, weight 300–400) + Montserrat (display/eyebrows/buttons, weight 500–900) + Jost (body/UI, weight 300–500).
+
+VOICE: Expert local neighbor. Specific and direct. Warm but never bubbly. Always Coachella Valley-anchored. No exclamation points unless essential. Never: "Did you know…", "Amazing!", "leverage", "synergy", "seamless". Always: specific addresses, named CV cities, real dates and data.
+
+BRAND PERSONALITY: Sophisticated but approachable. Local authority. Cinematic and premium visuals. Premium dark aesthetic — never bright or light-mode.
+
+THUMBNAIL FORMULA (video/social graphics): Eyebrow label (Montserrat 500, wide tracking, small) → Bold condensed name (Montserrat 900, all caps) → Script accent word (Cormorant italic, turquoise #4ECDC4) → Subtitle badge (dark teal background, turquoise text).
+
+CITIES SERVED: Palm Springs, Palm Desert, Rancho Mirage, Indian Wells, La Quinta, Indio, Cathedral City, Desert Hot Springs, Coachella.
+
+COMPLIANCE: Never mention school quality/ratings, neighborhood safety, demographic composition, or any content that could be construed as steering.
+
+CATEGORIES: market-update, investor-tips, seller-tips, community, trending-topics, local-history, local-interest.</div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="/admin/admin-nav.js" defer></script>
+  <script>
+    function copyPrompt() {
+      const text = document.getElementById('promptText').textContent
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtn')
+        btn.textContent = 'Copied!'
+        btn.classList.add('copied')
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied') }, 2000)
+      })
+    }
+
+    // Highlight active TOC link on scroll
+    const sections = document.querySelectorAll('section[id]')
+    const links = document.querySelectorAll('.toc a')
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          links.forEach(l => l.classList.remove('active'))
+          const active = document.querySelector(`.toc a[href="#${e.target.id}"]`)
+          if (active) active.classList.add('active')
+        }
+      })
+    }, { rootMargin: '-40% 0px -55% 0px' })
+    sections.forEach(s => obs.observe(s))
+  </script>
+</body>
+</html>
