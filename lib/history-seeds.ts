@@ -14,7 +14,7 @@ import type { IdeaCandidate } from './types'
 import type { ScoredArticle } from './blog-store'
 import { saveIdea, getIdea, buildWeekId } from './idea-store'
 
-interface SeedStory {
+export interface SeedStory {
   slug: string
   title: string
   angle: string
@@ -24,7 +24,7 @@ interface SeedStory {
   researchData: string
 }
 
-const PALM_SPRINGS_STORIES: SeedStory[] = [
+export const PALM_SPRINGS_STORIES: SeedStory[] = [
   {
     slug: 'sinatra-twin-palms-estate',
     title: "Inside Frank Sinatra's Palm Springs Estate — The House That Defined Rat Pack Glamour",

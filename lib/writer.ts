@@ -16,7 +16,7 @@ VOICE:
 - Always ties news or advice back to the local Coachella Valley / Palm Springs market
 
 POST STRUCTURE (follow exactly):
-1. # [Engaging headline — rewrite the source title to be more compelling]
+1. # [Use the exact title provided — do not change it]
 2. [Opening question — the exact question the blog answers, in **bold**]
 3. [1–2 sentence "snippet answer" immediately below the question]
 4. ## [Section heading]
@@ -308,7 +308,7 @@ SEO RULES:
 
 Return a JSON object with EXACTLY these fields:
 {
-  "title": "Final polished headline (optimize for keyword: ${keyword})",
+  "title": "${idea.title}",
   "slug": "url-slug",
   "excerpt": "2–3 sentence summary for blog listing page",
   "metaTitle": "SEO title under 60 chars",
@@ -379,8 +379,8 @@ Return ONLY valid JSON, no markdown fences.`,
   }
 
   return {
-    title:           raw.title ?? idea.title,
-    slug:            raw.slug  ?? slugifySimple(raw.title ?? idea.title),
+    title:           idea.title,
+    slug:            raw.slug  ?? slugifySimple(idea.title),
     excerpt:         raw.excerpt ?? '',
     category:        idea.category,
     metaTitle:       raw.metaTitle ?? '',
