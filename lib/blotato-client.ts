@@ -105,7 +105,7 @@ export async function publishToFacebook(text: string, imageUrl: string): Promise
 }
 
 export async function publishToFacebookReel(text: string, videoUrl: string): Promise<BlotatoPublishResult> {
-  return blotatoPost({ post: { accountId: getFacebookAccountId(), content: { text: safe(text, FB_TEXT_LIMIT), mediaUrls: [videoUrl], platform: 'facebook' }, target: { targetType: 'facebook', pageId: getPageId() } } })
+  return blotatoPost({ post: { accountId: getFacebookAccountId(), content: { text: safe(text, FB_TEXT_LIMIT), mediaUrls: [videoUrl], platform: 'facebook' }, target: { targetType: 'facebook', pageId: getPageId(), mediaType: 'reel' } } })
 }
 
 export async function publishToYouTube(title: string, description: string, videoUrl: string, thumbnailUrl?: string): Promise<BlotatoPublishResult> {
@@ -134,7 +134,7 @@ export async function publishToInstagram(text: string, mediaUrl: string): Promis
 }
 
 export async function publishToInstagramReel(text: string, videoUrl: string): Promise<BlotatoPublishResult> {
-  return blotatoPost({ post: { accountId: getInstagramAccountId(), content: { text: safe(text, IG_TEXT_LIMIT), mediaUrls: [videoUrl], platform: 'instagram_reels' }, target: { targetType: 'instagram_reels' } } })
+  return blotatoPost({ post: { accountId: getInstagramAccountId(), content: { text: safe(text, IG_TEXT_LIMIT), mediaUrls: [videoUrl], platform: 'instagram' }, target: { targetType: 'instagram', mediaType: 'reel' } } })
 }
 
 export async function getPostStatus(postSubmissionId: string): Promise<BlotatoPostStatus> {
