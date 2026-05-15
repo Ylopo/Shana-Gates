@@ -17,7 +17,7 @@
     { divider: true },
     { section: 'TOOLS' },
     { label: 'AI Assistant',   href: '/admin/assistant/' },
-    { label: 'Brand Guide',    href: '/admin/brand-guide/' },
+    { label: 'Brand Guide',    href: '/brand-guide/' },
   ]
 
   var path = location.pathname.replace(/\/$/, '') || '/admin'
