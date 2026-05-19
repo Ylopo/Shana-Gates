@@ -39,6 +39,9 @@
     "api/property-report.ts": {
       "maxDuration": 300
     },
+    "api/property-history.ts": {
+      "maxDuration": 300
+    },
     "api/content/generate-heygen-video.ts": {
       "maxDuration": 30
     },

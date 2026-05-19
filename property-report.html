@@ -209,6 +209,91 @@
       line-height: 1.5;
     }
 
+    /* ── Report selector checkboxes ─────────────────────────── */
+    .pr-report-picker {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .pr-report-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid rgba(26,68,76,0.28);
+      border-radius: 8px;
+      background: rgba(26,68,76,0.05);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .pr-report-option:hover { border-color: var(--sg-hover); background: rgba(26,68,76,0.10); }
+
+    .pr-report-option input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid rgba(242,237,228,0.45);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative;
+      transition: all 0.15s;
+    }
+
+    .pr-report-option input[type="checkbox"]:checked {
+      background: var(--sg);
+      border-color: var(--sg);
+    }
+
+    .pr-report-option input[type="checkbox"]:checked::after {
+      content: "";
+      position: absolute;
+      left: 5px;
+      top: 1px;
+      width: 5px;
+      height: 10px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .pr-report-option-label {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--cream);
+      line-height: 1.4;
+      margin-bottom: 2px;
+    }
+
+    .pr-report-option-sub {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(242,237,228,0.55);
+      line-height: 1.45;
+    }
+
+    /* Section heading in step list (used when both pipelines run) */
+    .pr-steps-section {
+      padding: 10px 18px 6px;
+      font-family: var(--sans);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--sg-hover);
+      background: rgba(26,68,76,0.05);
+      border-bottom: 1px solid rgba(26,68,76,0.15);
+    }
+    .pr-steps-section.is-hidden,
+    .pr-step.is-hidden { display: none; }
+
     /* ── STATE: ANALYZING ───────────────────────────────────── */
     #state-analyzing { display: none; width: 100%; max-width: 540px; }
 
@@ -681,49 +766,33 @@
 
         <!-- Left: what's included -->
         <div class="pr-idle-left">
-          <h1 class="pr-headline">Residential Property<br><em><span style="color:#4ade80;font-style:normal;font-family:var(--sans);font-weight:600;letter-spacing:1px;">BUYERS</span> Analysis Report</em></h1>
-          <p class="pr-sub">Enter any Coachella Valley property address and receive a comprehensive, investment-grade analysis — completely free.</p>
+          <h1 class="pr-headline">Residential Property<br><em><span style="color:#4ade80;font-style:normal;font-family:var(--sans);font-weight:600;letter-spacing:1px;">BUYERS</span> Reports</em></h1>
+          <p class="pr-sub">Enter any Coachella Valley property address and choose one or both AI-powered reports — completely free.</p>
 
-          <p class="pr-checklist-label">What's in your report</p>
+          <p class="pr-checklist-label">Buyers Analysis Report</p>
           <ul class="pr-checklist">
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Comparable Sales &amp; Value Assessment
-            </li>
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Rental Income &amp; Cash Flow Projections
-            </li>
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Neighborhood Scorecard
-            </li>
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Investment Strategy Scenarios
-            </li>
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Current Market Conditions
-            </li>
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Buy / Watch / Avoid Signal &amp; Score
-            </li>
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Expert Recommendation &amp; Next Steps
-            </li>
-            <li>
-              <span class="pr-checklist-check">✓</span>
-              Full Branded PDF Delivered to Your Inbox
-            </li>
+            <li><span class="pr-checklist-check">✓</span>Comparable Sales &amp; Value Assessment</li>
+            <li><span class="pr-checklist-check">✓</span>Rental Income &amp; Cash Flow Projections</li>
+            <li><span class="pr-checklist-check">✓</span>Neighborhood Scorecard</li>
+            <li><span class="pr-checklist-check">✓</span>Investment Strategy Scenarios</li>
+            <li><span class="pr-checklist-check">✓</span>Current Market Conditions</li>
+            <li><span class="pr-checklist-check">✓</span>Buy / Watch / Avoid Signal &amp; Score</li>
+          </ul>
+
+          <p class="pr-checklist-label" style="margin-top:32px;">Property History Report</p>
+          <ul class="pr-checklist">
+            <li><span class="pr-checklist-check">✓</span>Construction &amp; Architecture</li>
+            <li><span class="pr-checklist-check">✓</span>Ownership Timeline</li>
+            <li><span class="pr-checklist-check">✓</span>Permits &amp; Major Remodels</li>
+            <li><span class="pr-checklist-check">✓</span>Short-Term Rental &amp; Historic Designation</li>
+            <li><span class="pr-checklist-check">✓</span>Notable Residents &amp; Public Events</li>
+            <li><span class="pr-checklist-check">✓</span>Great for review on the way to a showing</li>
           </ul>
         </div>
 
         <!-- Right: form -->
         <div class="pr-idle-right">
-          <p class="pr-right-label">Get Your Free Report</p>
+          <p class="pr-right-label">Get Your Free Reports</p>
           <div class="pr-card">
             <input
               id="input-address"
@@ -732,8 +801,26 @@
               placeholder="123 Desert Rose Dr, Palm Springs, CA"
               autocomplete="street-address"
             />
-            <button id="btn-analyze" class="pr-btn">Analyze This Property</button>
-            <p class="pr-disclaimer">Free. No account needed. For educational purposes only — not financial advice.</p>
+
+            <div class="pr-report-picker">
+              <label class="pr-report-option">
+                <input type="checkbox" id="opt-analysis" checked />
+                <span>
+                  <span class="pr-report-option-label">Buyers Analysis Report</span>
+                  <span class="pr-report-option-sub">Comps, cash flow, neighborhood score, investment strategy, market conditions</span>
+                </span>
+              </label>
+              <label class="pr-report-option">
+                <input type="checkbox" id="opt-history" />
+                <span>
+                  <span class="pr-report-option-label">Property History Report</span>
+                  <span class="pr-report-option-sub">Construction, ownership, permits, STR &amp; historic designation, notable residents &amp; events</span>
+                </span>
+              </label>
+            </div>
+
+            <button id="btn-analyze" class="pr-btn">Generate My Report</button>
+            <p class="pr-disclaimer">Free. No account needed. For educational and informational purposes only — not financial or legal advice.</p>
           </div>
 
           <div class="pr-shana-photo-wrap">
@@ -764,38 +851,27 @@
       </div>
 
       <ul class="pr-steps" id="steps-list">
-        <li class="pr-step" data-step="discovery">
-          <span class="pr-step-icon">1</span>
-          <span>Researching property data</span>
-        </li>
-        <li class="pr-step" data-step="comps">
-          <span class="pr-step-icon">2</span>
-          <span>Pulling comparable sales</span>
-        </li>
-        <li class="pr-step" data-step="rental">
-          <span class="pr-step-icon">3</span>
-          <span>Estimating rental income &amp; cash flow</span>
-        </li>
-        <li class="pr-step" data-step="neighborhood">
-          <span class="pr-step-icon">4</span>
-          <span>Scoring the neighborhood</span>
-        </li>
-        <li class="pr-step" data-step="investment">
-          <span class="pr-step-icon">5</span>
-          <span>Running investment models</span>
-        </li>
-        <li class="pr-step" data-step="market">
-          <span class="pr-step-icon">6</span>
-          <span>Analyzing market conditions</span>
-        </li>
-        <li class="pr-step" data-step="pdf">
-          <span class="pr-step-icon">7</span>
-          <span>Generating your branded PDF report</span>
-        </li>
-        <li class="pr-step" data-step="email">
-          <span class="pr-step-icon">8</span>
-          <span>Sending report to your inbox</span>
-        </li>
+        <!-- Analysis pipeline -->
+        <li class="pr-steps-section" data-section="analysis">Buyers Analysis Report</li>
+        <li class="pr-step" data-step="discovery"        data-pipeline="analysis"><span class="pr-step-icon">·</span><span>Researching property data</span></li>
+        <li class="pr-step" data-step="comps"            data-pipeline="analysis"><span class="pr-step-icon">·</span><span>Pulling comparable sales</span></li>
+        <li class="pr-step" data-step="rental"           data-pipeline="analysis"><span class="pr-step-icon">·</span><span>Estimating rental income &amp; cash flow</span></li>
+        <li class="pr-step" data-step="neighborhood"     data-pipeline="analysis"><span class="pr-step-icon">·</span><span>Scoring the neighborhood</span></li>
+        <li class="pr-step" data-step="investment"       data-pipeline="analysis"><span class="pr-step-icon">·</span><span>Running investment models</span></li>
+        <li class="pr-step" data-step="market"           data-pipeline="analysis"><span class="pr-step-icon">·</span><span>Analyzing market conditions</span></li>
+        <li class="pr-step" data-step="pdf"              data-pipeline="analysis"><span class="pr-step-icon">·</span><span>Generating your analysis PDF</span></li>
+
+        <!-- History pipeline -->
+        <li class="pr-steps-section" data-section="history">Property History Report</li>
+        <li class="pr-step" data-step="h_discovery"      data-pipeline="history"><span class="pr-step-icon">·</span><span>Searching public records</span></li>
+        <li class="pr-step" data-step="h_construction"   data-pipeline="history"><span class="pr-step-icon">·</span><span>Reading construction history</span></li>
+        <li class="pr-step" data-step="h_ownership"      data-pipeline="history"><span class="pr-step-icon">·</span><span>Tracing ownership timeline</span></li>
+        <li class="pr-step" data-step="h_permits"        data-pipeline="history"><span class="pr-step-icon">·</span><span>Pulling permits &amp; remodels</span></li>
+        <li class="pr-step" data-step="h_records"        data-pipeline="history"><span class="pr-step-icon">·</span><span>Compiling public records &amp; events</span></li>
+        <li class="pr-step" data-step="h_pdf"            data-pipeline="history"><span class="pr-step-icon">·</span><span>Generating your history PDF</span></li>
+
+        <!-- Shared final step -->
+        <li class="pr-step" data-step="email"            data-pipeline="shared"><span class="pr-step-icon">·</span><span>Sending to your inbox</span></li>
       </ul>
 
       <!-- Email capture — slides in after discovery completes -->
@@ -907,13 +983,16 @@
   </footer>
 
   <script>
-    // ─── Step order (discovery through pdf — email is step 8, triggered after email submit) ──
-    const ANALYSIS_STEPS = ['discovery','comps','rental','neighborhood','investment','market','pdf']
-    const TOTAL_STEPS = 8  // includes email step in progress bar
-
-    let pdfBase64 = null
+    // ─── Pipeline-aware state ─────────────────────────────────
+    let analysisPdfBase64 = null
+    let historyPdfBase64 = null
     let userEmail = null
     let emailFormRevealed = false
+    let runAnalysis = true
+    let runHistory = false
+    let analysisPipelineDone = false
+    let historyPipelineDone = false
+    let emailSent = false
 
     // ─── State display ────────────────────────────────────────
     function show(id) {
@@ -930,31 +1009,47 @@
       if (state) el.classList.add(`is-${state}`)
 
       const icon = el.querySelector('.pr-step-icon')
-      const idx = [...document.querySelectorAll('.pr-step')].indexOf(el) + 1
-
-      if (state === 'running') {
-        icon.innerHTML = '<span class="pr-step-spinner"></span>'
-      } else if (state === 'done') {
-        icon.textContent = '✓'
-      } else if (state === 'error') {
-        icon.textContent = '✕'
-      } else {
-        icon.textContent = idx
-      }
+      if (state === 'running')      icon.innerHTML = '<span class="pr-step-spinner"></span>'
+      else if (state === 'done')    icon.textContent = '✓'
+      else if (state === 'error')   icon.textContent = '✕'
+      else                          icon.textContent = '·'
     }
 
-    function setProgress(done) {
+    function totalActiveSteps() {
+      const analysis = runAnalysis ? 7 : 0   // discovery..pdf
+      const history  = runHistory  ? 6 : 0   // h_discovery..h_pdf
+      return analysis + history + 1          // + email
+    }
+
+    function setProgressFromDone(doneCount) {
       document.getElementById('progress-fill').style.width =
-        `${Math.round((done / TOTAL_STEPS) * 100)}%`
+        `${Math.round((doneCount / totalActiveSteps()) * 100)}%`
+    }
+
+    function applyStepVisibility() {
+      // Show/hide each step + section based on which pipelines are running
+      document.querySelectorAll('.pr-step').forEach(el => {
+        const pipe = el.getAttribute('data-pipeline')
+        const visible =
+          (pipe === 'analysis' && runAnalysis) ||
+          (pipe === 'history' && runHistory) ||
+          (pipe === 'shared')
+        el.classList.toggle('is-hidden', !visible)
+      })
+      document.querySelectorAll('.pr-steps-section').forEach(el => {
+        const section = el.getAttribute('data-section')
+        const visible = (section === 'analysis' && runAnalysis) || (section === 'history' && runHistory)
+        // Only show section labels when both pipelines run (otherwise it's redundant)
+        const both = runAnalysis && runHistory
+        el.classList.toggle('is-hidden', !(visible && both))
+      })
     }
 
     // ─── Email capture reveal ──────────────────────────────────
     function revealEmailCapture() {
       if (emailFormRevealed) return
       emailFormRevealed = true
-      const cap = document.getElementById('email-capture')
-      cap.classList.add('is-visible')
-      // Focus email input after transition
+      document.getElementById('email-capture').classList.add('is-visible')
       setTimeout(() => document.getElementById('input-email').focus(), 600)
     }
 
@@ -965,56 +1060,54 @@
         document.getElementById('input-email').focus()
         return
       }
-
       document.getElementById('btn-email-submit').disabled = true
       userEmail = email
-
-      // Swap form → confirmed message
       document.getElementById('email-capture').style.display = 'none'
       document.getElementById('email-capture').classList.remove('is-visible')
       document.getElementById('confirmed-email-text').textContent = email
       document.getElementById('email-confirmed').style.display = ''
-
-      // If PDF is already ready, fire the send now
-      if (pdfBase64) {
-        sendReport()
-      }
+      maybeSendReport()
     }
 
-    // ─── Send report via dedicated endpoint ───────────────────
+    function readyToSend() {
+      if (!userEmail) return false
+      if (runAnalysis && !analysisPdfBase64) return false
+      if (runHistory && !historyPdfBase64) return false
+      return true
+    }
+
+    async function maybeSendReport() {
+      if (emailSent) return
+      if (!readyToSend()) return
+      emailSent = true
+      await sendReport()
+    }
+
     async function sendReport() {
-      if (!pdfBase64 || !userEmail) return
-
       setStep('email', 'running')
-
       try {
         const res = await fetch('/api/property-report-send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: userEmail,
-            pdfBase64,
+            pdfBase64: analysisPdfBase64,
+            historyPdfBase64,
             address: document.getElementById('analyzing-address-text').textContent,
           }),
         })
-
         if (!res.ok) {
           const err = await res.json().catch(() => ({}))
           throw new Error(err.error || `Send failed (${res.status})`)
         }
-
         setStep('email', 'done')
-        setProgress(TOTAL_STEPS)
-
-        // Brief pause so user sees step 8 check, then transition
+        document.getElementById('progress-fill').style.width = '100%'
         setTimeout(() => {
           document.getElementById('done-email-text').textContent = userEmail
           show('state-done')
         }, 900)
-
       } catch (err) {
         setStep('email', 'error')
-        // Still show done state — user was told to expect email, we don't want to alarm them
         setTimeout(() => {
           document.getElementById('done-email-text').textContent = userEmail
           show('state-done')
@@ -1022,11 +1115,76 @@
       }
     }
 
-    // ─── Main analysis stream ──────────────────────────────────
+    // ─── Stream consumer for one pipeline ─────────────────────
+    // pipelineKey is 'analysis' or 'history' — only used to mark which side completed.
+    async function streamPipeline(endpoint, pipelineKey, address, onDiscoveryDone, onProgressTick) {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address }),
+      })
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Request failed' }))
+        throw new Error(err.error || `HTTP ${response.status}`)
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buf = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buf += decoder.decode(value, { stream: true })
+        const lines = buf.split('\n')
+        buf = lines.pop()
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          let evt
+          try { evt = JSON.parse(line.slice(6)) } catch { continue }
+
+          if (evt.step === 'complete') return
+          if (evt.step === 'error') throw new Error(evt.message || 'Analysis failed')
+
+          if (evt.status === 'running') {
+            setStep(evt.step, 'running')
+          } else if (evt.status === 'done') {
+            setStep(evt.step, 'done')
+            onProgressTick()
+
+            // Capture PDFs as their respective steps complete
+            if (evt.step === 'pdf' && evt.pdfBase64) {
+              analysisPdfBase64 = evt.pdfBase64
+              maybeSendReport()
+            }
+            if (evt.step === 'h_pdf' && evt.pdfBase64) {
+              historyPdfBase64 = evt.pdfBase64
+              maybeSendReport()
+            }
+
+            // Reveal email form once *any* discovery completes
+            if (evt.step === 'discovery' || evt.step === 'h_discovery') {
+              onDiscoveryDone()
+            }
+          }
+        }
+      }
+    }
+
+    // ─── Main entrypoint ──────────────────────────────────────
     async function startAnalysis(address) {
-      pdfBase64 = null
+      // Reset state
+      analysisPdfBase64 = null
+      historyPdfBase64 = null
       userEmail = null
       emailFormRevealed = false
+      analysisPipelineDone = false
+      historyPipelineDone = false
+      emailSent = false
+
+      runAnalysis = document.getElementById('opt-analysis').checked
+      runHistory = document.getElementById('opt-history').checked
 
       document.getElementById('analyzing-address-text').textContent = address
       document.getElementById('email-capture').classList.remove('is-visible')
@@ -1036,77 +1194,30 @@
       document.getElementById('btn-email-submit').disabled = false
       document.getElementById('progress-fill').style.width = '0%'
 
-      // Reset all steps
-      ;[...document.querySelectorAll('.pr-step')].forEach((el, i) => {
+      // Reset all step UI + apply visibility based on selection
+      document.querySelectorAll('.pr-step').forEach(el => {
         el.classList.remove('is-running','is-done','is-error')
-        el.querySelector('.pr-step-icon').textContent = i + 1
+        el.querySelector('.pr-step-icon').textContent = '·'
       })
+      applyStepVisibility()
 
       show('state-analyzing')
 
       let doneCount = 0
+      const tick = () => { doneCount++; setProgressFromDone(doneCount) }
+      const onDiscovery = () => revealEmailCapture()
 
       try {
-        const response = await fetch('/api/property-report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ address }),
-        })
+        const pipelines = []
+        if (runAnalysis) pipelines.push(streamPipeline('/api/property-report', 'analysis', address, onDiscovery, tick))
+        if (runHistory)  pipelines.push(streamPipeline('/api/property-history', 'history', address, onDiscovery, tick))
 
-        if (!response.ok) {
-          const err = await response.json().catch(() => ({ error: 'Request failed' }))
-          throw new Error(err.error || `HTTP ${response.status}`)
-        }
+        await Promise.all(pipelines)
 
-        const reader = response.body.getReader()
-        const decoder = new TextDecoder()
-        let buf = ''
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          buf += decoder.decode(value, { stream: true })
-          const lines = buf.split('\n')
-          buf = lines.pop()
-
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue
-            let evt
-            try { evt = JSON.parse(line.slice(6)) } catch { continue }
-
-            if (evt.step === 'complete') {
-              // Analysis finished — step 8 waits for email
-              // If email already submitted, trigger send immediately
-              if (userEmail && pdfBase64) sendReport()
-              return
-            }
-
-            if (evt.step === 'error') {
-              throw new Error(evt.message || 'Analysis failed')
-            }
-
-            if (evt.status === 'running') {
-              setStep(evt.step, 'running')
-
-            } else if (evt.status === 'done') {
-              setStep(evt.step, 'done')
-              doneCount++
-              setProgress(doneCount)
-
-              // Capture PDF data when pdf step completes
-              if (evt.step === 'pdf' && evt.pdfBase64) {
-                pdfBase64 = evt.pdfBase64
-                if (userEmail) sendReport()
-              }
-
-              // Reveal email form after discovery (step 1) completes
-              if (evt.step === 'discovery') {
-                revealEmailCapture()
-              }
-            }
-          }
-        }
+        // If email is already in, send will have fired via maybeSendReport.
+        // If not, sendReport will fire when user submits their email.
+        if (runAnalysis) analysisPipelineDone = true
+        if (runHistory) historyPipelineDone = true
 
       } catch (err) {
         document.getElementById('error-message-text').textContent =
@@ -1117,11 +1228,24 @@
 
     // ─── Reset ──────────────────────────────────────────────────
     function reset() {
-      pdfBase64 = null
+      analysisPdfBase64 = null
+      historyPdfBase64 = null
       userEmail = null
       emailFormRevealed = false
+      emailSent = false
       document.getElementById('input-address').value = ''
       show('state-idle')
+    }
+
+    // ─── Validation: at least one option must be checked ──────
+    function enforceOneChecked(changed) {
+      const a = document.getElementById('opt-analysis')
+      const h = document.getElementById('opt-history')
+      if (!a.checked && !h.checked) {
+        // Re-check the one that wasn't just toggled
+        if (changed === a) h.checked = true
+        else a.checked = true
+      }
     }
 
     // ─── Event listeners ────────────────────────────────────────
@@ -1129,6 +1253,12 @@
       const addr = document.getElementById('input-address').value.trim()
       if (!addr || addr.length < 5) {
         document.getElementById('input-address').focus()
+        return
+      }
+      const aChecked = document.getElementById('opt-analysis').checked
+      const hChecked = document.getElementById('opt-history').checked
+      if (!aChecked && !hChecked) {
+        document.getElementById('opt-analysis').checked = true
         return
       }
       document.getElementById('btn-analyze').disabled = true
@@ -1140,6 +1270,9 @@
     document.getElementById('input-address').addEventListener('keydown', e => {
       if (e.key === 'Enter') document.getElementById('btn-analyze').click()
     })
+
+    document.getElementById('opt-analysis').addEventListener('change', e => enforceOneChecked(e.target))
+    document.getElementById('opt-history').addEventListener('change', e => enforceOneChecked(e.target))
 
     document.getElementById('btn-email-submit').addEventListener('click', handleEmailSubmit)
     document.getElementById('input-email').addEventListener('keydown', e => {
