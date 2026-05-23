@@ -16,7 +16,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bronze: #B8975A;
+      --bronze: #C8C8C8;
       --teal:   #1A444C;
       --teal-h: #255a65;
       --bg:     #0a0a0a;
@@ -42,7 +42,7 @@
     .tab-btn:hover { color: var(--text); }
     .tab-btn.active { color: var(--text); border-bottom-color: var(--bronze); font-weight: 700; }
     .tab-count { display: inline-block; background: rgba(255,255,255,0.1); border-radius: 100px; padding: 1px 7px; font-size: 11px; margin-left: 6px; }
-    .tab-btn.active .tab-count { background: rgba(184,151,90,0.2); color: var(--bronze); }
+    .tab-btn.active .tab-count { background: rgba(200,200,200,0.2); color: var(--bronze); }
 
     /* ── Main ── */
     main { max-width: 900px; margin: 0 auto; padding: 36px 24px 100px; }
@@ -158,8 +158,8 @@
       background: var(--surf2);
       user-select: none;
     }
-    .thumb-bucket:hover { border-color: rgba(184,151,90,0.5); background: rgba(184,151,90,0.05); }
-    .thumb-bucket.drag-over { border-color: var(--bronze); background: rgba(184,151,90,0.1); border-style: solid; }
+    .thumb-bucket:hover { border-color: rgba(200,200,200,0.5); background: rgba(200,200,200,0.05); }
+    .thumb-bucket.drag-over { border-color: var(--bronze); background: rgba(200,200,200,0.1); border-style: solid; }
     .thumb-bucket.has-image { border-style: solid; border-color: var(--bronze); }
     .thumb-bucket img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; pointer-events: none; }
     .bucket-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; z-index: 1; padding: 8px; }

@@ -15,7 +15,7 @@
   'use strict'
 
   var TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog'
-  var BRONZE = '#B8975A'
+  var ACCENT = '#C8C8C8'
   mapboxgl.accessToken = TOKEN
 
   var cfg = window.CV_MAP_CONFIG
@@ -42,9 +42,9 @@
           try { pmap.setConfigProperty('basemap', 'lightPreset', 'night') } catch (e) {}
           var pin = document.createElement('div')
           pin.className = 'cv-map-poi'
-          pin.style.background = BRONZE
+          pin.style.background = ACCENT
           pin.style.border = '2px solid #fff'
-          pin.style.boxShadow = '0 0 0 4px rgba(184,151,90,0.35)'
+          pin.style.boxShadow = '0 0 0 4px rgba(200,200,200,0.35)'
           pin.style.width = '18px'
           pin.style.height = '18px'
           pin.style.borderRadius = '50%'
@@ -100,10 +100,10 @@
       data: { type: 'Feature', geometry: { type: 'LineString', coordinates: HWY111 }, properties: {} }
     })
     map.addLayer({ id: 'cv-hwy111-glow', type: 'line', source: 'cv-hwy111',
-      paint: { 'line-color': BRONZE, 'line-width': 5, 'line-opacity': 0.20, 'line-blur': 4 }
+      paint: { 'line-color': ACCENT, 'line-width': 5, 'line-opacity': 0.20, 'line-blur': 4 }
     })
     map.addLayer({ id: 'cv-hwy111-line', type: 'line', source: 'cv-hwy111',
-      paint: { 'line-color': BRONZE, 'line-width': 2, 'line-opacity': 0.60 }
+      paint: { 'line-color': ACCENT, 'line-width': 2, 'line-opacity': 0.60 }
     })
   }
 
@@ -118,10 +118,10 @@
       }
     })
     map.addLayer({ id: 'cv-boundary-fill', type: 'fill', source: 'cv-boundary',
-      paint: { 'fill-color': BRONZE, 'fill-opacity': 0.10 }
+      paint: { 'fill-color': ACCENT, 'fill-opacity': 0.10 }
     })
     map.addLayer({ id: 'cv-boundary-line', type: 'line', source: 'cv-boundary',
-      paint: { 'line-color': BRONZE, 'line-width': 2.5, 'line-opacity': 0.90 }
+      paint: { 'line-color': ACCENT, 'line-width': 2.5, 'line-opacity': 0.90 }
     })
   }
 

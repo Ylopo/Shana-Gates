@@ -40,7 +40,7 @@ The article title (or a short punchy version) rendered **in the image itself**.
 A small, bold, flat/illustrated graphic element near the title.
 - **NOT photorealistic** — icon/arrow style, like a news broadcast graphic
 - Must reinforce the article's market direction (see Sentiment Detection below)
-- Examples: upward blue arrow for growth stories, downward amber arrow for declines, gold coin for investment, house key for buying tips
+- Examples: upward blue arrow for growth stories, downward cool-red arrow for declines, light-gray house key for buying tips, light-gray "SOLD" ribbon for selling tips. **Never bronze, gold, copper, or amber** — see [BRAND-STYLE-GUIDE.md](BRAND-STYLE-GUIDE.md).
 
 ---
 
@@ -70,21 +70,23 @@ A small, bold, flat/illustrated graphic element near the title.
 
 | Signal | Examples | Graphic accent |
 |---|---|---|
-| **UP** | rises, surges, growth, boom, record high, migration, appreciation, rally | Bold upward arrow — electric blue or teal glow |
-| **DOWN** | falls, drops, declining, cooling, correction, price cut, soft market | Bold downward arrow — warm amber/orange |
+| **UP** | rises, surges, growth, boom, record high, migration, appreciation, rally | Bold upward arrow — electric blue or bright turquoise glow |
+| **DOWN** | falls, drops, declining, cooling, correction, price cut, soft market | Bold downward arrow — desaturated cool red |
 | **NEUTRAL** | informational, tips, spotlight, guide | Category-specific icon (see below) |
+
+> **No bronze, gold, amber, copper, or warm metallic tones** in any thumbnail accent. Brand-approved accent colors only: electric blue, bright turquoise `#4ECDC4`, C&B teal `#1A4447`, light gray `#C8C8C8`, cool red for "down" signals.
 
 ### Category fallback accents (when sentiment is neutral)
 
 | Category | Accent |
 |---|---|
 | `market-update` | Upward arrow, electric blue |
-| `buying-tips` | Gold house key or house icon with sparkle |
-| `selling-tips` | "SOLD" ribbon or gold price arrow |
-| `community-spotlight` | Glowing location pin in bronze/gold |
-| `investment` | Gold coin stack or trend chart line |
+| `buying-tips` | Light-gray house key or house icon with subtle sparkle |
+| `selling-tips` | "SOLD" ribbon in light gray, or upward price arrow in electric blue |
+| `community-spotlight` | Glowing location pin in bright turquoise |
+| `investment` | Minimalist trend chart line in electric blue, or a stack of light-gray chips |
 | `news` | Bold accent bar + arrow in electric blue |
-| `local-area` | Sun icon or palm tree silhouette in warm gold |
+| `local-area` | Sun icon or palm tree silhouette in light gray against a dark sky |
 | `market-insight` | Minimalist trend line or bar chart in electric blue |
 
 ---

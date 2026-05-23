@@ -786,7 +786,7 @@
   (function() {
     var el = document.getElementById('valley-context-map');
     if (!el || typeof mapboxgl === 'undefined') return;
-    var BRONZE = '#B8975A';
+    var ACCENT = '#C8C8C8';
     var CREAM  = '#F2EDE4';
     var YELLOW = '#FFE14D';
     var CURRENT_SLUG = 'cathedral-city';
@@ -824,8 +824,8 @@
           map.addLayer({ id:'vc-i10-glow', type:'line', source:'vc-i10', paint:{'line-color':'#5ba4ff','line-width':6,'line-opacity':0.22,'line-blur':4} });
           map.addLayer({ id:'vc-i10-line', type:'line', source:'vc-i10', paint:{'line-color':'#7dbfff','line-width':2,'line-opacity':0.70} });
           map.addSource('vc-hwy111', { type:'geojson', data:{type:'Feature',geometry:{type:'LineString',coordinates:HWY111},properties:{}} });
-          map.addLayer({ id:'vc-hwy111-glow', type:'line', source:'vc-hwy111', paint:{'line-color':BRONZE,'line-width':6,'line-opacity':0.18,'line-blur':4} });
-          map.addLayer({ id:'vc-hwy111-line', type:'line', source:'vc-hwy111', paint:{'line-color':BRONZE,'line-width':2,'line-opacity':0.55} });
+          map.addLayer({ id:'vc-hwy111-glow', type:'line', source:'vc-hwy111', paint:{'line-color':ACCENT,'line-width':6,'line-opacity':0.18,'line-blur':4} });
+          map.addLayer({ id:'vc-hwy111-line', type:'line', source:'vc-hwy111', paint:{'line-color':ACCENT,'line-width':2,'line-opacity':0.55} });
           CITIES.forEach(function(c, i) {
             var isCurrent = c.slug === CURRENT_SLUG;
             map.addSource('vc-city-'+i, { type:'geojson', data:{type:'Feature',geometry:{type:'Polygon',coordinates:[c.boundary]},properties:{}} });

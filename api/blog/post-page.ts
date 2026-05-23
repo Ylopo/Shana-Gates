@@ -36,9 +36,9 @@ export default async function handler(req: any, res: any) {
 <title>Post Not Found — Shana Gates Blog</title>
 <style>body{background:#0a0a0a;color:#fff;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;}</style>
 </head><body>
-<div><h1 style="color:#B8975A;margin-bottom:16px">Post Not Found</h1>
+<div><h1 style="color:#C8C8C8;margin-bottom:16px">Post Not Found</h1>
 <p style="color:rgba(255,255,255,0.5);margin-bottom:24px">This post may have been moved or removed.</p>
-<a href="/blog/" style="color:#B8975A">← Back to Blog</a></div>
+<a href="/blog/" style="color:#C8C8C8">← Back to Blog</a></div>
 </body></html>`)
     return
   }
@@ -94,7 +94,7 @@ export default async function handler(req: any, res: any) {
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bronze: #B8975A;
+      --bronze: #C8C8C8;
       --bg: #0a0a0a;
       --surface: #141414;
       --border: rgba(255,255,255,0.08);
@@ -153,7 +153,7 @@ export default async function handler(req: any, res: any) {
     .nav-communities-trigger::after { content: '▾'; font-size: 10px; color: rgba(255,255,255,0.3); }
     .communities-dropdown {
       position: absolute; top: calc(100% + 18px); left: 50%;
-      background: rgba(19,19,19,0.98); border: 1px solid rgba(184,151,90,0.2);
+      background: rgba(19,19,19,0.98); border: 1px solid rgba(200,200,200,0.2);
       min-width: 200px; opacity: 0; pointer-events: none;
       transition: opacity 0.25s, transform 0.25s;
       transform: translateX(-50%) translateY(-6px); z-index: 150;
@@ -168,11 +168,11 @@ export default async function handler(req: any, res: any) {
       display: block; padding: 10px 18px; font-size: 11px; font-weight: 400;
       letter-spacing: 0.15em; text-transform: uppercase;
       color: rgba(255,255,255,0.65); text-decoration: none;
-      border-bottom: 1px solid rgba(184,151,90,0.08);
+      border-bottom: 1px solid rgba(200,200,200,0.08);
       transition: color 0.2s, background 0.2s;
     }
     .communities-dropdown a:last-child { border-bottom: none; }
-    .communities-dropdown a:hover { color: var(--bronze); background: rgba(184,151,90,0.06); }
+    .communities-dropdown a:hover { color: var(--bronze); background: rgba(200,200,200,0.06); }
     .nav-cta {
       background: var(--bronze);
       color: #000;
@@ -342,7 +342,7 @@ export default async function handler(req: any, res: any) {
     .city-link-btn:hover { opacity: 0.85; }
     .city-link-btn-outline {
       display: inline-block;
-      border: 1.5px solid rgba(184,151,90,0.5);
+      border: 1.5px solid rgba(200,200,200,0.5);
       color: var(--bronze);
       font-size: 14px;
       font-weight: 600;
@@ -363,7 +363,7 @@ export default async function handler(req: any, res: any) {
     .cta-card {
       margin-top: 48px;
       background: var(--surface);
-      border: 1px solid rgba(184,151,90,0.25);
+      border: 1px solid rgba(200,200,200,0.25);
       border-radius: 12px;
       padding: 32px;
       text-align: center;
@@ -686,7 +686,7 @@ export default async function handler(req: any, res: any) {
 
       const res = await fetch('/api/blog/post?slug=' + encodeURIComponent(slug))
       if (res.status === 404) {
-        document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><h2>Post not found</h2><p><a href="/blog/" style="color:#B8975A">&larr; Back to Blog</a></p></div>'
+        document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><h2>Post not found</h2><p><a href="/blog/" style="color:#C8C8C8">&larr; Back to Blog</a></p></div>'
         return
       }
       if (!res.ok) throw new Error('Server error ' + res.status)
@@ -731,7 +731,7 @@ export default async function handler(req: any, res: any) {
     }
 
     loadPost().catch(() => {
-      document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><p>Failed to load post. <a href="/blog/" style="color:#B8975A">&larr; Back to Blog</a></p></div>'
+      document.getElementById('loadingState').innerHTML = '<div style="text-align:center;padding:80px 0;color:rgba(255,255,255,0.4)"><p>Failed to load post. <a href="/blog/" style="color:#C8C8C8">&larr; Back to Blog</a></p></div>'
     })
   </script>
 

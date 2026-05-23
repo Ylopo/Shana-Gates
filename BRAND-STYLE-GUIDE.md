@@ -7,6 +7,8 @@
 
 Feed this document into any AI tool before generating copy, graphics, captions, thumbnails, or any branded material. It defines the exact visual language, voice, and rules that keep every touchpoint consistent across shanasells.com, social media, video, and print.
 
+This guide is the authoritative source. The visual reference PDF at `Shana-Gates-Brand-Style-Guide.pdf` and the live page at [/brand-guide/](brand-guide/) mirror this document.
+
 ---
 
 ## 1. Brand Identity
@@ -19,6 +21,7 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 - **Local authority** — deeply knowledgeable about Coachella Valley history, lifestyle, and market
 - **Warm and approachable** — feels like advice from a trusted friend, not a sales pitch
 - **Cinematic and premium** — visuals skew toward editorial, not stock-photo generic
+- **Premium dark aesthetic** — never bright or light-mode
 
 ### Brand Tagline (use sparingly)
 > *Your Coachella Valley Expert*
@@ -27,22 +30,26 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 
 ## 2. Color Palette
 
+> **No bronze. No gold.** The brand's primary accent is **Light Gray `#C8C8C8`**. Any reference to "bronze" in legacy CSS variables (`--bronze`) now resolves to the light gray accent — the visual color is light gray everywhere.
+
 ### Primary Brand Colors
 
 | Name | Hex | Usage |
 |---|---|---|
-| **Midnight** | `#0D0D0D` | Website background, dark overlays |
-| **Obsidian** | `#0A0A0A` | Admin/dashboard background |
-| **Bronze / Gold** | `#B8975A` | Primary accent — CTA buttons, highlights, active nav, borders |
-| **Bronze Light** | `#CEB07A` | Hover states, secondary highlights |
-| **Cream** | `#F2EDE4` | Light-mode text, hero text on dark |
+| **Obsidian** | `#0A0A0A` | Page background, dark base |
+| **Midnight** | `#0D0D0D` | Secondary dark surface |
+| **Surface** | `#141414` | Cards, panels |
+| **Surface 2** | `#1A1A1A` | Nested cards |
+| **Light Gray** | `#C8C8C8` | Primary accent — CTA buttons, highlights, active nav, borders |
+| **Light Gray 2** | `#DCDCDC` | Hover states, secondary highlights |
+| **Cream** | `#F2EDE4` | Primary text on dark backgrounds, hero text |
 | **Cream Muted** | `rgba(242,237,228,0.55)` | Secondary text on dark backgrounds |
 
 ### Craft & Bauer Brand Colors (use on co-branded materials)
 
 | Name | Hex | Usage |
 |---|---|---|
-| **C&B Navy** | `#0D1B2A` | Background swatch, dark base for co-branded pieces |
+| **C&B Navy** | `#0D1B2A` | Co-branded backgrounds, dark base for co-branded pieces |
 | **C&B Teal** | `#1A4447` | Logo color, brand identity color, badge backgrounds |
 | **C&B Teal Dark** | `#0D2A2E` | Gradient base, deep section backgrounds |
 | **C&B Teal Mid** | `#1A3A3C` | Gradient end, card backgrounds |
@@ -53,8 +60,6 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 |---|---|---|
 | **Turquoise Bright** | `#4ECDC4` | Script text accents on thumbnails, highlight callouts |
 | **White** | `#FFFFFF` | Primary headline text on dark backgrounds |
-| **Surface** | `#141414` | Card backgrounds |
-| **Surface 2** | `#1A1A1A` | Secondary card backgrounds |
 | **Border** | `rgba(255,255,255,0.08)` | Subtle dividers on dark UI |
 
 ### Content Category Colors (blog badges only)
@@ -66,14 +71,15 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 | Seller Tips | `#0EA5E9` |
 | Community | `#16A34A` |
 | Trending Topics | `#9C27B0` |
-| Local History | `#B8975A` |
+| Local History | `#C8C8C8` |
 | Local Interest | `#E67E22` |
 
 ### Color Rules
-- **Never** use the bronze/gold on a white background — it disappears. Always pair it with dark backgrounds.
+- **Never** use bronze, gold, amber, copper, or any warm metallic tone on the brand. The brand uses only the colors listed in this guide.
 - **Never** use bright teal (`#4ECDC4`) as a background — accent text only.
-- The C&B teal (`#1A4447`) and the website bronze (`#B8975A`) do not compete — they pair well together.
+- The C&B teal (`#1A4447`) and the website light gray accent (`#C8C8C8`) do not compete — they pair well together.
 - Gradients always go **dark to darker**, never light-to-light.
+- Light gray accent only works on dark backgrounds. Never place light gray on white.
 
 ---
 
@@ -84,16 +90,16 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 | Role | Font | Fallback | Weight |
 |---|---|---|---|
 | **Display / Headlines** | Cormorant Garamond | Georgia, serif | 300–400 |
-| **Body / UI** | Jost | system-ui, sans-serif | 400–500 |
-| **Supporting / Brand** | Montserrat | system-ui, sans-serif | 100–900 |
+| **Eyebrows, Buttons, Nav** | Montserrat | system-ui, sans-serif | 500–900 |
+| **Body / UI** | Jost | system-ui, sans-serif | 300–500 |
 
-### Thumbnail & Social Graphic Typography (what you see in video thumbnails)
+### Thumbnail & Social Graphic Typography
 
 | Element | Style | Weight |
 |---|---|---|
 | **Eyebrow label** (e.g. "INSIDE") | Montserrat, all caps, wide tracking (0.3em+) | 500 |
 | **Main headline word** (e.g. "FRANK SINATRA'S") | Montserrat Condensed Bold or Impact-style, all caps | 800–900 |
-| **Script accent** (e.g. "Palm Springs") | Cursive/script overlay, turquoise bright `#4ECDC4` | — |
+| **Script accent** (e.g. "Palm Springs") | Cormorant italic overlay, turquoise bright `#4ECDC4` | — |
 | **Subtitle badge** | Montserrat, all caps, tight tracking | 600–700 |
 | **"Shana Gates" name** | Script font, white or turquoise | — |
 | **"REAL ESTATE" sub-label** | Montserrat, all caps, wide tracking | 500 |
@@ -113,6 +119,7 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 - Never bold Cormorant Garamond — it's a light/thin serif by design; its elegance lives at weight 300–400
 - Montserrat at weight 800+ condensed is used for impact-headline moments only (thumbnails, hero graphics)
 - Mixed-font headlines: serif for the elegant word, sans for the punchy word
+- Accent words inside italic headlines use turquoise `#4ECDC4` (never any warm metallic)
 
 ---
 
@@ -135,7 +142,7 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 ### Logo Don'ts
 - Never stretch, rotate, or recolor the logos
 - Never place the C&B logo on a busy photo without a background buffer
-- Never use the bronze color as a substitute for the C&B teal
+- Never use a warm metallic color (bronze, gold, copper) as a substitute for the C&B teal
 
 ---
 
@@ -151,7 +158,7 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 - **Dark cinematic base**: photos treated with dark overlay (0.4–0.7 opacity dark vignette)
 - **Layered compositions**: background photo + foreground cutout of Shana + text overlay
 - **Historical thumbnails**: archival B&W photos work well layered against modern desert architecture shots
-- **Color grading**: slight cool teal shift on background, warm on Shana cutout
+- **Color grading**: slight cool teal shift on background, neutral on Shana cutout
 - **Always include Shana** in corner or side of thumbnail for brand recognition
 
 ### Image Don'ts
@@ -159,6 +166,7 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 - No overly bright, washed-out, or flat-lit photos
 - No clip art, no cartoony illustrations
 - No photos that include competing brokerage signage
+- No graphics or icons in bronze, gold, copper, amber, or any warm metallic tone
 
 ---
 
@@ -208,12 +216,12 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 
 ### Video Thumbnail Formula
 ```
-[Eyebrow label — context] (small, wide tracking, Montserrat)
-[Big bold word or name] (condensed heavy, all caps)
-[Script accent word] (turquoise, cursive)
+[Eyebrow label — context] (small, wide tracking, Montserrat 500)
+[Big bold word or name] (condensed heavy, all caps, Montserrat 900)
+[Script accent word] (turquoise #4ECDC4, Cormorant italic)
 [DESCRIPTOR WORD] (condensed heavy, all caps)
 ─────────────────────────────────────────
-[SUBTITLE BADGE: "THE [WORD] THAT [VERB] [NOUN]"]
+[SUBTITLE BADGE: "THE [WORD] THAT [VERB] [NOUN]" — dark teal bg, turquoise text]
 [Shana Gates corner logo]
 ```
 
@@ -234,23 +242,29 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 ### Card / Badge Design
 - Rounded corners: `12px` for cards, `100px` for pill badges, `8px` for buttons
 - Dark surface backgrounds: `#141414` or `#1A1A1A`
-- Hover/active state: bronze border `#B8975A` at 1.5px
-- Selected/active state: `rgba(184,151,90,0.06)` background fill
+- Hover/active state: light gray border `#C8C8C8` at 1.5px
+- Selected/active state: `rgba(200,200,200,0.06)` background fill
 
 ### Button Design
-- Primary: Bronze `#B8975A` background, black `#000` text, `8px` radius, Montserrat 600, `0.22em` letter-spacing
-- Secondary: Transparent background, bronze border, bronze text
-- Hover: 85% opacity on primary; bronze border on secondary
+
+| Style | Background | Text | Use for |
+|---|---|---|---|
+| **Primary** | `#C8C8C8` (Light Gray) | `#000000` (Black) | Main CTA, publish, submit |
+| **Secondary** | Transparent, 1px light gray border | `#C8C8C8` | Secondary action, learn more |
+| **Ghost** | Transparent | Cream `rgba(242,237,228,0.7)` | Tertiary, cancel, skip |
+| **Teal** | `#1A4447` | `#F2EDE4` (Cream) | C&B co-branded contexts only |
+
+All buttons: `8px` radius, Montserrat 600, `0.20em` letter-spacing, uppercase.
 
 ### Dividers
 - Use `rgba(255,255,255,0.08)` for subtle lines on dark backgrounds
-- Use the bronze at low opacity `rgba(184,151,90,0.18)` for accent dividers
+- Use the light gray at low opacity `rgba(200,200,200,0.18)` for accent dividers
 - Never use harsh white or gray lines
 
 ### Shadow System
-- Cards: `box-shadow: 0 4px 24px rgba(26,24,20,0.08)`
+- Cards: `box-shadow: 0 4px 24px rgba(0,0,0,0.55)`
 - Hover elevation: `box-shadow: 0 8px 32px rgba(0,0,0,0.55)`
-- Bronze glow (active/featured): `box-shadow: 0 0 20px rgba(184,151,90,0.55)`
+- Light gray glow (active/featured): `box-shadow: 0 0 20px rgba(200,200,200,0.45)`
 
 ---
 
@@ -263,7 +277,7 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 
 ### Video Caption / Lower-Third Formula
 - White headline text on semi-transparent dark overlay
-- Bronze accent for emphasis words
+- Light gray or turquoise accent for emphasis words (never warm metallic)
 - Montserrat for all on-screen text
 
 ### B-roll Style
@@ -278,14 +292,51 @@ Shana Gates is a Coachella Valley REALTOR® at **Craft & Bauer | Real Broker**. 
 
 When generating any branded content for Shana Gates, apply these rules:
 
-**Colors:** Dark backgrounds (`#0D0D0D`, `#0A0A0A`), Bronze accent (`#B8975A`), Cream text (`#F2EDE4`), C&B Teal (`#1A4447`), Turquoise accent (`#4ECDC4`)
+**Colors:** Dark backgrounds (`#0A0A0A`, `#0D0D0D`, `#141414`), Light Gray accent (`#C8C8C8`), Cream text (`#F2EDE4`), C&B Teal (`#1A4447`), Turquoise accent (`#4ECDC4`), C&B Navy (`#0D1B2A`). **Never use bronze, gold, copper, amber, or any warm metallic tone.**
 
-**Fonts:** Cormorant Garamond (elegant headlines, weight 300–400) + Jost/Montserrat (body and UI, weight 400–600) + Script font (Shana name, accent words)
+**Fonts:** Cormorant Garamond (elegant serif headlines, weight 300–400) + Montserrat (display/eyebrows/buttons, weight 500–900) + Jost (body/UI, weight 300–500)
 
 **Voice:** Expert local neighbor. Specific. Warm. Direct. Never salesy. Always Coachella Valley-anchored.
 
 **Brand:** Shana Gates, REALTOR® at Craft & Bauer | Real Broker, Coachella Valley, CA. Contact: shana@craftbauer.com. Website: shanasells.com
 
-**Never:** Generic real estate clichés, bright/light color palettes, competing brokerage references, school rating mentions, neighborhood safety or demographic commentary (Fair Housing compliance).
+**Never:** Generic real estate clichés, bright/light color palettes, bronze/gold/warm-metallic accents, competing brokerage references, school rating mentions, neighborhood safety or demographic commentary (Fair Housing compliance).
 
 **Always:** Specific addresses, named CV cities, real dates and data, desert lifestyle anchors, Shana's face in thumbnails/videos.
+
+### Copy-paste LLM prompt
+
+```
+You are creating content for Shana Gates, REALTOR® at Craft & Bauer | Real Broker
+in the Coachella Valley, CA. Website: shanasells.com. Contact: shana@craftbauer.com.
+
+BRAND COLORS: Background #0A0A0A, Light Gray accent #C8C8C8, Cream text #F2EDE4,
+C&B Teal #1A4447, Turquoise bright #4ECDC4, C&B Navy #0D1B2A.
+NEVER use bronze, gold, copper, amber, or any warm metallic tone.
+
+FONTS: Cormorant Garamond (elegant serif headlines, weight 300–400) +
+Montserrat (display/eyebrows/buttons, weight 500–900) +
+Jost (body/UI, weight 300–500).
+
+VOICE: Expert local neighbor. Specific and direct. Warm but never bubbly.
+Always Coachella Valley-anchored. No exclamation points unless essential.
+Never: "Did you know…", "Amazing!", "leverage", "synergy", "seamless".
+Always: specific addresses, named CV cities, real dates and data.
+
+BRAND PERSONALITY: Sophisticated but approachable. Local authority. Cinematic
+and premium visuals. Premium dark aesthetic — never bright or light-mode.
+
+THUMBNAIL FORMULA (video/social graphics): Eyebrow label (Montserrat 500, wide
+tracking, small) → Bold condensed name (Montserrat 900, all caps) → Script
+accent word (Cormorant italic, turquoise #4ECDC4) → Subtitle badge (dark teal
+background, turquoise text).
+
+CITIES SERVED: Palm Springs, Palm Desert, Rancho Mirage, Indian Wells,
+La Quinta, Indio, Cathedral City, Desert Hot Springs, Coachella.
+
+COMPLIANCE: Never mention school quality/ratings, neighborhood safety,
+demographic composition, or any content that could be construed as steering.
+
+CATEGORIES: market-update, investor-tips, seller-tips, community,
+trending-topics, local-history, local-interest.
+```

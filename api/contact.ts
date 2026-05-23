@@ -56,7 +56,7 @@ export default async function handler(req: any, res: any) {
       html: `
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#1a1814">
           <div style="background:#1a1e3c;padding:24px 32px;border-radius:6px 6px 0 0">
-            <p style="color:#B8975A;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin:0">New Contact Form Submission</p>
+            <p style="color:#C8C8C8;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin:0">New Contact Form Submission</p>
             <h1 style="color:#F2EDE4;font-size:22px;font-weight:600;margin:8px 0 0">shanasells.com</h1>
           </div>
           <div style="background:#fff;padding:32px;border:1px solid #e8e1d5;border-top:none;border-radius:0 0 6px 6px">
@@ -68,7 +68,7 @@ export default async function handler(req: any, res: any) {
             <h3 style="margin:24px 0 10px;font-size:14px;text-transform:uppercase;letter-spacing:0.1em;color:#888">Message</h3>
             <p style="line-height:1.7;color:#3a3530">${safeMessage}</p>
             <div style="margin-top:32px;padding:16px;background:#f8f5f0;border-radius:4px">
-              <a href="mailto:${safeEmail}" style="display:inline-block;background:#B8975A;color:#fff;padding:12px 28px;border-radius:4px;text-decoration:none;font-weight:600;font-size:14px">Reply to ${firstName}</a>
+              <a href="mailto:${safeEmail}" style="display:inline-block;background:#C8C8C8;color:#fff;padding:12px 28px;border-radius:4px;text-decoration:none;font-weight:600;font-size:14px">Reply to ${firstName}</a>
             </div>
           </div>
           <p style="color:#aaa;font-size:11px;text-align:center;margin-top:16px">Sent from the contact form on shanasells.com</p>
@@ -84,7 +84,7 @@ export default async function handler(req: any, res: any) {
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#1a1814">
           <div style="background:#1a1e3c;padding:24px 32px;border-radius:6px 6px 0 0">
-            <p style="color:#B8975A;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin:0">Shana Gates</p>
+            <p style="color:#C8C8C8;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;margin:0">Shana Gates</p>
             <h1 style="color:#F2EDE4;font-size:22px;font-weight:600;margin:8px 0 0">Craft &amp; Bauer | Real Broker</h1>
           </div>
           <div style="background:#fff;padding:32px;border:1px solid #e8e1d5;border-top:none;border-radius:0 0 6px 6px">

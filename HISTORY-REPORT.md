@@ -155,19 +155,19 @@ The subject line + email body copy adapt to which reports were attached. The lea
 
 ## PDF Report — pdfmake, 5 pages
 
-Same brand system as the buyers report (Marcellus + Montserrat, dark cover, bronze rules, cream text on dark). No scoring/grading — this is a fact-compilation document, not an evaluation.
+Same brand system as the buyers report (Marcellus + Montserrat, dark cover, light gray rules, cream text on dark). No scoring/grading — this is a fact-compilation document, not an evaluation.
 
 ### Brand colors
 ```typescript
 DARK   = '#131313'
-BRONZE = '#B8975A'
+ACCENT = '#C8C8C8'  // light gray
 CREAM  = '#F2EDE4'
 ROW_ALT = '#F5F0E8'
 ```
 
 ### Cover page (dark background)
 - Property photo (Tavily; same fallback chain as buyers report)
-- "PROPERTY HISTORY REPORT" eyebrow (bronze, letter-spaced serif)
+- "PROPERTY HISTORY REPORT" eyebrow (light gray, letter-spaced serif)
 - Address (large serif, cream)
 - Date
 - "At a Glance" block: Year Built · Architecture · Known Sales · Historic (Yes/No)
@@ -255,7 +255,7 @@ No new env vars. Reuses:
 
 All adaptation work for this report mirrors the buyers report — see the `BUYERS-REPORT.md` "Adapting for a New Client" section. Specifically:
 
-- Brand colors in `api/property-history.ts` (`DARK`, `BRONZE`, `CREAM`)
+- Brand colors in `api/property-history.ts` (`DARK`, `ACCENT`, `CREAM`)
 - Agent photo at `images/shana-green-pdf.jpg`
 - Contact info in cover-page credit block + page header + email footer
 - Market geography is address-driven — Tavily adapts to whatever address is submitted; no code change needed for a new market

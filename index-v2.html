@@ -37,9 +37,9 @@
       --dark-3:       #1a1a1a;
       --cream:        #F2EDE4;
       --cream-2:      #E8E1D5;
-      --bronze:       #B8975A;
-      --bronze-light: #CEB07A;
-      --bronze-dim:   rgba(184,151,90,0.18);
+      --bronze:       #C8C8C8;
+      --bronze-light: #DCDCDC;
+      --bronze-dim:   rgba(200,200,200,0.18);
       --text-light:   #F2EDE4;
       --text-muted:   rgba(242,237,228,0.55);
       --text-dark:    #1a1814;
@@ -78,7 +78,7 @@
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       padding: 20px 52px;
-      border-bottom-color: rgba(184,151,90,0.18);
+      border-bottom-color: rgba(200,200,200,0.18);
     }
 
     .nav-logo img {
@@ -343,7 +343,7 @@
       text-transform: uppercase;
       color: var(--bronze);
       text-decoration: none;
-      border-bottom: 1px solid rgba(184,151,90,0.4);
+      border-bottom: 1px solid rgba(200,200,200,0.4);
       padding-bottom: 3px;
       white-space: nowrap;
       transition: border-color 0.3s, color 0.3s;
@@ -432,16 +432,16 @@
       transition: opacity 0.4s;
     }
 
-    .card-bronze-hover {
+    .card-accent-hover {
       position: absolute;
       inset: 0;
-      background: rgba(184,151,90,0.08);
+      background: rgba(200,200,200,0.08);
       opacity: 0;
       z-index: 2;
       transition: opacity 0.4s;
     }
 
-    .property-card:hover .card-bronze-hover { opacity: 1; }
+    .property-card:hover .card-accent-hover { opacity: 1; }
     .property-card:hover .card-bg { transform: scale(1.05); }
     .property-card:hover video { transform: scale(1.05); }
 
@@ -506,7 +506,7 @@
 
     .card-arrow {
       font-size: 13px;
-      color: rgba(184,151,90,0.6);
+      color: rgba(200,200,200,0.6);
       transition: transform 0.3s, color 0.3s;
     }
 
@@ -722,7 +722,7 @@
       position: relative;
       width: 100%;
       height: 660px;
-      border: 1px solid rgba(184,151,90,0.18);
+      border: 1px solid rgba(200,200,200,0.18);
       overflow: hidden;
     }
 
@@ -738,7 +738,7 @@
       left: 0;
       pointer-events: none;
       background: rgba(13,13,13,0.92);
-      border: 1px solid rgba(184,151,90,0.45);
+      border: 1px solid rgba(200,200,200,0.45);
       backdrop-filter: blur(12px);
       padding: 16px 22px;
       min-width: 200px;
@@ -757,7 +757,7 @@
       font-size: 9px;
       font-weight: 500;
       letter-spacing: 0.28em;
-      color: rgba(184,151,90,0.5);
+      color: rgba(200,200,200,0.5);
       margin-bottom: 6px;
     }
 
@@ -816,7 +816,7 @@
       border-radius: 50%;
       background: var(--bronze);
       border: 1.5px solid rgba(13,13,13,0.8);
-      box-shadow: 0 0 8px rgba(184,151,90,0.6);
+      box-shadow: 0 0 8px rgba(200,200,200,0.6);
       transition: transform 0.2s, box-shadow 0.2s;
       flex-shrink: 0;
     }
@@ -835,7 +835,7 @@
 
     .valley-city-label.hovered .label-dot {
       transform: scale(1.5);
-      box-shadow: 0 0 16px rgba(184,151,90,0.9);
+      box-shadow: 0 0 16px rgba(200,200,200,0.9);
     }
 
     .valley-city-label.hovered .label-text {
@@ -852,7 +852,7 @@
 
     .comm-link-card {
       background: var(--dark-2);
-      border: 1px solid rgba(184,151,90,0.1);
+      border: 1px solid rgba(200,200,200,0.1);
       padding: 22px 20px;
       text-decoration: none;
       display: flex;
@@ -862,8 +862,8 @@
     }
 
     .comm-link-card:hover {
-      border-color: rgba(184,151,90,0.35);
-      background: rgba(184,151,90,0.04);
+      border-color: rgba(200,200,200,0.35);
+      background: rgba(200,200,200,0.04);
     }
 
     .comm-link-num {
@@ -871,7 +871,7 @@
       font-size: 9px;
       font-weight: 500;
       letter-spacing: 0.28em;
-      color: rgba(184,151,90,0.45);
+      color: rgba(200,200,200,0.45);
     }
 
     .comm-link-name {
@@ -953,7 +953,7 @@
     ============================================================ */
     footer {
       background: var(--dark-2);
-      border-top: 1px solid rgba(184,151,90,0.15);
+      border-top: 1px solid rgba(200,200,200,0.15);
       padding: 76px 52px 40px;
     }
 
@@ -1047,7 +1047,7 @@
 
     .footer-bottom {
       padding-top: 32px;
-      border-top: 1px solid rgba(184,151,90,0.1);
+      border-top: 1px solid rgba(200,200,200,0.1);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -1244,7 +1244,7 @@
       <a href="https://search.searchcoachellavalleyhomes.com/search/detail/259876193?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.79780119999999&s[circle][lng]=-116.5005879&s[circle][radius]=3&s[address]=459%20Desert%20Lakes%20Dr%2C%20Palm%20Springs%2C%20CA%2092264&s[addressComponents][street]=459%20Desert%20Lakes%20Drive&s[addressComponents][city]=Palm%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92264" target="_blank" rel="noopener" class="property-card reveal reveal-delay-1">
         <img class="card-photo" src="images/459-desert-lakes-drive.jpeg" alt="459 Desert Lakes Drive, Palm Springs" />
         <div class="card-gradient-overlay"></div>
-        <div class="card-bronze-hover"></div>
+        <div class="card-accent-hover"></div>
         <div class="card-content">
           <span class="card-badge">Active</span>
           <p class="card-address">459 Desert Lakes Drive</p>
@@ -1260,7 +1260,7 @@
       <a href="https://search.searchcoachellavalleyhomes.com/search/detail/259917628?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.7550352&s[circle][lng]=-116.3099975&s[circle][radius]=3&s[address]=77553%20Carinda%20Ct%2C%20Palm%20Desert%2C%20CA%2092211&s[addressComponents][street]=77553%20Carinda%20Court&s[addressComponents][city]=Palm%20Desert&s[addressComponents][state]=CA&s[addressComponents][zip]=92211" target="_blank" rel="noopener" class="property-card reveal reveal-delay-2">
         <img class="card-photo" src="images/77553-carinda-court.jpeg" alt="77553 Carinda Court, Palm Desert" />
         <div class="card-gradient-overlay"></div>
-        <div class="card-bronze-hover"></div>
+        <div class="card-accent-hover"></div>
         <div class="card-content">
           <span class="card-badge">Active</span>
           <p class="card-address">77553 Carinda Court</p>
@@ -1276,7 +1276,7 @@
       <a href="https://search.searchcoachellavalleyhomes.com/search/detail/259492317?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.8360332&s[circle][lng]=-116.4991375&s[circle][radius]=3&s[address]=4321%20Lumina%20Way%2C%20Palm%20Springs%2C%20CA%2092262&s[addressComponents][street]=4321%20Lumina%20Way&s[addressComponents][city]=Palm%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92262" target="_blank" rel="noopener" class="property-card reveal reveal-delay-3">
         <img class="card-photo" src="images/4321-lumina-way.jpeg" alt="4321 Lumina Way, Palm Springs" />
         <div class="card-gradient-overlay"></div>
-        <div class="card-bronze-hover"></div>
+        <div class="card-accent-hover"></div>
         <div class="card-content">
           <span class="card-badge">Active</span>
           <p class="card-address">4321 Lumina Way</p>
@@ -1292,7 +1292,7 @@
       <a href="https://search.searchcoachellavalleyhomes.com/search/detail/261541877?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.7505301&s[circle][lng]=-116.225812&s[circle][radius]=3&s[address]=41098%20Hanover%20St%2C%20Indio%2C%20CA%2092203&s[addressComponents][street]=41098%20Hanover%20Street&s[addressComponents][city]=Indio&s[addressComponents][state]=CA&s[addressComponents][zip]=92203" target="_blank" rel="noopener" class="property-card reveal reveal-delay-4">
         <img class="card-photo" src="images/41098-hanover-st.jpeg" alt="41098 Hanover Street, Indio" />
         <div class="card-gradient-overlay"></div>
-        <div class="card-bronze-hover"></div>
+        <div class="card-accent-hover"></div>
         <div class="card-content">
           <span class="card-badge">Active</span>
           <p class="card-address">41098 Hanover Street</p>
@@ -1308,7 +1308,7 @@
       <a href="https://search.searchcoachellavalleyhomes.com/search/detail/261197517?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=false&s[circle][lat]=33.760245&s[circle][lng]=-116.287728&s[circle][radius]=3&s[address]=78924%20La%20Rosa%20Wy%2C%20Palm%20Desert%2C%20CA%2092211&s[addressComponents][street]=78924%20La%20Rosa%20Way&s[addressComponents][city]=Palm%20Desert&s[addressComponents][state]=CA&s[addressComponents][zip]=92211" target="_blank" rel="noopener" class="property-card reveal reveal-delay-5">
         <img class="card-photo" src="images/78924-la-rosa-way.jpeg" alt="78924 La Rosa Way, Palm Desert" />
         <div class="card-gradient-overlay"></div>
-        <div class="card-bronze-hover"></div>
+        <div class="card-accent-hover"></div>
         <div class="card-content">
           <span class="card-badge">Active</span>
           <p class="card-address">78924 La Rosa Way</p>
@@ -1324,7 +1324,7 @@
       <a href="https://search.searchcoachellavalleyhomes.com/search?s[orderBy]=sourceCreationDate%2Cdesc&s[page]=1&s[mainInputSearch]=true&s[circle][lat]=33.930134&s[circle][lng]=-116.485205&s[circle][radius]=3&s[address]=16264%20Ave%20Rambla%2C%20Desert%20Hot%20Springs%2C%20CA%2092240&s[addressComponents][street]=16264%20Avenue%20Rambla&s[addressComponents][city]=Desert%20Hot%20Springs&s[addressComponents][state]=CA&s[addressComponents][zip]=92240" target="_blank" rel="noopener" class="property-card reveal reveal-delay-6">
         <img class="card-photo" src="images/16264-avenida-rambla.jpeg" alt="16264 Avenida Rambla, Desert Hot Springs" />
         <div class="card-gradient-overlay"></div>
-        <div class="card-bronze-hover"></div>
+        <div class="card-accent-hover"></div>
         <div class="card-content">
           <span class="card-badge">Active</span>
           <p class="card-address">16264 Avenida Rambla</p>
@@ -1539,8 +1539,8 @@
   <script>
   (function () {
     const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
-    const BRONZE       = '#B8975A';
-    const BRONZE_GLOW  = 'rgba(184,151,90,0.55)';
+    const ACCENT       = '#C8C8C8';
+    const BRONZE_GLOW  = 'rgba(200,200,200,0.55)';
 
     const COMMUNITIES = [
       {
@@ -1672,7 +1672,7 @@
           type: 'fill',
           source: c.id,
           paint: {
-            'fill-color': BRONZE,
+            'fill-color': ACCENT,
             'fill-opacity': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
@@ -1688,7 +1688,7 @@
           type: 'line',
           source: c.id,
           paint: {
-            'line-color': BRONZE,
+            'line-color': ACCENT,
             'line-width': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],

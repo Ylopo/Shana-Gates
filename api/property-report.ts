@@ -282,7 +282,7 @@ async function generatePdf(address: string, data: {
   const sans = useMarcellus ? 'Montserrat' : 'Helvetica'
 
   const DARK = '#131313'
-  const BRONZE = '#B8975A'
+  const ACCENT = '#C8C8C8'
   const CREAM = '#F2EDE4'
   const PAGE_BG = '#FAFAF8'
   const ROW_ALT = '#F5F0E8'
@@ -369,7 +369,7 @@ async function generatePdf(address: string, data: {
       if (currentPage === 1) return null
       return {
         columns: [
-          { text: 'PROPERTY ANALYSIS REPORT', font: serif, fontSize: 9, color: BRONZE, margin: [50, 20, 0, 0] },
+          { text: 'PROPERTY ANALYSIS REPORT', font: serif, fontSize: 9, color: ACCENT, margin: [50, 20, 0, 0] },
           { text: 'Shana Gates  ·  Craft & Bauer | Real Broker  ·  760.232.4054', font: sans, fontSize: 8, color: '#888', alignment: 'right', margin: [0, 20, 50, 0] },
         ],
       }
@@ -380,7 +380,7 @@ async function generatePdf(address: string, data: {
       return {
         columns: [
           { text: 'For educational purposes only. Not financial or investment advice.', font: sans, fontSize: 7, color: '#aaa', margin: [50, 10, 0, 0] },
-          { text: `Page ${currentPage} of ${pageCount}`, font: sans, fontSize: 8, color: BRONZE, alignment: 'right', margin: [0, 10, 50, 0] },
+          { text: `Page ${currentPage} of ${pageCount}`, font: sans, fontSize: 8, color: ACCENT, alignment: 'right', margin: [0, 10, 50, 0] },
         ],
       }
     },
@@ -401,13 +401,13 @@ async function generatePdf(address: string, data: {
         text: 'PROPERTY ANALYSIS REPORT',
         font: serif,
         fontSize: 11,
-        color: BRONZE,
+        color: ACCENT,
         letterSpacing: 3,
         alignment: 'center',
         margin: [0, data.propImageBase64 ? 0 : 32, 0, 4],
       },
       {
-        canvas: [{ type: 'line', x1: 160, y1: 0, x2: 352, y2: 0, lineWidth: 0.5, lineColor: BRONZE }],
+        canvas: [{ type: 'line', x1: 160, y1: 0, x2: 352, y2: 0, lineWidth: 0.5, lineColor: ACCENT }],
         margin: [0, 0, 0, 24],
       },
       {
@@ -434,7 +434,7 @@ async function generatePdf(address: string, data: {
             stack: [
               { text: String(data.overallScore), font: serif, fontSize: 56, color: scoreColor, alignment: 'center', margin: [0, 16, 0, 0] },
               { text: 'out of 100', font: sans, fontSize: 9, color: '#999', alignment: 'center', margin: [0, 0, 0, 8] },
-              { text: data.grade, font: serif, fontSize: 28, color: BRONZE, alignment: 'center', margin: [0, 0, 0, 4] },
+              { text: data.grade, font: serif, fontSize: 28, color: ACCENT, alignment: 'center', margin: [0, 0, 0, 4] },
               { text: data.signal.toUpperCase(), font: sans, fontSize: 10, color: scoreColor, alignment: 'center', bold: true, margin: [0, 0, 0, 16] },
             ],
             fillColor: '#1a1a1a',
@@ -444,7 +444,7 @@ async function generatePdf(address: string, data: {
         layout: {
           hLineWidth: () => 0,
           vLineWidth: () => 0,
-          hLineColor: () => BRONZE,
+          hLineColor: () => ACCENT,
           paddingLeft: () => 0,
           paddingRight: () => 0,
           paddingTop: () => 0,
@@ -468,7 +468,7 @@ async function generatePdf(address: string, data: {
         columns: [
           { text: '', width: '*' },
           {
-            canvas: [{ type: 'line', x1: 0, y1: 0, x2: shanaImageBase64 ? 236 : 172, y2: 0, lineWidth: 0.5, lineColor: BRONZE }],
+            canvas: [{ type: 'line', x1: 0, y1: 0, x2: shanaImageBase64 ? 236 : 172, y2: 0, lineWidth: 0.5, lineColor: ACCENT }],
             width: shanaImageBase64 ? 236 : 172,
           },
         ],
@@ -499,7 +499,7 @@ async function generatePdf(address: string, data: {
       // ── PAGE 2: PROPERTY OVERVIEW + COMPS ────────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'PROPERTY OVERVIEW', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 16] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 16] },
       {
         columns: [
           {
@@ -526,7 +526,7 @@ async function generatePdf(address: string, data: {
           { width: 16, text: '' },
           {
             stack: [
-              { text: 'COMP SUMMARY', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+              { text: 'COMP SUMMARY', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
               { text: `Avg Comp Price: ${comps.comp_avg_price || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 3] },
               { text: `Avg Comp $/SqFt: ${comps.comp_avg_price_sqft || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 3] },
               { text: `Valuation vs Comps: ${comps.over_under || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 12] },
@@ -560,11 +560,11 @@ async function generatePdf(address: string, data: {
       // ── PAGE 3: CASH FLOW ──────────────────────────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'CASH FLOW ANALYSIS', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 16] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 16] },
       {
         columns: [
           { stack: [
-            { text: 'KEY METRICS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+            { text: 'KEY METRICS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
             { text: `Cap Rate: ${rental.cap_rate || 'N/A'}`, font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 4] },
             { text: `Cash-on-Cash: ${rental.cash_on_cash || 'N/A'}`, font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 4] },
             { text: `GRM: ${rental.grm || 'N/A'}`, font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 4] },
@@ -576,7 +576,7 @@ async function generatePdf(address: string, data: {
           { width: 16, text: '' },
           {
             stack: [
-              { text: 'MONTHLY CASH FLOW PROJECTION', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+              { text: 'MONTHLY CASH FLOW PROJECTION', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
               {
                 table: {
                   widths: ['*', 'auto', 'auto'],
@@ -601,7 +601,7 @@ async function generatePdf(address: string, data: {
       // ── PAGE 4: NEIGHBORHOOD ───────────────────────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'NEIGHBORHOOD SCORECARD', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 20] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 20] },
       ...scoreBar(nbr.school_quality || 60, 'School Quality'),
       ...scoreBar(nbr.safety_score || 55, 'Safety & Crime'),
       ...scoreBar(nbr.walkability || 65, 'Walkability'),
@@ -611,11 +611,11 @@ async function generatePdf(address: string, data: {
         columns: [
           {
             stack: [
-              { text: 'SCHOOLS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 16, 0, 6] },
+              { text: 'SCHOOLS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 16, 0, 6] },
               { text: `Elementary: ${nbr.elementary_school || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 3] },
               { text: `Middle: ${nbr.middle_school || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 3] },
               { text: `High School: ${nbr.high_school || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 16] },
-              { text: 'AMENITIES', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+              { text: 'AMENITIES', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
               { text: nbr.amenities || 'N/A', font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 0] },
             ],
             width: '50%',
@@ -623,9 +623,9 @@ async function generatePdf(address: string, data: {
           { width: 16, text: '' },
           {
             stack: [
-              { text: 'GROWTH DRIVERS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 16, 0, 6] },
+              { text: 'GROWTH DRIVERS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 16, 0, 6] },
               { text: nbr.growth_drivers || 'N/A', font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 16] },
-              { text: 'SUMMARY', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+              { text: 'SUMMARY', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
               { text: nbr.summary || '', font: sans, fontSize: 9, color: '#444', italics: true },
             ],
             width: '*',
@@ -636,12 +636,12 @@ async function generatePdf(address: string, data: {
       // ── PAGE 5: INVESTMENT + MARKET ────────────────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'INVESTMENT ANALYSIS', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 16] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 16] },
       {
         columns: [
           {
             stack: [
-              { text: 'BEST STRATEGY', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 4] },
+              { text: 'BEST STRATEGY', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 4] },
               { text: inv.best_strategy || 'Buy & Hold', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 12] },
               { text: `Risk Level: ${inv.risk_level || 'Moderate'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 4] },
               { text: `1-Year ROI: ${inv.projected_roi_1yr || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 4] },
@@ -655,7 +655,7 @@ async function generatePdf(address: string, data: {
           { width: 16, text: '' },
           {
             stack: [
-              { text: 'STRATEGY COMPARISON', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+              { text: 'STRATEGY COMPARISON', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
               {
                 table: {
                   widths: ['*', 'auto', 'auto', '*'],
@@ -672,7 +672,7 @@ async function generatePdf(address: string, data: {
                 layout: { hLineWidth: () => 0.3, vLineWidth: () => 0, hLineColor: () => '#ddd', paddingLeft: () => 4, paddingRight: () => 4 },
                 margin: [0, 0, 0, 16],
               },
-              { text: 'MARKET CONDITIONS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+              { text: 'MARKET CONDITIONS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
               { text: `Market Type: ${mkt.market_type || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 3] },
               { text: `Median Price: ${mkt.median_price || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 3] },
               { text: `Days on Market: ${mkt.days_on_market || 'N/A'}`, font: sans, fontSize: 9, color: DARK, margin: [0, 0, 0, 3] },
@@ -689,7 +689,7 @@ async function generatePdf(address: string, data: {
       // ── PAGE 6: RECOMMENDATION ─────────────────────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'RECOMMENDATION', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 20] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 20] },
       {
         table: {
           widths: ['*'],
@@ -706,7 +706,7 @@ async function generatePdf(address: string, data: {
         margin: [0, 0, 0, 20],
       },
       { text: `${comps.summary || ''} ${rental.summary || ''} ${inv.summary || ''}`.trim(), font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 20] },
-      { text: 'SCENARIOS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+      { text: 'SCENARIOS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
       ...(inv.scenarios || []).map((s: any, i: number) => ({
         columns: [
           { text: s.scenario || '', font: sans, fontSize: 9, bold: true, color: s.scenario?.includes('Bull') ? GREEN : s.scenario?.includes('Bear') ? RED : DARK, width: 80 },
@@ -717,7 +717,7 @@ async function generatePdf(address: string, data: {
         fillColor: i % 2 === 1 ? ROW_ALT : '#FFFFFF',
       })),
       { text: '', margin: [0, 16, 0, 0] },
-      { text: 'NEXT STEPS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+      { text: 'NEXT STEPS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
       { text: `Contact Shana Gates for personalized guidance on this property.`, font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 4] },
       { text: `shana@craftbauer.com  ·  760.232.4054  ·  Craft & Bauer | Real Broker`, font: sans, fontSize: 9, color: '#666', margin: [0, 0, 0, 24] },
       { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 0.5, lineColor: '#ddd' }], margin: [0, 0, 0, 12] },

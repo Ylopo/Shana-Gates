@@ -8,7 +8,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bronze: #B8975A;
+      --bronze: #C8C8C8;
       --bg:     #0a0a0a;
       --surf:   #141414;
       --surf2:  #1c1c1c;
@@ -82,7 +82,7 @@
       font-family: var(--font); padding: 2px 0; width: 100%;
       transition: border-color 0.15s;
     }
-    .title-input:focus { outline: none; border-bottom-color: rgba(184,151,90,0.5); }
+    .title-input:focus { outline: none; border-bottom-color: rgba(200,200,200,0.5); }
     .title-input:hover { border-bottom-color: var(--border); }
     .suggest-btn {
       background: none; border: 1px solid var(--border); border-radius: 7px;
@@ -91,7 +91,7 @@
       transition: border-color 0.15s, color 0.15s; white-space: nowrap;
       display: inline-flex; align-items: center; gap: 5px;
     }
-    .suggest-btn:hover:not(:disabled) { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .suggest-btn:hover:not(:disabled) { border-color: rgba(200,200,200,0.4); color: var(--text); }
     .suggest-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .title-suggestions {
       display: flex; flex-direction: column; gap: 6px; margin-top: 10px;
@@ -102,7 +102,7 @@
       text-align: left; font-family: var(--font); transition: border-color 0.15s, color 0.15s;
       line-height: 1.4;
     }
-    .suggestion-pill:hover { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .suggestion-pill:hover { border-color: rgba(200,200,200,0.4); color: var(--text); }
     .suggestion-pill.applied { border-color: var(--bronze); color: var(--text); }
     .post-excerpt { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 12px; margin-top: 10px; }
     .source-link { font-size: 12px; color: var(--bronze); text-decoration: none; }
@@ -117,7 +117,7 @@
       font-family: var(--font); transition: border-color 0.15s, color 0.15s;
       display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
     }
-    .gen-btn:hover:not(:disabled) { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .gen-btn:hover:not(:disabled) { border-color: rgba(200,200,200,0.4); color: var(--text); }
     .gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     textarea {
       width: 100%; background: var(--surf2); border: 1px solid var(--border);
@@ -125,7 +125,7 @@
       font-family: var(--font); font-size: 14px; line-height: 1.6;
       resize: vertical; min-height: 110px; transition: border-color 0.15s;
     }
-    textarea:focus { outline: none; border-color: rgba(184,151,90,0.4); }
+    textarea:focus { outline: none; border-color: rgba(200,200,200,0.4); }
     .url-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
 
     /* ── Thumbnail builder ── */
@@ -142,7 +142,7 @@
       font-family: var(--font); transition: border-color 0.15s, color 0.15s;
       display: inline-flex; align-items: center; gap: 6px;
     }
-    .copy-btn:hover { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .copy-btn:hover { border-color: rgba(200,200,200,0.4); color: var(--text); }
     .copy-hint { font-size: 12px; color: var(--muted); }
 
     /* ── Right column: Thumbnail preview ── */
@@ -162,7 +162,7 @@
       font-size: 13px; color: var(--muted); cursor: pointer;
       transition: border-color 0.15s, color 0.15s;
     }
-    .upload-label:hover { border-color: rgba(184,151,90,0.4); color: var(--text); }
+    .upload-label:hover { border-color: rgba(200,200,200,0.4); color: var(--text); }
     .upload-input { display: none; }
     .upload-hint { font-size: 11px; color: var(--muted); text-align: center; margin-top: 6px; }
 

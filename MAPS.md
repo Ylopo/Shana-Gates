@@ -39,7 +39,7 @@ The public token is safe to commit and ship in client-side code.
 
 | Element | Color | Usage |
 |---|---|---|
-| Bronze | `#B8975A` | City boundaries, Hwy 111 highlight, POI dots, hover fill |
+| Light Gray | `#C8C8C8` | City boundaries, Hwy 111 highlight, POI dots, hover fill |
 | Blue | `#7dbfff` / `#5ba4ff` | I-10 freeway highlight |
 | Glow opacity | `0.18–0.25` | Blur layer under road lines |
 | Fill at rest | `0.07–0.10` opacity | City polygon fill (subtle tint) |
@@ -71,8 +71,8 @@ Line layer: `#7dbfff`, width 2, opacity 0.70–0.75
  [-116.301,33.708],[-116.243,33.720],[-116.175,33.705]]
 ```
 
-Glow layer: `#B8975A` (bronze), width 5–6, opacity 0.18–0.20, blur 4–5
-Line layer: `#B8975A` (bronze), width 2, opacity 0.60–0.65
+Glow layer: `#C8C8C8` (light gray), width 5–6, opacity 0.18–0.20, blur 4–5
+Line layer: `#C8C8C8` (light gray), width 2, opacity 0.60–0.65
 
 ---
 
@@ -134,7 +134,7 @@ The lifestyle map also includes a `NavigationControl` (pitch + zoom) in the top-
 ### Layers Added to Every Community Map
 
 1. `cv-i10-glow` / `cv-i10-line` — I-10 freeway (blue)
-2. `cv-hwy111-glow` / `cv-hwy111-line` — Hwy 111 (bronze)
+2. `cv-hwy111-glow` / `cv-hwy111-line` — Hwy 111 (light gray)
 3. `cv-boundary-fill` / `cv-boundary-line` — city boundary polygon
 4. POI markers — `.cv-map-poi` elements with emoji icons + dark popups
 5. Corner label (lifestyle map only) — `.cv-map-label` bottom-left with city name
@@ -143,7 +143,7 @@ The lifestyle map also includes a `NavigationControl` (pitch + zoom) in the top-
 
 | Class | Purpose |
 |---|---|
-| `.cv-map-poi` | POI marker dot — 32px circle, bronze border, emoji icon |
+| `.cv-map-poi` | POI marker dot — 32px circle, light gray border, emoji icon |
 | `.cv-map-label` | Corner label overlay — glassmorphism dark background |
 | `.cv-poi-popup .mapboxgl-popup-content` | Dark glassmorphism popup override |
 | `.cv-poi-name` / `.cv-poi-desc` | Popup text styles |
@@ -189,9 +189,9 @@ map.fitBounds([[-116.68,33.56],[-116.08,34.02]], { padding: 60, duration: 0 })
 ### Layers
 
 1. `val-i10-glow` / `val-i10-line` — I-10 (blue, same coords as above)
-2. `val-hwy111-glow` / `val-hwy111-line` — Hwy 111 (bronze, same coords)
+2. `val-hwy111-glow` / `val-hwy111-line` — Hwy 111 (light gray, same coords)
 3. Per city: `[id]-fill` + `[id]-line` — boundary polygon with hover state
-4. City label markers (`.valley-city-label`) with bronze dot + name text
+4. City label markers (`.valley-city-label`) with light gray dot + name text
 
 ### Interactive Behavior
 
@@ -204,7 +204,7 @@ map.fitBounds([[-116.68,33.56],[-116.08,34.02]], { padding: 60, duration: 0 })
 
 A small `.map-road-legend` overlay in the bottom-left labels the two road highlights:
 - Blue line — I-10
-- Bronze line — Hwy 111
+- Light Gray line — Hwy 111
 
 ---
 
@@ -290,7 +290,7 @@ Things worth building as the site grows:
   Jacinto Mountains rising dramatically behind Palm Springs
 - **3D building pitch on community maps** — the Standard style already renders 3D
   buildings; increasing pitch on the lifestyle map to 60° would make them more dramatic
-- **Custom map style** — a Mapbox Studio style tuned to the site's bronze/dark palette
+- **Custom map style** — a Mapbox Studio style tuned to the site's light gray/dark palette
   (custom road colors, custom label fonts matching the site's Jost/Cormorant combo)
 - **Sold listings layer** — toggle showing recent sold transactions as dots on the
   lifestyle map (sourced from a Sanity dataset or a nightly data pull)

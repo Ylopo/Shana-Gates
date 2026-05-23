@@ -199,7 +199,7 @@ Fonts must be passed as Node.js `Buffer` objects (from `fs.readFileSync()`), **n
 ### Brand colors (Shana Gates version)
 ```typescript
 DARK   = '#131313'   // page background (cover), table headers
-BRONZE = '#B8975A'   // section rules, accent labels, page numbers
+ACCENT = '#C8C8C8'  // light gray   // section rules, accent labels, page numbers
 CREAM  = '#F2EDE4'   // body text on dark backgrounds
 PAGE_BG = '#FAFAF8'  // interior page background (default white)
 ROW_ALT = '#F5F0E8'  // alternating table row fill
@@ -222,7 +222,7 @@ background: (currentPage, pageSize) => {
 
 Cover page sections (top → bottom):
 1. **Property photo** (if Tavily returns one) — `fit: [512, 172]`, centered
-2. "PROPERTY ANALYSIS REPORT" — Marcellus serif, bronze, letter-spaced
+2. "PROPERTY ANALYSIS REPORT" — Marcellus serif, light gray, letter-spaced
 3. Horizontal rule
 4. Address — large serif, cream
 5. Date
@@ -246,7 +246,7 @@ Header on pages 2–6 (columns only — no canvas):
 header: (currentPage) => {
   if (currentPage === 1) return null
   return { columns: [
-    { text: 'PROPERTY ANALYSIS REPORT', font: serif, fontSize: 9, color: BRONZE, margin: [50, 20, 0, 0] },
+    { text: 'PROPERTY ANALYSIS REPORT', font: serif, fontSize: 9, color: ACCENT, margin: [50, 20, 0, 0] },
     { text: 'Agent Name  ·  Brokerage  ·  Phone', font: sans, fontSize: 8, color: '#888', alignment: 'right', margin: [0, 20, 50, 0] },
   ]}
 }
@@ -302,7 +302,7 @@ No auth, no Redis, no Sanity — this feature is entirely self-contained.
 Update these constants in `api/property-report.ts`:
 ```typescript
 const DARK   = '#131313'   // cover page background
-const BRONZE = '#B8975A'   // accent color (rules, labels) — replace with brand accent
+const ACCENT = '#C8C8C8'  // light gray   // accent color (rules, labels) — replace with brand accent
 const CREAM  = '#F2EDE4'   // light text on dark bg
 ```
 

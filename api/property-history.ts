@@ -290,7 +290,7 @@ async function generateHistoryPdf(address: string, data: {
   const sans = useMarcellus ? 'Montserrat' : 'Helvetica'
 
   const DARK = '#131313'
-  const BRONZE = '#B8975A'
+  const ACCENT = '#C8C8C8'
   const CREAM = '#F2EDE4'
   const ROW_ALT = '#F5F0E8'
 
@@ -363,7 +363,7 @@ async function generateHistoryPdf(address: string, data: {
       if (currentPage === 1) return null
       return {
         columns: [
-          { text: 'PROPERTY HISTORY REPORT', font: serif, fontSize: 9, color: BRONZE, margin: [50, 20, 0, 0] },
+          { text: 'PROPERTY HISTORY REPORT', font: serif, fontSize: 9, color: ACCENT, margin: [50, 20, 0, 0] },
           { text: 'Shana Gates  ·  Craft & Bauer | Real Broker  ·  760.232.4054', font: sans, fontSize: 8, color: '#888', alignment: 'right', margin: [0, 20, 50, 0] },
         ],
       }
@@ -374,7 +374,7 @@ async function generateHistoryPdf(address: string, data: {
       return {
         columns: [
           { text: 'For informational purposes only. Compiled from public sources — accuracy not guaranteed.', font: sans, fontSize: 7, color: '#aaa', margin: [50, 10, 0, 0] },
-          { text: `Page ${currentPage} of ${pageCount}`, font: sans, fontSize: 8, color: BRONZE, alignment: 'right', margin: [0, 10, 50, 0] },
+          { text: `Page ${currentPage} of ${pageCount}`, font: sans, fontSize: 8, color: ACCENT, alignment: 'right', margin: [0, 10, 50, 0] },
         ],
       }
     },
@@ -392,13 +392,13 @@ async function generateHistoryPdf(address: string, data: {
         text: 'PROPERTY HISTORY REPORT',
         font: serif,
         fontSize: 11,
-        color: BRONZE,
+        color: ACCENT,
         letterSpacing: 3,
         alignment: 'center',
         margin: [0, data.propImageBase64 ? 0 : 32, 0, 4],
       },
       {
-        canvas: [{ type: 'line', x1: 160, y1: 0, x2: 352, y2: 0, lineWidth: 0.5, lineColor: BRONZE }],
+        canvas: [{ type: 'line', x1: 160, y1: 0, x2: 352, y2: 0, lineWidth: 0.5, lineColor: ACCENT }],
         margin: [0, 0, 0, 24],
       },
       {
@@ -424,7 +424,7 @@ async function generateHistoryPdf(address: string, data: {
           widths: ['*'],
           body: [[{
             stack: [
-              { text: 'AT A GLANCE', font: sans, fontSize: 8, color: BRONZE, bold: true, letterSpacing: 2, alignment: 'center', margin: [0, 20, 0, 14] },
+              { text: 'AT A GLANCE', font: sans, fontSize: 8, color: ACCENT, bold: true, letterSpacing: 2, alignment: 'center', margin: [0, 20, 0, 14] },
               {
                 columns: [
                   { stack: [
@@ -459,7 +459,7 @@ async function generateHistoryPdf(address: string, data: {
       {
         columns: [
           { text: '', width: '*' },
-          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: shanaImageBase64 ? 236 : 172, y2: 0, lineWidth: 0.5, lineColor: BRONZE }], width: shanaImageBase64 ? 236 : 172 },
+          { canvas: [{ type: 'line', x1: 0, y1: 0, x2: shanaImageBase64 ? 236 : 172, y2: 0, lineWidth: 0.5, lineColor: ACCENT }], width: shanaImageBase64 ? 236 : 172 },
         ],
         margin: [0, 0, 0, 10],
       },
@@ -483,7 +483,7 @@ async function generateHistoryPdf(address: string, data: {
       // ── PAGE 2: CONSTRUCTION & ARCHITECTURE ───────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'CONSTRUCTION & ARCHITECTURE', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 20] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 20] },
 
       {
         table: {
@@ -502,16 +502,16 @@ async function generateHistoryPdf(address: string, data: {
         margin: [0, 0, 0, 20],
       },
 
-      { text: 'ORIGINAL FEATURES', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'ORIGINAL FEATURES', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       { text: c.original_features || 'No original features documented in available records.', font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 18] },
 
-      { text: 'NARRATIVE', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'NARRATIVE', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       { text: c.summary || '', font: sans, fontSize: 10, color: '#444', italics: true, lineHeight: 1.5 },
 
       // ── PAGE 3: OWNERSHIP TIMELINE ─────────────────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'OWNERSHIP TIMELINE', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 20] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 20] },
 
       {
         columns: [
@@ -531,7 +531,7 @@ async function generateHistoryPdf(address: string, data: {
         margin: [0, 0, 0, 20],
       },
 
-      { text: 'SALES HISTORY', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+      { text: 'SALES HISTORY', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
       {
         table: {
           widths: ['auto', 'auto', '*', 'auto'],
@@ -549,15 +549,15 @@ async function generateHistoryPdf(address: string, data: {
         margin: [0, 0, 0, 20],
       },
 
-      { text: 'NARRATIVE', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'NARRATIVE', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       { text: o.summary || '', font: sans, fontSize: 10, color: '#444', italics: true, lineHeight: 1.5 },
 
       // ── PAGE 4: PERMITS & REMODELS ─────────────────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'PERMITS & REMODELS', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 20] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 20] },
 
-      { text: 'PERMIT HISTORY', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+      { text: 'PERMIT HISTORY', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
       {
         table: {
           widths: ['auto', '*', 'auto'],
@@ -574,22 +574,22 @@ async function generateHistoryPdf(address: string, data: {
         margin: [0, 0, 0, 20],
       },
 
-      { text: 'MAJOR REMODEL YEARS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'MAJOR REMODEL YEARS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       { text: (p.major_remodel_years || []).length > 0 ? (p.major_remodel_years || []).join(' · ') : 'None documented in public records.', font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 16] },
 
-      { text: 'ADDITIONS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'ADDITIONS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       { text: p.additions || 'None documented in public records.', font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 18] },
 
-      { text: 'NARRATIVE', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'NARRATIVE', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       { text: p.summary || '', font: sans, fontSize: 10, color: '#444', italics: true, lineHeight: 1.5 },
 
       // ── PAGE 5: PUBLIC RECORDS & NOTABLE EVENTS ────────────────────────────
       { text: '', pageBreak: 'before' },
       { text: 'PUBLIC RECORDS & NOTABLE EVENTS', font: serif, fontSize: 14, color: DARK, margin: [0, 0, 0, 4] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: BRONZE }], margin: [0, 0, 0, 20] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 1, lineColor: ACCENT }], margin: [0, 0, 0, 20] },
 
       // Short-term rental
-      { text: 'SHORT-TERM RENTAL HISTORY', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'SHORT-TERM RENTAL HISTORY', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       {
         columns: [
           { text: r.str_history?.listed_as_str === true ? 'Yes' : r.str_history?.listed_as_str === false ? 'No' : 'No records found', font: sans, fontSize: 11, bold: true, color: r.str_history?.listed_as_str ? '#1A444C' : DARK, width: 100 },
@@ -600,7 +600,7 @@ async function generateHistoryPdf(address: string, data: {
       { text: r.str_history?.details || '', font: sans, fontSize: 9, color: '#666', italics: true, margin: [0, 0, 0, 16] },
 
       // Historic designation
-      { text: 'HISTORIC DESIGNATION', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'HISTORIC DESIGNATION', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       {
         columns: [
           { text: r.historic_designation?.is_designated === true ? 'Designated' : r.historic_designation?.is_designated === false ? 'Not designated' : 'No records found', font: sans, fontSize: 11, bold: true, color: r.historic_designation?.is_designated ? '#1A444C' : DARK, width: 140 },
@@ -611,7 +611,7 @@ async function generateHistoryPdf(address: string, data: {
       { text: r.historic_designation?.year_designated ? `Designated: ${r.historic_designation.year_designated}` : '', font: sans, fontSize: 9, color: '#666', italics: true, margin: [0, 0, 0, 16] },
 
       // Notable residents
-      { text: 'NOTABLE RESIDENTS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+      { text: 'NOTABLE RESIDENTS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
       ...(residentRows.length > 0 ? [{
         table: {
           widths: ['auto', 'auto', '*'],
@@ -629,7 +629,7 @@ async function generateHistoryPdf(address: string, data: {
       }] : [{ text: 'No notable residents identified in public records.', font: sans, fontSize: 10, color: '#777', italics: true, margin: [0, 0, 0, 16] }]),
 
       // Notable events
-      { text: 'NOTABLE EVENTS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 8] },
+      { text: 'NOTABLE EVENTS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 8] },
       ...(eventRows.length > 0 ? [{
         table: {
           widths: ['auto', 'auto', '*', 'auto'],
@@ -648,12 +648,12 @@ async function generateHistoryPdf(address: string, data: {
       }] : [{ text: 'No notable events identified in public records.', font: sans, fontSize: 10, color: '#777', italics: true, margin: [0, 0, 0, 16] }]),
 
       // Summary
-      { text: 'SUMMARY', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 6, 0, 6] },
+      { text: 'SUMMARY', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 6, 0, 6] },
       { text: r.summary || '', font: sans, fontSize: 10, color: '#444', italics: true, lineHeight: 1.5, margin: [0, 0, 0, 20] },
 
       // Disclaimer block
       { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 0.5, lineColor: '#ddd' }], margin: [0, 0, 0, 12] },
-      { text: 'IMPORTANT DISCLAIMERS', font: sans, fontSize: 8, color: BRONZE, bold: true, margin: [0, 0, 0, 6] },
+      { text: 'IMPORTANT DISCLAIMERS', font: sans, fontSize: 8, color: ACCENT, bold: true, margin: [0, 0, 0, 6] },
       {
         text: 'This report compiles information from publicly available sources including news media, real estate listings, and public records databases. Accuracy is not guaranteed. Absence of records does not mean an event did not occur. California Civil Code §1710.2 limits required seller disclosure of deaths at a property to the past three years and prohibits disclosure of deaths related to HIV/AIDS. The buyer is responsible for independently verifying any property history that materially affects a purchase decision. This document does not constitute legal, financial, or investment advice.\n\nNothing in this report should be construed as a basis for any housing decision that violates the Fair Housing Act or California Fair Employment and Housing Act. Shana Gates, Craft & Bauer | Real Broker, CalDRE #02224632.',
         font: sans,

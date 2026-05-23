@@ -135,19 +135,23 @@ const CITY_VISUAL_ANCHORS: Record<string, string> = {
 
 // ── Graphic accent: sentiment overrides category ──────────────────────────
 
+// Brand: NEVER use bronze, gold, copper, amber, or any warm metallic tone.
+// Accent palette is light gray (#C8C8C8), bright turquoise (#4ECDC4), C&B teal
+// (#1A4447), or electric blue. Sentiment "down" uses a desaturated cool red.
+
 const SENTIMENT_ACCENT: Record<'up' | 'down', string> = {
-  up: 'a bold upward-pointing arrow in electric blue or teal with a subtle glow — modern, sharp, optimistic',
-  down: 'a bold downward-pointing arrow in warm amber/orange — clean and sharp',
+  up: 'a bold upward-pointing arrow in electric blue or bright turquoise with a subtle glow — modern, sharp, optimistic',
+  down: 'a bold downward-pointing arrow in a desaturated cool red — clean and sharp',
 }
 
 const CATEGORY_ACCENT: Record<string, string> = {
   'market-update': 'a bold upward-pointing arrow in electric blue, modern and sharp',
-  'buying-tips': 'a stylized gold house key or house icon with a subtle sparkle',
-  'selling-tips': 'a bold "SOLD" ribbon or gold upward price arrow',
-  'community-spotlight': 'a glowing location pin or star icon in bronze/gold',
-  'investment': 'a gold coin stack or upward trend chart line in gold',
+  'buying-tips': 'a stylized house key or house icon in light gray with a subtle sparkle',
+  'selling-tips': 'a bold "SOLD" ribbon in light gray, or an upward price arrow in electric blue',
+  'community-spotlight': 'a glowing location pin or star icon in bright turquoise',
+  'investment': 'a minimalist upward trend chart line in electric blue, or a stack of light-gray chips',
   'news': 'a small bold accent bar and upward arrow in electric blue',
-  'local-area': 'a sun icon or palm tree silhouette in warm gold',
+  'local-area': 'a sun icon or palm tree silhouette in light gray against a dark sky',
   'market-insight': 'a minimalist upward trend line or bar chart in electric blue',
 }
 

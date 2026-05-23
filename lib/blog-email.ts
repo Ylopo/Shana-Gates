@@ -50,7 +50,7 @@ export async function sendDailyDigest(date: string, articles: ScoredArticle[]): 
               </div>
               <div style="color:#fff; font-size:15px; font-weight:600; margin-bottom:6px;">${a.title}</div>
               <div style="color:#aaa; font-size:13px; line-height:1.5; margin-bottom:6px;">${a.summary}</div>
-              <div style="color:#B8975A; font-size:13px; font-style:italic;">${a.whyItMatters}</div>
+              <div style="color:#C8C8C8; font-size:13px; font-style:italic;">${a.whyItMatters}</div>
               <div style="margin-top:6px;"><a href="${a.url}" style="color:#888; font-size:12px;">${a.source}</a></div>
             </div>
           </div>
@@ -67,7 +67,7 @@ export async function sendDailyDigest(date: string, articles: ScoredArticle[]): 
   <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
 
     <div style="text-align:center; margin-bottom:32px;">
-      <div style="color:#B8975A; font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Shana Gates · Craft &amp; Bauer</div>
+      <div style="color:#C8C8C8; font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Shana Gates · Craft &amp; Bauer</div>
       <h1 style="color:#fff; font-size:22px; font-weight:700; margin:0 0 8px;">Daily Blog Digest</h1>
       <p style="color:#888; font-size:14px; margin:0;">${new Date(date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
     </div>
@@ -82,7 +82,7 @@ export async function sendDailyDigest(date: string, articles: ScoredArticle[]): 
     </div>
 
     <div style="text-align:center;">
-      <a href="${pickerUrl}" style="display:inline-block; background:#B8975A; color:#000; font-size:15px; font-weight:700; padding:16px 40px; border-radius:8px; text-decoration:none;">
+      <a href="${pickerUrl}" style="display:inline-block; background:#C8C8C8; color:#000; font-size:15px; font-weight:700; padding:16px 40px; border-radius:8px; text-decoration:none;">
         Pick Articles to Publish →
       </a>
       <p style="color:#555; font-size:12px; margin-top:16px;">Link expires after 48 hours. No articles? Check back tomorrow.</p>
@@ -156,7 +156,7 @@ export async function sendWeeklyDigest(topics: WeeklyTopic[]): Promise<void> {
   <div style="max-width:620px; margin:0 auto; padding:40px 20px;">
 
     <div style="text-align:center; margin-bottom:32px;">
-      <div style="color:#B8975A; font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Shana Gates · Craft &amp; Bauer</div>
+      <div style="color:#C8C8C8; font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Shana Gates · Craft &amp; Bauer</div>
       <h1 style="color:#fff; font-size:22px; font-weight:700; margin:0 0 8px;">Your Weekly Blog Topics</h1>
       <p style="color:#888; font-size:14px; margin:0;">Pick which posts you'd like to write and publish this week.</p>
     </div>
@@ -166,7 +166,7 @@ export async function sendWeeklyDigest(topics: WeeklyTopic[]): Promise<void> {
     </div>
 
     <div style="text-align:center;">
-      <a href="${pickerUrl}" style="display:inline-block; background:#B8975A; color:#000; font-size:15px; font-weight:700; padding:16px 40px; border-radius:8px; text-decoration:none;">
+      <a href="${pickerUrl}" style="display:inline-block; background:#C8C8C8; color:#000; font-size:15px; font-weight:700; padding:16px 40px; border-radius:8px; text-decoration:none;">
         Review &amp; Publish Your Weekly Posts →
       </a>
       <p style="color:#555; font-size:12px; margin-top:16px;">Topics expire after 72 hours. Claude will write the full post once you select.</p>
@@ -215,12 +215,12 @@ export async function sendIdeaDigest(ideas: IdeaCandidate[]): Promise<void> {
       <td style="padding:16px; border-bottom:1px solid #222;">
         <div style="display:flex; align-items:flex-start; gap:12px;">
           <div style="min-width:44px; text-align:center;">
-            <div style="font-size:20px; font-weight:800; color:${isTopPick ? '#B8975A' : '#fff'};">${idea.score.total}</div>
+            <div style="font-size:20px; font-weight:800; color:${isTopPick ? '#C8C8C8' : '#fff'};">${idea.score.total}</div>
             <div style="font-size:10px; color:#555; letter-spacing:0.05em;">/ 100</div>
           </div>
           <div style="flex:1;">
             <div style="margin-bottom:6px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-              ${isTopPick ? '<span style="background:#B8975A22; color:#B8975A; font-size:10px; padding:2px 7px; border-radius:20px; font-weight:700;">★ TOP PICK</span>' : ''}
+              ${isTopPick ? '<span style="background:#C8C8C822; color:#C8C8C8; font-size:10px; padding:2px 7px; border-radius:20px; font-weight:700;">★ TOP PICK</span>' : ''}
               <span style="background:${catColor}22; color:${catColor}; font-size:10px; padding:2px 7px; border-radius:20px; text-transform:uppercase; letter-spacing:0.05em;">${idea.category.replace('-', ' ')}</span>
               <span style="background:${urgColor}22; color:${urgColor}; font-size:10px; padding:2px 7px; border-radius:20px;">${idea.urgency}</span>
             </div>
@@ -241,7 +241,7 @@ export async function sendIdeaDigest(ideas: IdeaCandidate[]): Promise<void> {
   <div style="max-width:600px; margin:0 auto; padding:40px 20px;">
 
     <div style="text-align:center; margin-bottom:32px;">
-      <div style="color:#B8975A; font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Shana Gates · Craft &amp; Bauer</div>
+      <div style="color:#C8C8C8; font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px;">Shana Gates · Craft &amp; Bauer</div>
       <h1 style="color:#fff; font-size:22px; font-weight:700; margin:0 0 8px;">New Blog Ideas Ready</h1>
       <p style="color:#888; font-size:14px; margin:0;">${ideas.length} ideas scored and queued — approve the ones you want written.</p>
     </div>
@@ -253,7 +253,7 @@ export async function sendIdeaDigest(ideas: IdeaCandidate[]): Promise<void> {
     </div>
 
     <div style="text-align:center;">
-      <a href="${reviewUrl}" style="display:inline-block; background:#B8975A; color:#000; font-size:15px; font-weight:700; padding:16px 40px; border-radius:8px; text-decoration:none;">
+      <a href="${reviewUrl}" style="display:inline-block; background:#C8C8C8; color:#000; font-size:15px; font-weight:700; padding:16px 40px; border-radius:8px; text-decoration:none;">
         Review &amp; Approve Ideas →
       </a>
       <p style="color:#555; font-size:12px; margin-top:16px;">Click Approve on any idea, then Write &amp; Publish to generate the full post instantly.</p>
