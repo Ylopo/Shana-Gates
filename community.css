@@ -4201,7 +4201,7 @@ a.btg-card { text-decoration: none; color: inherit; }
 }
 .valley-loc-title em {
   font-style: italic;
-  color: var(--bronze);
+  color: #4ECDC4;
 }
 .valley-loc-desc {
   font-family: var(--sans);
