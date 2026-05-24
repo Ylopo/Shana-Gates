@@ -349,6 +349,42 @@
       min-height: 56.25vw;
       pointer-events: none;
       border: none;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    #hero.is-ready .hero-video-wrapper iframe { opacity: 1; }
+
+    /* Soft pulsing glow shown while the Vimeo iframe loads.
+       Fades out smoothly once the iframe is ready (~400ms after load). */
+    .hero-loader {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 1.2s ease;
+    }
+
+    .hero-loader::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 55%, rgba(78,205,196,0.085) 0%, transparent 55%),
+        radial-gradient(ellipse 35% 22% at 50% 55%, rgba(242,237,228,0.05) 0%, transparent 60%);
+      animation: heroLoaderPulse 2.6s ease-in-out infinite;
+    }
+
+    #hero.is-ready .hero-loader { opacity: 0; }
+
+    @keyframes heroLoaderPulse {
+      0%, 100% { opacity: 0.55; transform: scale(0.96); }
+      50%      { opacity: 1;    transform: scale(1.04); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-loader::before { animation: none; opacity: 0.85; }
+      .hero-video-wrapper iframe { transition: none; }
     }
 
     .hero-overlay {
@@ -2116,7 +2152,9 @@
   ============================================================ -->
   <section id="hero">
     <div class="hero-video-wrapper">
+      <div class="hero-loader" aria-hidden="true"></div>
       <iframe
+        id="hero-video"
         src="https://player.vimeo.com/video/1184153512?background=1&autoplay=1&loop=1&muted=1&autopause=0&quality=1080p"
         allow="autoplay; fullscreen"
         title="Coachella Valley Luxury Real Estate">
@@ -3338,6 +3376,25 @@
     // Randomly rotate Shana's photo on each page load
     var shanaPhotos = ['images/shana-lifestyle.JPG', 'images/Shana Gates Green.jpeg'];
     document.getElementById('shana-photo').src = shanaPhotos[Math.floor(Math.random() * shanaPhotos.length)];
+  </script>
+
+  <script>
+    // Hero video loader: fade out the pulsing glow + fade the iframe in
+    // once Vimeo's iframe document has loaded. ~400ms buffer lets the first
+    // video frame paint before we cross-fade. Fallback at 5s in case the
+    // load event never fires.
+    (function () {
+      var hero = document.getElementById('hero');
+      var iframe = document.getElementById('hero-video');
+      if (!hero || !iframe) return;
+      function ready() { hero.classList.add('is-ready'); }
+      if (iframe.complete) {
+        setTimeout(ready, 400);
+      } else {
+        iframe.addEventListener('load', function () { setTimeout(ready, 400); });
+      }
+      setTimeout(ready, 5000);
+    })();
   </script>
 
 <script src="/ylopo-tracking.js" defer></script>
