@@ -198,8 +198,15 @@
 
     .aeo-page { background: #0A0A0A; color: #F2EDE4; }
 
-    /* Breadcrumb nav */
-    .aeo-breadcrumb {
+    /* Breadcrumb nav — reset community.css's global `nav { position:fixed }`
+       so this nav stays in the document flow below the site nav. */
+    nav.aeo-breadcrumb {
+      position: static;
+      display: block;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-bottom: none;
       max-width: 1180px;
       margin: 0 auto;
       padding: 110px 36px 0;
