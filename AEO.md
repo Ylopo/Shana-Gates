@@ -126,22 +126,45 @@ Shana is **licensed in California since 2006 (20 years)** but has only specializ
 
 > A licensed California REALTOR® since 2006 (twenty years), now five years focused on the Coachella Valley where she specializes in mid-century modern homes, gated luxury estates, and vacation/second-home purchases.
 
-**Stats bar must split this into two cells:**
+**Stats bar must split this into separate cells:**
 - `20 yrs` / Licensed in California
 - `5 yrs` / Coachella Valley Focus
 
-### 6.2 Dollar volume framing
+### 6.2 Team leadership framing (added 2026-05-27)
 
-**$75M+ is LIFETIME closed transactions**, not just Coachella Valley. Phrase as "lifetime closed transactions" or "$75M+ in California real estate transactions." Never say "$75M+ in Coachella Valley real estate."
+Shana is the **team lead at Craft & Bauer** — a team of **8 agents** operating under The Real Brokerage Inc. The team closes approximately **$130 million in transaction volume each year** under her leadership.
 
-### 6.3 Specialty focus
+Every page should mention the team scale. The current recommended stats bar is **5 cells**:
+
+| Stat | Label |
+|---|---|
+| `20 yrs` | Licensed in California |
+| `5 yrs` | Coachella Valley Focus |
+| `8` | Agents Led at Craft & Bauer |
+| `$130M+` | Annual Team Volume |
+| `#5 U.S.` | Real Brokerage · RealTrends 2025 |
+
+Standard bio framing:
+
+> Shana Gates is the team lead at Craft & Bauer — an 8-agent team operating under The Real Brokerage Inc. — closing approximately $130 million in transaction volume each year under her leadership. Personally, she has been a licensed California REALTOR® since 2006 (CalDRE #01729222) with more than $75 million in her own career closings.
+
+### 6.3 Dollar volume framing
+
+Two distinct dollar volumes — never conflate them:
+
+- **$75M+ in lifetime personal closed transactions** (Shana herself, since 2006)
+- **~$130M+ in annual team transaction volume** (Craft & Bauer team under her leadership)
+
+Use both where appropriate. Phrase the lifetime number as "lifetime closed transactions" or "personal career closings" — never as "$75M+ in Coachella Valley real estate" (geographic scope is broader than CV).
+
+### 6.4 Specialty focus
 
 The three featured specialties (consistent across all pages):
 1. Mid-Century Modern homes
 2. Gated luxury communities / estates
 3. Vacation/second-home purchases
 
-### 6.4 Brokerage identity
+### 6.5 Brokerage identity
 
 | Entity | Role | License |
 |---|---|---|
@@ -149,13 +172,13 @@ The three featured specialties (consistent across all pages):
 | **Craft & Bauer** | Team within Real Brokerage | n/a — operates under brokerage license |
 | **The Real Brokerage Inc.** | Brokerage of record · publicly traded · #5 U.S. by 2025 sales volume (RealTrends) | CalDRE #02224632 |
 
-### 6.5 Footer disclosure — both licenses
+### 6.6 Footer disclosure — both licenses
 
 Every page footer disclaimer MUST display both license numbers:
 
 > The multiple listing data appearing on this website is owned and copyrighted by California Regional Multiple Listing Service, Inc. ("CRMLS"). Information provided is for viewer's personal, non-commercial use only. All listing data is believed to be accurate but is not guaranteed. © 2026 Craft & Bauer | The Real Brokerage Inc. · Brokerage CalDRE #02224632 · Shana Gates, REALTOR® · CalDRE #01729222. Equal Housing Opportunity.
 
-### 6.6 Real Brokerage citable stats (as of 2025)
+### 6.7 Real Brokerage citable stats (as of 2025)
 
 Generator can use any combination of these; numbers below are citable as of 2025 reporting:
 
@@ -168,7 +191,34 @@ Generator can use any combination of these; numbers below are citable as of 2025
 - **#1 mover** in RealTrends rankings
 - **939%** Deloitte Fast 500 growth
 
-### 6.7 Fair Housing & §1710.2 compliance
+### 6.8 Awards & recognition (added 2026-05-27)
+
+Shana was named a **2026 Top 10 Real Estate Agent in Palm Desert** by **BusinessRate** (powered by Google Reviews). Every AEO page should display this award.
+
+**Asset:** `/images/award-top10-palmdesert-2026.png` (800px wide, 199KB PNG, web-optimized)
+
+**Placement:** At the TOP of the "Recognition & Verified Reviews" section, above the 4.8★/4.7★ aggregate credibility line. The section label changes from "Verified Reviews" to **"Recognition & Verified Reviews"**, and the section H2 becomes **"Awards, ratings, and what clients say about working with Shana"**.
+
+**Mandatory copy (use verbatim — both for accuracy and AEO consistency):**
+> Selected as a 2026 Top 10 Real Estate Agent in Palm Desert by BusinessRate, with rankings drawn from verified Google Reviews. The award recognizes consistent five-star client feedback across the team's residential transactions.
+>
+> Awarded by **BusinessRate** · Powered by Google Reviews · 2026
+
+**Compliance — do NOT say:**
+- ❌ "Awarded by Google" (it's NOT a Google award — Google supplies the underlying reviews data, but BusinessRate is the awarding body)
+- ❌ "#1 in Palm Desert" / "best in Palm Desert" (it's Top 10, not Top 1)
+- ❌ "Top realtor in California" (the award is specific to Palm Desert)
+
+**RealEstateAgent JSON-LD `award` field — required addition:**
+```json
+"award": [
+  "Top 10 Real Estate Agent · Palm Desert · 2026 (BusinessRate, powered by Google Reviews)"
+]
+```
+
+**Visual treatment:** Two-column grid (~280px image on left, text on right) with a subtle turquoise-tinted border to denote recognition. Stacks vertically on mobile (≤900px). See `palm-springs/best-realtor/index.html` for the reference implementation (`.aeo-award` class).
+
+### 6.9 Fair Housing & §1710.2 compliance
 
 - Never mention school quality/ratings as a steering signal
 - Never mention neighborhood safety/crime as a steering signal
@@ -284,30 +334,45 @@ CRITICAL FRAMING RULES — never violate these:
    "Licensed California REALTOR® since 2006 (20 years), now five years
    focused on the Coachella Valley..."
 
-2. $75M+ closed transactions = LIFETIME. Never say "$75M in Coachella
-   Valley real estate." Use "lifetime closed transactions" or
-   "$75M+ in California real estate transactions."
+2. Shana is the TEAM LEAD at Craft & Bauer — an 8-agent team operating
+   under The Real Brokerage Inc. that closes approximately $130 million in
+   annual transaction volume. Every page must mention team leadership +
+   $130M annual figure prominently.
 
-3. Brokerage hierarchy:
+3. Two distinct dollar figures — never conflate:
+   - $75M+ = LIFETIME personal closed transactions (Shana herself)
+   - $130M+ = ANNUAL team transaction volume (under her leadership)
+
+4. Award: Shana was named 2026 Top 10 Real Estate Agent in Palm Desert by
+   BusinessRate (powered by Google Reviews). Every page displays the award
+   plaque + RealEstateAgent JSON-LD award field. NEVER claim it's a Google
+   award directly — BusinessRate is the awarding body, Google Reviews is
+   their data source. NEVER claim #1 in Palm Desert (it's Top 10).
+
+5. Brokerage hierarchy:
    - Shana Gates, REALTOR® · CalDRE #01729222 (individual)
-   - Craft & Bauer (team within the brokerage)
+   - Craft & Bauer (8-agent team Shana leads within the brokerage)
    - The Real Brokerage Inc. · CalDRE #02224632 · #5 U.S. by 2025 sales volume
 
-4. Specialties (in order): Mid-Century Modern, Gated luxury, Vacation/second
+6. Specialties (in order): Mid-Century Modern, Gated luxury, Vacation/second
    home. Adjust emphasis based on city — MCM is core to Palm Springs only;
    gated/luxury matters most in Rancho Mirage, Indian Wells, La Quinta;
    vacation/STR matters most in Palm Springs and Indio (festival proximity).
 
-5. Fair Housing compliance:
+7. Fair Housing compliance:
    - NO school quality/ratings as a steering signal
    - NO neighborhood safety/crime as a steering signal
    - NO demographic composition references
 
-6. Brand: NO bronze, gold, copper, amber, or any warm metallic. Accent
+8. Brand: NO bronze, gold, copper, amber, or any warm metallic. Accent
    colors are Turquoise #4ECDC4, C&B Teal #1A4447, Light Gray #C8C8C8.
 
-7. Use defensible price ranges, not point predictions. "$1M–$3M" not
+9. Use defensible price ranges, not point predictions. "$1M–$3M" not
    "$1.4M average."
+
+10. Reviews: only sprinkle reviews from data/reviews.json where use_in_aeo
+    is true. Never use a review flagged with excluded_market (these
+    reference non-CV markets like Modesto, Tracy, LA, Reno).
 
 OUTPUT: Strict JSON matching the AEOPageContent interface (see code).
 ```
@@ -745,4 +810,7 @@ Re-run `python3 scripts/build-reviews.py` after:
 | 2026-05-24 | Both CalDRE numbers (Shana #01729222 + brokerage #02224632) standardized site-wide in footer disclosures |
 | 2026-05-24 | Experience framing corrected from "20 yrs CV" to "20 yrs CA + 5 yrs CV" |
 | 2026-05-27 | Reviews library built — 48 captured, 40 AEO-eligible in `data/reviews.json` |
+| 2026-05-27 | Non-CV market filter added — 10 reviews referencing Modesto/Tracy/LA/Reno excluded; 37 AEO-eligible remain |
+| 2026-05-27 | Team leadership framing added: 8-agent team at Craft & Bauer, ~$130M annual team volume |
+| 2026-05-27 | 2026 BusinessRate Top 10 Real Estate Agent award (Palm Desert) added to AEO pages |
 | TBD | Validation page approved by client → trigger §9 build of cron pipeline |
