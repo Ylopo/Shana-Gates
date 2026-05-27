@@ -666,7 +666,76 @@ Before approving the cron to run unsupervised, verify these for every newly publ
 
 ---
 
-## 14. Status Log
+## 14. Client Reviews Library — `data/reviews.json`
+
+Reviews collected from Google Business Profile + Zillow team profile, ready for the generator to sprinkle through the AEO pages.
+
+**Headline credibility numbers:**
+- **Google**: 4.8 ★ across 44 reviews ([place](https://www.google.com/maps?q=Shana+Gates+Craft+%26+Bauer))
+- **Zillow**: 4.7 ★ across 14 reviews ([profile](https://www.zillow.com/profile/ShanaGatesTeam))
+
+**Combined dataset:** 48 captured · 40 AEO-eligible.
+
+### Schema
+Each review:
+```json
+{
+  "source": "google" | "zillow",
+  "source_url": "...",
+  "rating": 5.0,
+  "date": "2 weeks ago" | "5/14/2026",
+  "reviewer": "Janna Hartfield",
+  "body": "Best realtor in Palm Springs",
+  "best_quote": "Best realtor in Palm Springs",
+  "cities_mentioned": ["palm-springs"],
+  "primary_city": "palm-springs",
+  "use_in_aeo": true
+}
+```
+
+A `by_city` index at the top of the JSON groups AEO-eligible quotes by city slug for direct lookup.
+
+### Generator usage rules
+
+1. **Pull-quote section in each AEO page** — add a "Reviews & Recognition" block above the FAQ accordion with 2–3 short pull-quotes. Use `best_quote` for short callouts (one sentence under 200 chars). Use `body` for longer testimonial blocks (max one per page).
+
+2. **City matching** — first try `by_city[city]` for city-specific quotes; if empty or thin, fall back to `by_city['coachella-valley']` (generic CV quotes). For Palm Desert, Palm Springs, La Quinta — there are city-specific quotes available.
+
+3. **Attribution** — every quote MUST display:
+   - Reviewer first name + last initial (e.g., "Janna H.")
+   - Source label: "Verified Google review" or "Zillow review"
+   - Date (relative is fine: "2 weeks ago")
+   - Source name links to `source_url` (open in new tab)
+
+4. **Aggregate credibility** — every AEO page footer (above the disclaimer) should include the combined rating line: **"4.8 ★ on Google · 4.7 ★ on Zillow · 58 combined verified reviews"** with both links.
+
+5. **Duplication control** — generator must round-robin so no single review appears on more than ~5 pages. Track usage in a Redis hash `aeo:review-usage:{reviewer}` or in the queue metadata.
+
+6. **`Review` schema markup** — add a fourth JSON-LD block when quoting reviews on a page:
+   ```json
+   {
+     "@context": "https://schema.org",
+     "@type": "Review",
+     "itemReviewed": { "@id": "https://shanasells.com/#shana-gates" },
+     "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": 5 },
+     "author": { "@type": "Person", "name": "Janna H." },
+     "reviewBody": "Best realtor in Palm Springs",
+     "datePublished": "2026-05-13"
+   }
+   ```
+   Embed only for quotes actually displayed on the page.
+
+7. **Negative-review exclusion** — `use_in_aeo: false` reviews must never be displayed. The captured negative (wolf tree, 2★) is already flagged.
+
+### Updating the dataset
+
+Re-run `python3 scripts/build-reviews.py` after:
+- Re-scraping Zillow via `firecrawl scrape https://www.zillow.com/profile/ShanaGatesTeam -o /tmp/shana-zillow.md`
+- Updating the hardcoded Google review array in the script (paste new reviews as they're added)
+
+---
+
+## 15. Status Log
 
 | Date | Event |
 |---|---|
@@ -675,4 +744,5 @@ Before approving the cron to run unsupervised, verify these for every newly publ
 | 2026-05-24 | `nav.aeo-breadcrumb` CSS override identified and applied |
 | 2026-05-24 | Both CalDRE numbers (Shana #01729222 + brokerage #02224632) standardized site-wide in footer disclosures |
 | 2026-05-24 | Experience framing corrected from "20 yrs CV" to "20 yrs CA + 5 yrs CV" |
+| 2026-05-27 | Reviews library built — 48 captured, 40 AEO-eligible in `data/reviews.json` |
 | TBD | Validation page approved by client → trigger §9 build of cron pipeline |
