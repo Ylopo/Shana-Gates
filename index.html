@@ -2988,7 +2988,8 @@
   (function () {
     const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVnYXMta2l3aSIsImEiOiJjbW8waXJoaWEwOHN2MnJxYTl2bWNlaGp0In0.C57V2IUuHiNKHn5LLlbXog';
     const ACCENT       = '#C8C8C8';
-    const BOUND        = '#4864c8';   // community boundary blue
+    const BOUND        = '#4864c8';   // community boundary blue (fill + crisp inner border)
+    const GLOW         = '#4ECDC4';   // turquoise outer glow halo — brand accent
 
     const COMMUNITIES = [
       {
@@ -3119,13 +3120,13 @@
             paint: { 'fill-color': BOUND, 'fill-opacity': 0.20 },
           });
 
-          // Blurred outer glow
+          // Blurred outer glow — turquoise so the boundary lights up off the dark basemap
           locMap.addLayer({
             id: 'loc-' + c.id + '-glow',
             type: 'line',
             source: 'loc-' + c.id,
             layout: { 'line-cap': 'round', 'line-join': 'round' },
-            paint: { 'line-color': BOUND, 'line-width': 8, 'line-opacity': 0.40, 'line-blur': 4 },
+            paint: { 'line-color': GLOW, 'line-width': 9, 'line-opacity': 0.55, 'line-blur': 4 },
           });
 
           // Crisp border on top
@@ -3190,26 +3191,26 @@
           },
         });
 
-        // 2 — Wide blurred glow halo under the border — gives the line a soft
-        // outer presence so the boundary "lifts" off the basemap from a distance.
+        // 2 — Wide blurred turquoise glow halo under the border — lifts the
+        // boundary off the dark night basemap so the outline is visible at a glance.
         map.addLayer({
           id: c.id + '-glow',
           type: 'line',
           source: c.id,
           layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: {
-            'line-color': BOUND,
+            'line-color': GLOW,
             'line-width': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
-              10,
-              7,
+              12,
+              9,
             ],
             'line-opacity': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
+              0.75,
               0.55,
-              0.32,
             ],
             'line-blur': 4,
           },
