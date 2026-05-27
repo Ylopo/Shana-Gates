@@ -32,7 +32,7 @@
     },
     "totals": {
       "total_captured": 48,
-      "aeo_eligible": 40,
+      "aeo_eligible": 37,
       "by_source": {
         "google": 38,
         "zillow": 10
@@ -81,20 +81,6 @@
         "rating": 5.0,
         "quote": "Amazing Shana - she found a home for my best friend.",
         "date": "2 weeks ago"
-      },
-      {
-        "source": "google",
-        "reviewer": "Greg Stone",
-        "rating": 5.0,
-        "quote": "Got the pleasure to help Shana's client and list her home in Reno.",
-        "date": "3 months ago"
-      },
-      {
-        "source": "google",
-        "reviewer": "Bruce Somers",
-        "rating": 5.0,
-        "quote": "Shana and her amazing team at Craft & Bauer used a lot of social media tools and specific marketing strategies that delivered.",
-        "date": "6 months ago"
       },
       {
         "source": "google",
@@ -277,13 +263,6 @@
         "rating": 5.0,
         "quote": "Choosing Shana Gates in Coachella Valley, CA was amazing!",
         "date": "5/14/2026"
-      },
-      {
-        "source": "zillow",
-        "reviewer": "krystal yeats",
-        "rating": 5.0,
-        "quote": "My husband and I are 1st time homebuyers and originally sought out Shana specifically for her experience with foreclosures.",
-        "date": "1/21/2018"
       }
     ],
     "palm-springs": [
@@ -347,6 +326,7 @@
         "coachella-valley"
       ],
       "primary_city": "coachella-valley",
+      "excluded_market": null,
       "best_quote": "Shana is incredible, & so knowledgeable at what she does!",
       "use_in_aeo": true
     },
@@ -359,6 +339,7 @@
       "body": "Working with Shana was truly an amazing experience from beginning to end. As a first-time homebuyer, the process felt overwhelming at first, but she made everything so easy to understand and navigate. She is incredibly kind, knowledgeable, and patient.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Working with Shana was truly an amazing experience from beginning to end.",
       "use_in_aeo": true
     },
@@ -373,6 +354,7 @@
         "coachella-valley"
       ],
       "primary_city": "coachella-valley",
+      "excluded_market": null,
       "best_quote": "Shana was absolutely amazing to work with from start to finish.",
       "use_in_aeo": true
     },
@@ -385,6 +367,7 @@
       "body": "Shana is so knowledgeable. She is able to explain everything so that I understand and feel comfortable and well informed. I love working with her.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana is so knowledgeable.",
       "use_in_aeo": true
     },
@@ -397,6 +380,7 @@
       "body": "Amazing Shana - she found a home for my best friend. The other realtor my friend contacted would never return the many calls. Shana cares ❤️ love her",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Amazing Shana - she found a home for my best friend.",
       "use_in_aeo": true
     },
@@ -411,6 +395,7 @@
         "palm-springs"
       ],
       "primary_city": "palm-springs",
+      "excluded_market": null,
       "best_quote": "Best realtor in Palm Springs",
       "use_in_aeo": true
     },
@@ -425,6 +410,7 @@
         "palm-springs"
       ],
       "primary_city": "palm-springs",
+      "excluded_market": null,
       "best_quote": "I truly appreciated her approach and the way she navigated the sale of our Palm Springs home.",
       "use_in_aeo": true
     },
@@ -439,6 +425,7 @@
         "palm-desert"
       ],
       "primary_city": "palm-desert",
+      "excluded_market": null,
       "best_quote": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond.",
       "use_in_aeo": true
     },
@@ -453,6 +440,7 @@
         "palm-desert"
       ],
       "primary_city": "palm-desert",
+      "excluded_market": null,
       "best_quote": "Shana delivered an exceptional level of service on our Palm Desert listing, setting a standard of professionalism and execution that is truly rare in today's market.",
       "use_in_aeo": true
     },
@@ -465,8 +453,9 @@
       "body": "Got the pleasure to help Shana's client and list her home in Reno. With Shana being in CA she has been great with communication and assisting me in every way possible when needed. Her professionalism, experience and knowledge is top notch. I would highly recommend reaching out to her with any real estate needs.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": "reno",
       "best_quote": "Got the pleasure to help Shana's client and list her home in Reno.",
-      "use_in_aeo": true
+      "use_in_aeo": false
     },
     {
       "source": "google",
@@ -477,8 +466,9 @@
       "body": "Shana worked with me to sell our house in Los Angeles this year. She was incredibly detailed in her approach to researching and selling the house. Shana and her amazing team at Craft & Bauer used a lot of social media tools and specific marketing strategies that delivered.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": "los angeles",
       "best_quote": "Shana and her amazing team at Craft & Bauer used a lot of social media tools and specific marketing strategies that delivered.",
-      "use_in_aeo": true
+      "use_in_aeo": false
     },
     {
       "source": "google",
@@ -489,6 +479,7 @@
       "body": "After speaking with Shana Gates, and outlining my maximum budget for real estate prices and HOA's, she sent me comps that were largely well outside of the parameters we agreed to. I replied to her email and provided my feedback, reminding her of the parameters we agreed upon.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "After speaking with Shana Gates, and outlining my maximum budget for real estate prices and HOA's, she sent me comps that were largely well outside of the parameters we agreed to.",
       "use_in_aeo": false
     },
@@ -501,6 +492,7 @@
       "body": "A Tip of the Hat to a True Pro. As a fellow real estate professional, I just want to take a moment to tip my hat to an exceptional agent — Shana Gates. We recently worked together on an escrow, and her professionalism was outstanding.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "As a fellow real estate professional, I just want to take a moment to tip my hat to an exceptional agent — Shana Gates.",
       "use_in_aeo": true
     },
@@ -513,6 +505,7 @@
       "body": "All I can say is 'The Best'. So professional, friendly, and helpful through out the entire process. Jacob, Shana, and Christina went over and beyond to ensure all ran smoothly and it did! We couldn't be more pleased. Many thanks to Craft & Bauer!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "So professional, friendly, and helpful through out the entire process.",
       "use_in_aeo": true
     },
@@ -527,6 +520,7 @@
         "coachella-valley"
       ],
       "primary_city": "coachella-valley",
+      "excluded_market": null,
       "best_quote": "Shana is the best real estate agent out here in the desert.",
       "use_in_aeo": true
     },
@@ -539,6 +533,7 @@
       "body": "Shana is professional, responsive, and truly has your best interests in mind. Highly recommend!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana is professional, responsive, and truly has your best interests in mind.",
       "use_in_aeo": true
     },
@@ -551,6 +546,7 @@
       "body": "We want to say Shana was the ultimate professional realtor in every way. She was very easy to work with, as she listened intently. Her team never missed anything, got the best photographer, who did excellent work.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "We want to say Shana was the ultimate professional realtor in every way.",
       "use_in_aeo": true
     },
@@ -563,6 +559,7 @@
       "body": "Working with Shana Gates was an absolute pleasure! Her extensive knowledge of the local market, coupled with her unwavering commitment to finding the perfect home for us, made the entire process seamless and stress-free.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Working with Shana Gates was an absolute pleasure!",
       "use_in_aeo": true
     },
@@ -577,6 +574,7 @@
         "la-quinta"
       ],
       "primary_city": "la-quinta",
+      "excluded_market": null,
       "best_quote": "We recently purchased our home in La Quinta, CA using the professional services of Shana Gates and Charisse Drewry of Craft & Bauer Realty Co.",
       "use_in_aeo": true
     },
@@ -589,6 +587,7 @@
       "body": "Shana is an absolute pleasure to work with! Known as the 'hostess with the mostess,' her warmth and expertise shine through in every client interaction. With over 20 years of experience, she navigates the real estate world easily.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana is an absolute pleasure to work with!",
       "use_in_aeo": true
     },
@@ -601,6 +600,7 @@
       "body": "Thank you Jacob & Shana for helping us find our forever home! You both made this process so easy and carefree for us. The team at Craft & Bauer truly puts the client first. They were with us every step of the way and in constant communication.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "The team at Craft & Bauer truly puts the client first.",
       "use_in_aeo": true
     },
@@ -613,6 +613,7 @@
       "body": "Shana and her team are by far the best realtors I have ever experienced. They went above and beyond the service a normal Realtor provides. I highly recommend Shana whether you're selling or buying!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana and her team are by far the best realtors I have ever experienced.",
       "use_in_aeo": true
     },
@@ -625,6 +626,7 @@
       "body": "Shana and Mark go above and beyond and not only make the best team but literally exceed your expectations. I'm a former Mortgage Consultant that has had the pleasure to work with so many real estate professionals.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana and Mark go above and beyond and not only make the best team but literally exceed your expectations.",
       "use_in_aeo": true
     },
@@ -639,6 +641,7 @@
         "coachella-valley"
       ],
       "primary_city": "coachella-valley",
+      "excluded_market": null,
       "best_quote": "I would highly recommend Shana and her informative team when looking for homes in the Coachella Valley!",
       "use_in_aeo": true
     },
@@ -651,6 +654,7 @@
       "body": "Shana is just an amazing person overall. Not only is she a great realtor with plenty of experience to back her up. She is someone who I can truly rely on from a realtor to realtor relationship along with a personal friendship.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana is just an amazing person overall.",
       "use_in_aeo": true
     },
@@ -663,6 +667,7 @@
       "body": "Shana was amazing to work with! She was very knowledgeable and made us feel comfortable through the entire process.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana was amazing to work with!",
       "use_in_aeo": true
     },
@@ -675,6 +680,7 @@
       "body": "Such a great team to work with. Took care of us every step of the way, provided great advice, and got the deal done on time and low stress. Thanks!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Such a great team to work with.",
       "use_in_aeo": true
     },
@@ -687,6 +693,7 @@
       "body": "They need to have more than five stars for this young lady! I've never bought a home so stress-free. She's an absolute sweetheart.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "They need to have more than five stars for this young lady!",
       "use_in_aeo": true
     },
@@ -699,6 +706,7 @@
       "body": "Shana is an amazing agent that takes great care of all her clients. She's extremely knowledgeable and will always work hard to get you the best deal!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana is an amazing agent that takes great care of all her clients.",
       "use_in_aeo": true
     },
@@ -711,6 +719,7 @@
       "body": "Shana was fantastic. We were located 3000 miles away going through the buying process. Shana made sure everything went through without any problems. She worked with the seller's RE agent, ensured the home inspection was comprehensive.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana was fantastic.",
       "use_in_aeo": true
     },
@@ -723,6 +732,7 @@
       "body": "Shana is knowledgeable in her field, efficient and responsive in handling questions and any issues that arose. She was definitely on my team, working towards my best interests. She got my family and I a great deal on the perfect house!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana is knowledgeable in her field, efficient and responsive in handling questions and any issues that arose.",
       "use_in_aeo": true
     },
@@ -735,6 +745,7 @@
       "body": "Shana and her team go the extra mile to ensure that their client is happy. Their teamwork, attention to detail and communication are excellent. I wouldn't hesitate to recommend Shana for all of your real estate needs.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana and her team go the extra mile to ensure that their client is happy.",
       "use_in_aeo": true
     },
@@ -747,6 +758,7 @@
       "body": "Shana goes to the greatest lengths to ensure everything is perfect. She works every angle to the last detail and is sure to follow up before, during, and after closing. When a blended family can say she meets every need you have to know she's exceptional.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "When a blended family can say she meets every need you have to know she's exceptional.",
       "use_in_aeo": true
     },
@@ -759,6 +771,7 @@
       "body": "Above and beyond doesn't even begin to describe Shana when it comes to service. We haven't even listed our property yet because of some legal things that need to occur first, but she's helped with repairs, estate sales, consignment sales.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Above and beyond doesn't even begin to describe Shana when it comes to service.",
       "use_in_aeo": true
     },
@@ -771,6 +784,7 @@
       "body": "Shana Gates and the rest of her team are total professionals. Their communication is excellent and they will always go above and beyond. I worked with Shana many times. She is my go-to for all of my real estate transactions.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana Gates and the rest of her team are total professionals.",
       "use_in_aeo": true
     },
@@ -783,6 +797,7 @@
       "body": "Shana is one of the best agents to ever work with! She has amazing knowledge and really takes care of you.",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Shana is one of the best agents to ever work with!",
       "use_in_aeo": true
     },
@@ -795,6 +810,7 @@
       "body": "My family and I decided to relocate and made the smart decision of hiring Shana and her team to sell my home. Wouldn't make a move without them! Thank you, Shana!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "My family and I decided to relocate and made the smart decision of hiring Shana and her team to sell my home.",
       "use_in_aeo": true
     },
@@ -807,6 +823,7 @@
       "body": "Sweet, quick to respond and driven to succeed for her clients!",
       "cities_mentioned": [],
       "primary_city": null,
+      "excluded_market": null,
       "best_quote": "Sweet, quick to respond and driven to succeed for her clients!",
       "use_in_aeo": true
     },
@@ -824,6 +841,7 @@
       ],
       "primary_city": "coachella-valley",
       "primary_agent": "shana",
+      "excluded_market": null,
       "best_quote": "Choosing Shana Gates in Coachella Valley, CA was amazing!",
       "use_in_aeo": true
     },
@@ -841,6 +859,7 @@
       ],
       "primary_city": "palm-desert",
       "primary_agent": "shana-and-team",
+      "excluded_market": null,
       "best_quote": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond.",
       "use_in_aeo": true
     },
@@ -856,6 +875,7 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "andrew",
+      "excluded_market": "tracy",
       "best_quote": "I want to take a moment to thank Andrew for his outstanding service during a recent sales transaction.",
       "use_in_aeo": false
     },
@@ -871,6 +891,7 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "andrew",
+      "excluded_market": "dublin",
       "best_quote": "Andrew has a very good knowledge of the Tri-valley area and his good negotiations skills landed us with a property for less than the asking price.",
       "use_in_aeo": false
     },
@@ -886,6 +907,7 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "jesica",
+      "excluded_market": "modesto",
       "best_quote": "Jesica is one of the hardest working people I know!",
       "use_in_aeo": false
     },
@@ -901,6 +923,7 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "jesica",
+      "excluded_market": "turlock",
       "best_quote": "Jesica helped us purchase our first home ,as first home buyers we had so many questions she was very patient and professional with us.",
       "use_in_aeo": false
     },
@@ -916,6 +939,7 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "jesica",
+      "excluded_market": "ceres",
       "best_quote": "Jesica is amazing.",
       "use_in_aeo": false
     },
@@ -931,6 +955,7 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "unspecified",
+      "excluded_market": "turlock",
       "best_quote": "Honest and very Knowledgeable.",
       "use_in_aeo": false
     },
@@ -946,6 +971,7 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "unspecified",
+      "excluded_market": "modesto",
       "best_quote": "She agreed to give the buyer our refrigerator and washer and dryer with out ever mentioning it to us on the house we are selling.",
       "use_in_aeo": false
     },
@@ -961,8 +987,9 @@
       "cities_mentioned": [],
       "primary_city": null,
       "primary_agent": "shana",
+      "excluded_market": "lodi",
       "best_quote": "My husband and I are 1st time homebuyers and originally sought out Shana specifically for her experience with foreclosures.",
-      "use_in_aeo": true
+      "use_in_aeo": false
     }
   ]
 }

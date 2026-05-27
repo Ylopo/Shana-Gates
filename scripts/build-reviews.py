@@ -47,6 +47,32 @@ google_reviews_raw = [
 
 CV_CITIES = ['palm springs','palm desert','rancho mirage','indian wells','la quinta','indio','cathedral city','desert hot springs','coachella','coachella valley','the desert','desert area']
 
+# Cities that DISQUALIFY a review from AEO use (non-CV CA markets + other states).
+# A review explicitly mentioning one of these is about a non-CV transaction and
+# shouldn't appear on Coachella Valley AEO pages.
+EXCLUDED_MARKETS = [
+    # Central California (Modesto / Tri-Valley area where Shana's team has worked)
+    'modesto','tracy','dublin','lodi','turlock','ceres','stockton','pleasanton',
+    'livermore','manteca','riverbank','oakdale','tri-valley','tri valley','san joaquin',
+    # Bay Area
+    'san francisco','oakland','berkeley','san jose','silicon valley',
+    # Southern California outside CV
+    'los angeles','la county','san diego','orange county','irvine','anaheim',
+    'long beach','santa monica','beverly hills','malibu','pasadena',
+    # Other CA
+    'sacramento','fresno','bakersfield',
+    # Other states
+    'reno','las vegas','nevada','arizona','phoenix','scottsdale',
+]
+
+def is_excluded_market(text):
+    """True if the text references a non-CV market that disqualifies the review."""
+    t = text.lower()
+    for m in EXCLUDED_MARKETS:
+        if re.search(r'\b' + re.escape(m) + r'\b', t):
+            return m
+    return None
+
 def tag_cities(body):
     """Return list of CV city slugs mentioned in body."""
     body_l = body.lower()
@@ -82,10 +108,10 @@ def best_quote(body):
 google_reviews = []
 for raw in google_reviews_raw:
     cities = tag_cities(raw['body'])
-    market = 'coachella-valley' if cities else 'other-or-unspecified'
     primary_market = cities[0] if cities else None
-    # Negative review → use_in_aeo: false
-    use = raw['rating'] >= 4.5
+    excluded = is_excluded_market(raw['body'])
+    # AEO-eligible iff: high rating AND not about a non-CV market
+    use = raw['rating'] >= 4.5 and excluded is None
     google_reviews.append({
         'source': 'google',
         'source_url': 'https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker',
@@ -95,6 +121,7 @@ for raw in google_reviews_raw:
         'body': raw['body'],
         'cities_mentioned': cities,
         'primary_city': primary_market,
+        'excluded_market': excluded,
         'best_quote': best_quote(raw['body']),
         'use_in_aeo': use,
     })
@@ -131,7 +158,13 @@ try:
         elif mentions_shana and teammate: primary_agent = 'shana-and-team'
         else: primary_agent = 'unspecified'
 
-        use = rating >= 4.5 and primary_agent in ('shana','shana-and-team','unspecified') and (cities or primary_agent == 'shana')
+        excluded = is_excluded_market(title + ' ' + body)
+        use = (
+            rating >= 4.5
+            and primary_agent in ('shana','shana-and-team','unspecified')
+            and excluded is None
+            and (cities or primary_agent == 'shana')
+        )
         zillow_reviews.append({
             'source': 'zillow',
             'source_url': 'https://www.zillow.com/profile/ShanaGatesTeam',
@@ -144,6 +177,7 @@ try:
             'cities_mentioned': cities,
             'primary_city': cities[0] if cities else None,
             'primary_agent': primary_agent,
+            'excluded_market': excluded,
             'best_quote': best_quote(body),
             'use_in_aeo': bool(use),
         })
