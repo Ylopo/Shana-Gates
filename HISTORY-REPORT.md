@@ -199,7 +199,7 @@ Full text rendered at 7pt:
 
 > This report compiles information from publicly available sources including news media, real estate listings, and public records databases. Accuracy is not guaranteed. Absence of records does not mean an event did not occur. California Civil Code §1710.2 limits required seller disclosure of deaths at a property to the past three years and prohibits disclosure of deaths related to HIV/AIDS. The buyer is responsible for independently verifying any property history that materially affects a purchase decision. This document does not constitute legal, financial, or investment advice.
 >
-> Nothing in this report should be construed as a basis for any housing decision that violates the Fair Housing Act or California Fair Employment and Housing Act. Shana Gates, Craft & Bauer | Real Broker, CalDRE #02224632.
+> Nothing in this report should be construed as a basis for any housing decision that violates the Fair Housing Act or California Fair Employment and Housing Act. Shana Gates, REALTOR® · CalDRE #01729222 · Craft & Bauer | The Real Brokerage Inc. · Brokerage CalDRE #02224632.
 
 ---
 

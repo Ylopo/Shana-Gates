@@ -99,7 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             <p style="margin:0 0 4px;color:#666;font-size:14px">Craft &amp; Bauer | Real Broker</p>
             <p style="margin:0;font-size:14px"><a href="tel:7602324054" style="color:#1A444C">760.232.4054</a> &nbsp;·&nbsp; <a href="mailto:shana@craftbauer.com" style="color:#1A444C">shana@craftbauer.com</a></p>
           </div>
-          <p style="font-size:10px;color:#999;margin-top:24px;line-height:1.5">For educational and informational purposes only. Not financial, investment, or legal advice. All estimates are AI-generated approximations based on publicly available data. Property history is compiled from public sources and accuracy is not guaranteed. Always verify with a licensed real estate professional. CalDRE #02224632.</p>
+          <p style="font-size:10px;color:#999;margin-top:24px;line-height:1.5">For educational and informational purposes only. Not financial, investment, or legal advice. All estimates are AI-generated approximations based on publicly available data. Property history is compiled from public sources and accuracy is not guaranteed. Always verify with a licensed real estate professional. Shana Gates, REALTOR® · CalDRE #01729222 · The Real Brokerage Inc. · Brokerage CalDRE #02224632.</p>
         </div>
       </div>`,
       attachments,

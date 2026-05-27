@@ -721,7 +721,7 @@ async function generatePdf(address: string, data: {
       { text: `Contact Shana Gates for personalized guidance on this property.`, font: sans, fontSize: 10, color: DARK, margin: [0, 0, 0, 4] },
       { text: `shana@craftbauer.com  ·  760.232.4054  ·  Craft & Bauer | Real Broker`, font: sans, fontSize: 9, color: '#666', margin: [0, 0, 0, 24] },
       { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 512, y2: 0, lineWidth: 0.5, lineColor: '#ddd' }], margin: [0, 0, 0, 12] },
-      { text: 'DISCLAIMER: This report is for educational and informational purposes only. It does not constitute financial, investment, or legal advice. All data is AI-generated based on publicly available information and should be independently verified. Past performance is not indicative of future results. Always consult with licensed real estate, financial, and legal professionals before making any investment decisions. Shana Gates, Craft & Bauer | Real Broker, CalDRE #02224632.', font: sans, fontSize: 7, color: '#999' },
+      { text: 'DISCLAIMER: This report is for educational and informational purposes only. It does not constitute financial, investment, or legal advice. All data is AI-generated based on publicly available information and should be independently verified. Past performance is not indicative of future results. Always consult with licensed real estate, financial, and legal professionals before making any investment decisions. Shana Gates, REALTOR® · CalDRE #01729222 · Craft & Bauer | The Real Brokerage Inc. · Brokerage CalDRE #02224632.', font: sans, fontSize: 7, color: '#999' },
     ],
   }
 
