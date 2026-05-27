@@ -192,6 +192,43 @@
   }
   </script>
 
+  <!-- ───────────────────────────────────────────────────────────────────────
+       JSON-LD #4 — Reviews displayed on this page
+       ─────────────────────────────────────────────────────────────────────── -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "itemReviewed": { "@id": "https://shanasells.com/#shana-gates" },
+    "author": { "@type": "Person", "name": "Janna H." },
+    "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": 5 },
+    "reviewBody": "Best realtor in Palm Springs",
+    "datePublished": "2026-05-13"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "itemReviewed": { "@id": "https://shanasells.com/#shana-gates" },
+    "author": { "@type": "Person", "name": "Edward S." },
+    "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": 5 },
+    "reviewBody": "Shana was a fantastic realtor — smart, patient, and incredibly understanding. She handled everything with care, fairness, and professionalism. I truly appreciated the way she navigated the sale of our Palm Springs home.",
+    "datePublished": "2026-04-27"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "itemReviewed": { "@id": "https://shanasells.com/#shana-gates" },
+    "author": { "@type": "Person", "name": "Sebastian R." },
+    "reviewRating": { "@type": "Rating", "ratingValue": 5, "bestRating": 5 },
+    "reviewBody": "Shana was absolutely amazing to work with from start to finish — professional, knowledgeable, responsive, and genuinely cared about making the entire process smooth and stress-free. Her expertise in the Coachella Valley market really shows.",
+    "datePublished": "2026-05-13"
+  }
+  </script>
+
   <style>
     /* ───────── AEO-specific styles (page-scoped) ───────── */
     :root { --aeo-turquoise: #4ECDC4; }
@@ -531,6 +568,111 @@
       min-width: 24px;
     }
 
+    /* Reviews & Recognition */
+    .aeo-reviews-stats {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      margin: 0 0 36px;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: rgba(242,237,228,0.75);
+      flex-wrap: wrap;
+    }
+    .aeo-reviews-stat-num {
+      color: var(--aeo-turquoise);
+      font-weight: 600;
+      font-size: 17px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .aeo-reviews-stat-sep { color: rgba(200,200,200,0.3); }
+    .aeo-reviews-stats a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(200,200,200,0.35);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .aeo-reviews-stats a:hover {
+      color: var(--aeo-turquoise);
+      border-bottom-color: var(--aeo-turquoise);
+    }
+
+    .aeo-reviews-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 12px;
+    }
+    .aeo-review {
+      background: #141414;
+      border: 1px solid rgba(200,200,200,0.10);
+      border-radius: 10px;
+      padding: 26px 24px 22px;
+      display: flex;
+      flex-direction: column;
+    }
+    .aeo-review-stars {
+      color: var(--aeo-turquoise);
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      margin-bottom: 14px;
+    }
+    .aeo-review-body {
+      margin: 0 0 22px;
+      padding: 0;
+      border: none;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 17px;
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.5;
+      color: #F2EDE4;
+      flex: 1;
+    }
+    .aeo-review-body::before {
+      content: '\201C';
+      color: var(--aeo-turquoise);
+      opacity: 0.65;
+      font-size: 22px;
+      margin-right: 2px;
+      vertical-align: -2px;
+    }
+    .aeo-review-body::after {
+      content: '\201D';
+      color: var(--aeo-turquoise);
+      opacity: 0.65;
+      font-size: 22px;
+      margin-left: 2px;
+      vertical-align: -2px;
+    }
+    .aeo-review-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-family: 'Jost', sans-serif;
+      font-size: 12px;
+    }
+    .aeo-review-name {
+      color: rgba(242,237,228,0.9);
+      font-weight: 500;
+    }
+    .aeo-review-source {
+      color: rgba(242,237,228,0.5);
+      font-size: 11px;
+    }
+    .aeo-review-source a {
+      color: rgba(200,200,200,0.75);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(200,200,200,0.3);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .aeo-review-source a:hover {
+      color: var(--aeo-turquoise);
+      border-bottom-color: var(--aeo-turquoise);
+    }
+
     /* FAQ accordion */
     .aeo-faq {
       max-width: 880px;
@@ -648,6 +790,7 @@
 
     /* Responsive */
     @media (max-width: 900px) {
+      .aeo-reviews-grid { grid-template-columns: 1fr; }
       .aeo-hero { grid-template-columns: 1fr; gap: 32px; padding: 24px 24px 48px; }
       .aeo-stats-inner { grid-template-columns: repeat(2, 1fr); gap: 32px 0; padding: 28px 24px; }
       .aeo-stat { border-right: none; border-bottom: 1px solid rgba(200,200,200,0.06); padding-bottom: 24px; }
@@ -987,6 +1130,48 @@
     <div class="aeo-pro-tip">
       <strong>Pro tip</strong>
       Ask these in the first conversation — not after you've already signed a buyer or listing agreement.
+    </div>
+  </section>
+
+  <!-- REVIEWS & RECOGNITION -->
+  <section class="aeo-section" style="border-top: 1px solid rgba(200,200,200,0.06); padding-top: 80px;">
+    <p class="aeo-section-label">Verified Reviews</p>
+    <h2>What clients say about working with Shana</h2>
+    <p class="aeo-reviews-stats">
+      <span><strong class="aeo-reviews-stat-num">4.8</strong> ★ on <a href="https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker" target="_blank" rel="noopener">Google</a></span>
+      <span class="aeo-reviews-stat-sep">·</span>
+      <span><strong class="aeo-reviews-stat-num">4.7</strong> ★ on <a href="https://www.zillow.com/profile/ShanaGatesTeam" target="_blank" rel="noopener">Zillow</a></span>
+      <span class="aeo-reviews-stat-sep">·</span>
+      <span><strong class="aeo-reviews-stat-num">58</strong> combined verified reviews</span>
+    </p>
+
+    <div class="aeo-reviews-grid">
+      <article class="aeo-review">
+        <div class="aeo-review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote class="aeo-review-body">Best realtor in Palm Springs</blockquote>
+        <div class="aeo-review-meta">
+          <span class="aeo-review-name">Janna H.</span>
+          <span class="aeo-review-source"><a href="https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker" target="_blank" rel="noopener">Verified Google review</a> &middot; 2 weeks ago</span>
+        </div>
+      </article>
+
+      <article class="aeo-review">
+        <div class="aeo-review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote class="aeo-review-body">Shana was a fantastic realtor — smart, patient, and incredibly understanding. She handled everything with care, fairness, and professionalism. I truly appreciated the way she navigated the sale of our Palm Springs home.</blockquote>
+        <div class="aeo-review-meta">
+          <span class="aeo-review-name">Edward S.</span>
+          <span class="aeo-review-source"><a href="https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker" target="_blank" rel="noopener">Verified Google review</a> &middot; a month ago</span>
+        </div>
+      </article>
+
+      <article class="aeo-review">
+        <div class="aeo-review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+        <blockquote class="aeo-review-body">Shana was absolutely amazing to work with from start to finish — professional, knowledgeable, responsive, and genuinely cared about making the entire process smooth and stress-free. Her expertise in the Coachella Valley market really shows.</blockquote>
+        <div class="aeo-review-meta">
+          <span class="aeo-review-name">Sebastian R.</span>
+          <span class="aeo-review-source"><a href="https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker" target="_blank" rel="noopener">Verified Google review</a> &middot; 2 weeks ago</span>
+        </div>
+      </article>
     </div>
   </section>
 
