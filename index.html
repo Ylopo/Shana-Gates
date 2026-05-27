@@ -3134,7 +3134,8 @@
 
         map.addSource(c.id, { type: 'geojson', data: geojson });
 
-        // 1 — Light blue fill inside the boundary
+        // 1 — Tinted fill inside the boundary — strong enough to read each city as a
+        // distinct area against the dark night basemap.
         map.addLayer({
           id: c.id + '-fill',
           type: 'fill',
@@ -3144,30 +3145,56 @@
             'fill-opacity': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
+              0.32,
               0.18,
-              0.09,
             ],
           },
         });
 
-        // 2 — Clean solid border (no glow)
+        // 2 — Wide blurred glow halo under the border — gives the line a soft
+        // outer presence so the boundary "lifts" off the basemap from a distance.
         map.addLayer({
-          id: c.id + '-line',
+          id: c.id + '-glow',
           type: 'line',
           source: c.id,
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
           paint: {
             'line-color': BOUND,
             'line-width': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
+              10,
+              7,
+            ],
+            'line-opacity': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              0.55,
+              0.32,
+            ],
+            'line-blur': 4,
+          },
+        });
+
+        // 3 — Crisp solid border on top of the glow.
+        map.addLayer({
+          id: c.id + '-line',
+          type: 'line',
+          source: c.id,
+          layout: { 'line-cap': 'round', 'line-join': 'round' },
+          paint: {
+            'line-color': BOUND,
+            'line-width': [
+              'case',
+              ['boolean', ['feature-state', 'hovered'], false],
+              4,
               2.5,
-              1.5,
             ],
             'line-opacity': [
               'case',
               ['boolean', ['feature-state', 'hovered'], false],
               1.0,
-              0.75,
+              0.95,
             ],
           },
         });
