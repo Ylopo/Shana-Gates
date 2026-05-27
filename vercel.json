@@ -1,6 +1,8 @@
 {
   "rewrites": [
-    { "source": "/blog/post/:slug", "destination": "/api/blog/post-page?slug=:slug" }
+    { "source": "/blog/post/:slug", "destination": "/api/blog/post-page?slug=:slug" },
+    { "source": "/:city(palm-springs|palm-desert|rancho-mirage|indian-wells|la-quinta|indio|cathedral-city|desert-hot-springs|coachella)/:slug", "destination": "/:city/:slug/index.html" },
+    { "source": "/:city(palm-springs|palm-desert|rancho-mirage|indian-wells|la-quinta|indio|cathedral-city|desert-hot-springs|coachella)/:slug/", "destination": "/:city/:slug/index.html" }
   ],
   "functions": {
     "api/assistant/chat.ts": {
