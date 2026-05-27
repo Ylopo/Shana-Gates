@@ -1,31 +1,815 @@
 {
   "meta": {
-    "zillow": {
-      "profile_url": "https://www.zillow.com/profile/ShanaGatesTeam",
-      "profile_name": "Shana Gates Team",
-      "aggregate_rating": 4.7,
-      "review_count_total": 14,
-      "review_count_scraped": 10,
-      "scraped_at": "2026-05-27",
-      "notes": [
-        "Zillow displays 10 of 14 reviews in initial HTML; remaining 4 require carousel interaction.",
-        "Profile is for the broader Shana Gates Team. Reviews reference team members Andrew, Jesica, and Ryann Hammond as well as Shana.",
-        "Most pre-2024 reviews are from Central California markets (Modesto, Tracy, Dublin, Lodi, Turlock, Ceres) — they support the 20-year California experience framing but are NOT Coachella Valley specific.",
-        "Only 2 of 14 reviews are explicitly Coachella Valley (5/14/2026 Janna Salvnera and 2/28/2026 jpeterson447 — both Palm Desert).",
-        "1 review at 1.0 stars (1/28/2020 neves melanie, Modesto sale) — excluded from AEO use.",
-        "Truncated bodies end with \"…\". Full bodies are JS-gated behind Zillow \"Show more\" links and not captured in this scrape."
-      ]
+    "updated_at": "2026-05-27",
+    "business_name": "Shana Gates · Craft & Bauer | The Real Brokerage Inc.",
+    "address": "74-710 CA-111 #102, Palm Desert, CA 92260",
+    "phone": "+1-760-232-4054",
+    "sources": {
+      "google": {
+        "name": "Shana Gates - Craft & Bauer Real Broker",
+        "address": "74-710 CA-111 #102, Palm Desert, CA 92260",
+        "aggregate_rating": 4.8,
+        "total_review_count": 44,
+        "captured_count": 38,
+        "notes": [
+          "Reviews transcribed from Google Business Profile content (pasted by client 2026-05-27).",
+          "Body text may be slightly abridged; verify against the live Google profile before quoting verbatim.",
+          "1 negative review captured (wolf tree, 2★, 4 months ago) — excluded from AEO use.",
+          "Recent reviews (2 weeks ago and newer) include several Coachella-Valley-specific testimonials suitable for AEO citation."
+        ]
+      },
+      "zillow": {
+        "name": "Shana Gates Team",
+        "profile_url": "https://www.zillow.com/profile/ShanaGatesTeam",
+        "aggregate_rating": 4.7,
+        "total_review_count": 14,
+        "captured_count": 10,
+        "notes": [
+          "Zillow team profile — several reviews reference teammates Andrew, Jesica, Ryann rather than Shana directly.",
+          "Most pre-2024 reviews are Central California work (Modesto, Tracy, Dublin, Lodi, Turlock, Ceres)."
+        ]
+      }
     },
-    "google": {
-      "review_count": null,
-      "notes": "Not yet collected. Need either Google Business Profile URL (e.g. g.co/kgs/... or Maps listing) or manual paste of best 5-10 reviews."
+    "totals": {
+      "total_captured": 48,
+      "aeo_eligible": 40,
+      "by_source": {
+        "google": 38,
+        "zillow": 10
+      }
     },
     "usage": {
-      "aeo_filter": "reviews with use_in_aeo=true are safe to quote on AEO landing pages. The Coachella Valley reviews are highest-value for city-specific quoting. Older Central California reviews can be paraphrased into the \"20 years California experience\" framing in bio sections.",
-      "attribution": "Always link back to the source profile when displaying a quote: target=\"_blank\" rel=\"noopener\" to https://www.zillow.com/profile/ShanaGatesTeam"
+      "aeo_filter": "Use only reviews where use_in_aeo=true (rating ≥4.5 and Shana is the primary subject). Quote the 'best_quote' field for short pull-quote callouts; quote 'body' for longer testimonial blocks.",
+      "attribution": "Always include source ('Verified Google review' or 'Zillow review'), reviewer first name + last initial, and date. Link the source name to the source_url with target='_blank' rel='noopener'.",
+      "city_targeting": "Use 'cities_mentioned' to match reviews to AEO pages: a review mentioning 'Palm Desert' is ideal for Palm Desert pages; a review mentioning 'Coachella Valley' or 'the desert' works on any of the 9 city pages.",
+      "duplication": "Spread review usage across the ~177 AEO pages so no single review appears on more than ~5 pages. Generator should round-robin from city-specific reviews first, then fall back to generic."
     }
   },
+  "by_city": {
+    "coachella-valley": [
+      {
+        "source": "google",
+        "reviewer": "Tatum Dukes",
+        "rating": 5.0,
+        "quote": "Shana is incredible, & so knowledgeable at what she does!",
+        "date": "22 hours ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Armando Martinez",
+        "rating": 5.0,
+        "quote": "Working with Shana was truly an amazing experience from beginning to end.",
+        "date": "2 weeks ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Sebastian Ramirez",
+        "rating": 5.0,
+        "quote": "Shana was absolutely amazing to work with from start to finish.",
+        "date": "2 weeks ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Rachel Urias",
+        "rating": 5.0,
+        "quote": "Shana is so knowledgeable.",
+        "date": "2 weeks ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Diane Lipson",
+        "rating": 5.0,
+        "quote": "Amazing Shana - she found a home for my best friend.",
+        "date": "2 weeks ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Greg Stone",
+        "rating": 5.0,
+        "quote": "Got the pleasure to help Shana's client and list her home in Reno.",
+        "date": "3 months ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Bruce Somers",
+        "rating": 5.0,
+        "quote": "Shana and her amazing team at Craft & Bauer used a lot of social media tools and specific marketing strategies that delivered.",
+        "date": "6 months ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Eric Williamson",
+        "rating": 5.0,
+        "quote": "As a fellow real estate professional, I just want to take a moment to tip my hat to an exceptional agent — Shana Gates.",
+        "date": "7 months ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Terri",
+        "rating": 5.0,
+        "quote": "So professional, friendly, and helpful through out the entire process.",
+        "date": "7 months ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Eric",
+        "rating": 5.0,
+        "quote": "Shana is the best real estate agent out here in the desert.",
+        "date": "7 months ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Michelle Doan",
+        "rating": 5.0,
+        "quote": "Shana is professional, responsive, and truly has your best interests in mind.",
+        "date": "4 months ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "mary lou page",
+        "rating": 5.0,
+        "quote": "We want to say Shana was the ultimate professional realtor in every way.",
+        "date": "a year ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Tim Kelly",
+        "rating": 5.0,
+        "quote": "Working with Shana Gates was an absolute pleasure!",
+        "date": "a year ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "christina joy",
+        "rating": 5.0,
+        "quote": "Shana is an absolute pleasure to work with!",
+        "date": "a year ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Catherine Caldwell",
+        "rating": 5.0,
+        "quote": "The team at Craft & Bauer truly puts the client first.",
+        "date": "a year ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Dallas Williams",
+        "rating": 5.0,
+        "quote": "Shana and her team are by far the best realtors I have ever experienced.",
+        "date": "a year ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Candace Nurczyk",
+        "rating": 5.0,
+        "quote": "Shana and Mark go above and beyond and not only make the best team but literally exceed your expectations.",
+        "date": "2 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "kallihan ross",
+        "rating": 5.0,
+        "quote": "I would highly recommend Shana and her informative team when looking for homes in the Coachella Valley!",
+        "date": "2 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Jared Balassi",
+        "rating": 5.0,
+        "quote": "Shana is just an amazing person overall.",
+        "date": "2 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Megan Pearce",
+        "rating": 5.0,
+        "quote": "Shana was amazing to work with!",
+        "date": "2 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Ben Arwin",
+        "rating": 5.0,
+        "quote": "Such a great team to work with.",
+        "date": "2 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Christopher Mee",
+        "rating": 5.0,
+        "quote": "They need to have more than five stars for this young lady!",
+        "date": "2 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "THE MORTGAGE DR",
+        "rating": 5.0,
+        "quote": "Shana is an amazing agent that takes great care of all her clients.",
+        "date": "2 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Steve Weber",
+        "rating": 5.0,
+        "quote": "Shana was fantastic.",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "CHARISSE DREWRY",
+        "rating": 5.0,
+        "quote": "Shana is knowledgeable in her field, efficient and responsive in handling questions and any issues that arose.",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Alyssa Grace",
+        "rating": 5.0,
+        "quote": "Shana and her team go the extra mile to ensure that their client is happy.",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Amanda Peterson",
+        "rating": 5.0,
+        "quote": "When a blended family can say she meets every need you have to know she's exceptional.",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Laura Grody",
+        "rating": 5.0,
+        "quote": "Above and beyond doesn't even begin to describe Shana when it comes to service.",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "J R",
+        "rating": 5.0,
+        "quote": "Shana Gates and the rest of her team are total professionals.",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Denton Stowers",
+        "rating": 5.0,
+        "quote": "Shana is one of the best agents to ever work with!",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Abby Farhoud",
+        "rating": 5.0,
+        "quote": "My family and I decided to relocate and made the smart decision of hiring Shana and her team to sell my home.",
+        "date": "3 years ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Ann A",
+        "rating": 5.0,
+        "quote": "Sweet, quick to respond and driven to succeed for her clients!",
+        "date": "3 years ago"
+      },
+      {
+        "source": "zillow",
+        "reviewer": "Janna Salvnera",
+        "rating": 5.0,
+        "quote": "Choosing Shana Gates in Coachella Valley, CA was amazing!",
+        "date": "5/14/2026"
+      },
+      {
+        "source": "zillow",
+        "reviewer": "krystal yeats",
+        "rating": 5.0,
+        "quote": "My husband and I are 1st time homebuyers and originally sought out Shana specifically for her experience with foreclosures.",
+        "date": "1/21/2018"
+      }
+    ],
+    "palm-springs": [
+      {
+        "source": "google",
+        "reviewer": "Janna Hartfield",
+        "rating": 5.0,
+        "quote": "Best realtor in Palm Springs",
+        "date": "2 weeks ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "Edward Sandoval",
+        "rating": 5.0,
+        "quote": "I truly appreciated her approach and the way she navigated the sale of our Palm Springs home.",
+        "date": "a month ago"
+      }
+    ],
+    "palm-desert": [
+      {
+        "source": "google",
+        "reviewer": "jeff peterson",
+        "rating": 5.0,
+        "quote": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond.",
+        "date": "2 months ago"
+      },
+      {
+        "source": "google",
+        "reviewer": "J Alfonso",
+        "rating": 5.0,
+        "quote": "Shana delivered an exceptional level of service on our Palm Desert listing, setting a standard of professionalism and execution that is truly rare in today's market.",
+        "date": "4 months ago"
+      },
+      {
+        "source": "zillow",
+        "reviewer": "jpeterson447",
+        "rating": 5.0,
+        "quote": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond.",
+        "date": "2/28/2026"
+      }
+    ],
+    "la-quinta": [
+      {
+        "source": "google",
+        "reviewer": "Lainie Sims",
+        "rating": 5.0,
+        "quote": "We recently purchased our home in La Quinta, CA using the professional services of Shana Gates and Charisse Drewry of Craft & Bauer Realty Co.",
+        "date": "a year ago"
+      }
+    ]
+  },
   "reviews": [
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "22 hours ago",
+      "reviewer": "Tatum Dukes",
+      "body": "Shana is incredible, & so knowledgeable at what she does! Truly the best in the desert!",
+      "cities_mentioned": [
+        "coachella-valley"
+      ],
+      "primary_city": "coachella-valley",
+      "best_quote": "Shana is incredible, & so knowledgeable at what she does!",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 weeks ago",
+      "reviewer": "Armando Martinez",
+      "body": "Working with Shana was truly an amazing experience from beginning to end. As a first-time homebuyer, the process felt overwhelming at first, but she made everything so easy to understand and navigate. She is incredibly kind, knowledgeable, and patient.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Working with Shana was truly an amazing experience from beginning to end.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 weeks ago",
+      "reviewer": "Sebastian Ramirez",
+      "body": "Shana was absolutely amazing to work with from start to finish. She was professional, knowledgeable, responsive, and genuinely cared about making the entire process smooth and stress free. Her expertise in the Coachella Valley market really shows and I always felt like I was in great hands. Highly recommend!",
+      "cities_mentioned": [
+        "coachella-valley"
+      ],
+      "primary_city": "coachella-valley",
+      "best_quote": "Shana was absolutely amazing to work with from start to finish.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 weeks ago",
+      "reviewer": "Rachel Urias",
+      "body": "Shana is so knowledgeable. She is able to explain everything so that I understand and feel comfortable and well informed. I love working with her.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana is so knowledgeable.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 weeks ago",
+      "reviewer": "Diane Lipson",
+      "body": "Amazing Shana - she found a home for my best friend. The other realtor my friend contacted would never return the many calls. Shana cares ❤️ love her",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Amazing Shana - she found a home for my best friend.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 weeks ago",
+      "reviewer": "Janna Hartfield",
+      "body": "Best realtor in Palm Springs",
+      "cities_mentioned": [
+        "palm-springs"
+      ],
+      "primary_city": "palm-springs",
+      "best_quote": "Best realtor in Palm Springs",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "a month ago",
+      "reviewer": "Edward Sandoval",
+      "body": "Shana was a fantastic realtor — smart, patient, and incredibly understanding. She was chosen by my ex-husband to sell our home, and she handled everything with care, fairness, and professionalism. I truly appreciated her approach and the way she navigated the sale of our Palm Springs home.",
+      "cities_mentioned": [
+        "palm-springs"
+      ],
+      "primary_city": "palm-springs",
+      "best_quote": "I truly appreciated her approach and the way she navigated the sale of our Palm Springs home.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 months ago",
+      "reviewer": "jeff peterson",
+      "body": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond. I haven't purchased a home in 25 years, so I was naturally a bit apprehensive.",
+      "cities_mentioned": [
+        "palm-desert"
+      ],
+      "primary_city": "palm-desert",
+      "best_quote": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "4 months ago",
+      "reviewer": "J Alfonso",
+      "body": "Shana delivered an exceptional level of service on our Palm Desert listing, setting a standard of professionalism and execution that is truly rare in today's market. From the outset, she was an outstanding communicator — responsive, clear, and proactive.",
+      "cities_mentioned": [
+        "palm-desert"
+      ],
+      "primary_city": "palm-desert",
+      "best_quote": "Shana delivered an exceptional level of service on our Palm Desert listing, setting a standard of professionalism and execution that is truly rare in today's market.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 months ago",
+      "reviewer": "Greg Stone",
+      "body": "Got the pleasure to help Shana's client and list her home in Reno. With Shana being in CA she has been great with communication and assisting me in every way possible when needed. Her professionalism, experience and knowledge is top notch. I would highly recommend reaching out to her with any real estate needs.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Got the pleasure to help Shana's client and list her home in Reno.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "6 months ago",
+      "reviewer": "Bruce Somers",
+      "body": "Shana worked with me to sell our house in Los Angeles this year. She was incredibly detailed in her approach to researching and selling the house. Shana and her amazing team at Craft & Bauer used a lot of social media tools and specific marketing strategies that delivered.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana and her amazing team at Craft & Bauer used a lot of social media tools and specific marketing strategies that delivered.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 2.0,
+      "date": "4 months ago",
+      "reviewer": "wolf tree",
+      "body": "After speaking with Shana Gates, and outlining my maximum budget for real estate prices and HOA's, she sent me comps that were largely well outside of the parameters we agreed to. I replied to her email and provided my feedback, reminding her of the parameters we agreed upon.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "After speaking with Shana Gates, and outlining my maximum budget for real estate prices and HOA's, she sent me comps that were largely well outside of the parameters we agreed to.",
+      "use_in_aeo": false
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "7 months ago",
+      "reviewer": "Eric Williamson",
+      "body": "A Tip of the Hat to a True Pro. As a fellow real estate professional, I just want to take a moment to tip my hat to an exceptional agent — Shana Gates. We recently worked together on an escrow, and her professionalism was outstanding.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "As a fellow real estate professional, I just want to take a moment to tip my hat to an exceptional agent — Shana Gates.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "7 months ago",
+      "reviewer": "Terri",
+      "body": "All I can say is 'The Best'. So professional, friendly, and helpful through out the entire process. Jacob, Shana, and Christina went over and beyond to ensure all ran smoothly and it did! We couldn't be more pleased. Many thanks to Craft & Bauer!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "So professional, friendly, and helpful through out the entire process.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "7 months ago",
+      "reviewer": "Eric",
+      "body": "Shana is the best real estate agent out here in the desert. Very professional, kind, punctual, caring agent here in the Desert area.",
+      "cities_mentioned": [
+        "coachella-valley"
+      ],
+      "primary_city": "coachella-valley",
+      "best_quote": "Shana is the best real estate agent out here in the desert.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "4 months ago",
+      "reviewer": "Michelle Doan",
+      "body": "Shana is professional, responsive, and truly has your best interests in mind. Highly recommend!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana is professional, responsive, and truly has your best interests in mind.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "a year ago",
+      "reviewer": "mary lou page",
+      "body": "We want to say Shana was the ultimate professional realtor in every way. She was very easy to work with, as she listened intently. Her team never missed anything, got the best photographer, who did excellent work.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "We want to say Shana was the ultimate professional realtor in every way.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "a year ago",
+      "reviewer": "Tim Kelly",
+      "body": "Working with Shana Gates was an absolute pleasure! Her extensive knowledge of the local market, coupled with her unwavering commitment to finding the perfect home for us, made the entire process seamless and stress-free.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Working with Shana Gates was an absolute pleasure!",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "a year ago",
+      "reviewer": "Lainie Sims",
+      "body": "We recently purchased our home in La Quinta, CA using the professional services of Shana Gates and Charisse Drewry of Craft & Bauer Realty Co. We cannot express our immense gratitude and pleasure dealing with this team.",
+      "cities_mentioned": [
+        "la-quinta"
+      ],
+      "primary_city": "la-quinta",
+      "best_quote": "We recently purchased our home in La Quinta, CA using the professional services of Shana Gates and Charisse Drewry of Craft & Bauer Realty Co.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "a year ago",
+      "reviewer": "christina joy",
+      "body": "Shana is an absolute pleasure to work with! Known as the 'hostess with the mostess,' her warmth and expertise shine through in every client interaction. With over 20 years of experience, she navigates the real estate world easily.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana is an absolute pleasure to work with!",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "a year ago",
+      "reviewer": "Catherine Caldwell",
+      "body": "Thank you Jacob & Shana for helping us find our forever home! You both made this process so easy and carefree for us. The team at Craft & Bauer truly puts the client first. They were with us every step of the way and in constant communication.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "The team at Craft & Bauer truly puts the client first.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "a year ago",
+      "reviewer": "Dallas Williams",
+      "body": "Shana and her team are by far the best realtors I have ever experienced. They went above and beyond the service a normal Realtor provides. I highly recommend Shana whether you're selling or buying!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana and her team are by far the best realtors I have ever experienced.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 years ago",
+      "reviewer": "Candace Nurczyk",
+      "body": "Shana and Mark go above and beyond and not only make the best team but literally exceed your expectations. I'm a former Mortgage Consultant that has had the pleasure to work with so many real estate professionals.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana and Mark go above and beyond and not only make the best team but literally exceed your expectations.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 years ago",
+      "reviewer": "kallihan ross",
+      "body": "I would highly recommend Shana and her informative team when looking for homes in the Coachella Valley!",
+      "cities_mentioned": [
+        "coachella-valley"
+      ],
+      "primary_city": "coachella-valley",
+      "best_quote": "I would highly recommend Shana and her informative team when looking for homes in the Coachella Valley!",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 years ago",
+      "reviewer": "Jared Balassi",
+      "body": "Shana is just an amazing person overall. Not only is she a great realtor with plenty of experience to back her up. She is someone who I can truly rely on from a realtor to realtor relationship along with a personal friendship.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana is just an amazing person overall.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 years ago",
+      "reviewer": "Megan Pearce",
+      "body": "Shana was amazing to work with! She was very knowledgeable and made us feel comfortable through the entire process.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana was amazing to work with!",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 years ago",
+      "reviewer": "Ben Arwin",
+      "body": "Such a great team to work with. Took care of us every step of the way, provided great advice, and got the deal done on time and low stress. Thanks!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Such a great team to work with.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 years ago",
+      "reviewer": "Christopher Mee",
+      "body": "They need to have more than five stars for this young lady! I've never bought a home so stress-free. She's an absolute sweetheart.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "They need to have more than five stars for this young lady!",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "2 years ago",
+      "reviewer": "THE MORTGAGE DR",
+      "body": "Shana is an amazing agent that takes great care of all her clients. She's extremely knowledgeable and will always work hard to get you the best deal!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana is an amazing agent that takes great care of all her clients.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "Steve Weber",
+      "body": "Shana was fantastic. We were located 3000 miles away going through the buying process. Shana made sure everything went through without any problems. She worked with the seller's RE agent, ensured the home inspection was comprehensive.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana was fantastic.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "CHARISSE DREWRY",
+      "body": "Shana is knowledgeable in her field, efficient and responsive in handling questions and any issues that arose. She was definitely on my team, working towards my best interests. She got my family and I a great deal on the perfect house!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana is knowledgeable in her field, efficient and responsive in handling questions and any issues that arose.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "Alyssa Grace",
+      "body": "Shana and her team go the extra mile to ensure that their client is happy. Their teamwork, attention to detail and communication are excellent. I wouldn't hesitate to recommend Shana for all of your real estate needs.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana and her team go the extra mile to ensure that their client is happy.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "Amanda Peterson",
+      "body": "Shana goes to the greatest lengths to ensure everything is perfect. She works every angle to the last detail and is sure to follow up before, during, and after closing. When a blended family can say she meets every need you have to know she's exceptional.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "When a blended family can say she meets every need you have to know she's exceptional.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "Laura Grody",
+      "body": "Above and beyond doesn't even begin to describe Shana when it comes to service. We haven't even listed our property yet because of some legal things that need to occur first, but she's helped with repairs, estate sales, consignment sales.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Above and beyond doesn't even begin to describe Shana when it comes to service.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "J R",
+      "body": "Shana Gates and the rest of her team are total professionals. Their communication is excellent and they will always go above and beyond. I worked with Shana many times. She is my go-to for all of my real estate transactions.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana Gates and the rest of her team are total professionals.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "Denton Stowers",
+      "body": "Shana is one of the best agents to ever work with! She has amazing knowledge and really takes care of you.",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Shana is one of the best agents to ever work with!",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "Abby Farhoud",
+      "body": "My family and I decided to relocate and made the smart decision of hiring Shana and her team to sell my home. Wouldn't make a move without them! Thank you, Shana!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "My family and I decided to relocate and made the smart decision of hiring Shana and her team to sell my home.",
+      "use_in_aeo": true
+    },
+    {
+      "source": "google",
+      "source_url": "https://www.google.com/maps/place/?q=place_id:Shana+Gates+Craft+%26+Bauer+Real+Broker",
+      "rating": 5.0,
+      "date": "3 years ago",
+      "reviewer": "Ann A",
+      "body": "Sweet, quick to respond and driven to succeed for her clients!",
+      "cities_mentioned": [],
+      "primary_city": null,
+      "best_quote": "Sweet, quick to respond and driven to succeed for her clients!",
+      "use_in_aeo": true
+    },
     {
       "source": "zillow",
       "source_url": "https://www.zillow.com/profile/ShanaGatesTeam",
@@ -35,8 +819,12 @@
       "transaction": "CA 92236",
       "body": "Choosing Shana Gates in Coachella Valley, CA was amazing! Her investment property insights boosted our buying confidence! Truly the best realtor in coachella Valley.",
       "truncated": false,
-      "market": "coachella-valley",
+      "cities_mentioned": [
+        "coachella-valley"
+      ],
+      "primary_city": "coachella-valley",
       "primary_agent": "shana",
+      "best_quote": "Choosing Shana Gates in Coachella Valley, CA was amazing!",
       "use_in_aeo": true
     },
     {
@@ -48,8 +836,12 @@
       "transaction": "Bought a Condo home in 2026 in Palm desert, CA",
       "body": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond. I haven’t pu…",
       "truncated": true,
-      "market": "coachella-valley",
+      "cities_mentioned": [
+        "palm-desert"
+      ],
+      "primary_city": "palm-desert",
       "primary_agent": "shana-and-team",
+      "best_quote": "I recently purchased a beautiful home in Palm Desert, California, and I cannot say enough good things about my experience with Shana Gates and Ryann Hammond.",
       "use_in_aeo": true
     },
     {
@@ -61,8 +853,10 @@
       "transaction": "Sold a Single Family home in 2023 in Tracy, CA",
       "body": "I want to take a moment to thank Andrew for his outstanding service during a recent sales transaction. He had always been diligent with all the communication and patientl…",
       "truncated": true,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "andrew",
+      "best_quote": "I want to take a moment to thank Andrew for his outstanding service during a recent sales transaction.",
       "use_in_aeo": false
     },
     {
@@ -74,8 +868,10 @@
       "transaction": "Bought a Condo home in 2023 in Dublin, CA",
       "body": "Andrew has a very good knowledge of the Tri-valley area and his good negotiations skills landed us with a property for less than the asking price. He has always been a te…",
       "truncated": true,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "andrew",
+      "best_quote": "Andrew has a very good knowledge of the Tri-valley area and his good negotiations skills landed us with a property for less than the asking price.",
       "use_in_aeo": false
     },
     {
@@ -87,8 +883,10 @@
       "transaction": "Bought and sold a Single Family home in 2020 in Modesto, CA",
       "body": "Jesica is one of the hardest working people I know! We’ve purchased two homes and sold one with her. We have also recommended her to our family and they’ve also worked wi…",
       "truncated": true,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "jesica",
+      "best_quote": "Jesica is one of the hardest working people I know!",
       "use_in_aeo": false
     },
     {
@@ -100,8 +898,10 @@
       "transaction": "Bought and sold a Single Family home in 2010 in Turlock, CA",
       "body": "Jesica helped us purchase our first home ,as first home buyers we had so many questions she was very patient and professional with us. Her negotiations skills are excelle…",
       "truncated": true,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "jesica",
+      "best_quote": "Jesica helped us purchase our first home ,as first home buyers we had so many questions she was very patient and professional with us.",
       "use_in_aeo": false
     },
     {
@@ -113,8 +913,10 @@
       "transaction": "Sold a Single Family home in 2016 in Ceres, CA",
       "body": "Jesica is amazing. She listens to your needs, and explains everything. She also makes sure the other side is on time as well. She keeps you updated with everything.",
       "truncated": false,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "jesica",
+      "best_quote": "Jesica is amazing.",
       "use_in_aeo": false
     },
     {
@@ -126,8 +928,10 @@
       "transaction": "Bought a Single Family home in 2019 in Turlock, CA",
       "body": "She, is Great!!! Honest and very Knowledgeable. If you have any question about buying a home she has the answers and she goes above and beyond for her clients. I would re…",
       "truncated": true,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "unspecified",
+      "best_quote": "Honest and very Knowledgeable.",
       "use_in_aeo": false
     },
     {
@@ -139,8 +943,10 @@
       "transaction": "Bought and sold a Single Family home in 2020 in Modesto, CA",
       "body": "She agreed to give the buyer our refrigerator and washer and dryer with out ever mentioning it to us on the house we are selling. And on the house we bought I’m pretty s…",
       "truncated": true,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "unspecified",
+      "best_quote": "She agreed to give the buyer our refrigerator and washer and dryer with out ever mentioning it to us on the house we are selling.",
       "use_in_aeo": false
     },
     {
@@ -152,8 +958,10 @@
       "transaction": "Bought a Multiple Occupancy home in 2017 in Lodi, CA",
       "body": "My husband and I are 1st time homebuyers and originally sought out Shana specifically for her experience with foreclosures. We were pleasantly surprised by her extensive …",
       "truncated": true,
-      "market": "central-california",
+      "cities_mentioned": [],
+      "primary_city": null,
       "primary_agent": "shana",
+      "best_quote": "My husband and I are 1st time homebuyers and originally sought out Shana specifically for her experience with foreclosures.",
       "use_in_aeo": true
     }
   ]
