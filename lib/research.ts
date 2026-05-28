@@ -303,9 +303,12 @@ export async function runDailyResearch(date: string): Promise<ScoredArticle[]> {
     return true
   })
 
-  const toScore = uniqueResults.slice(0, 100)
+  // Cap scoring input — Claude Opus on 100 articles can push the function past
+  // Vercel's serverless timeout on smaller plans. 40 keeps quality while staying
+  // well under the 60s Hobby cap.
+  const toScore = uniqueResults.slice(0, 40)
   const scored = await scoreArticles(toScore)
-  const topScored = scored.sort((a, b) => b.score - a.score).slice(0, 50)
+  const topScored = scored.sort((a, b) => b.score - a.score).slice(0, 30)
 
   // Generate IdeaCandidates for the idea pipeline
   try {

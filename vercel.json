@@ -15,7 +15,7 @@
       "maxDuration": 120
     },
     "api/blog/run-research.ts": {
-      "maxDuration": 120
+      "maxDuration": 300
     },
     "api/blog/suggest-images.ts": {
       "maxDuration": 30
