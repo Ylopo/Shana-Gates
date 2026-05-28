@@ -34,6 +34,39 @@
     .header-nav { display: flex; gap: 12px; align-items: center; }
     .nav-link { color: var(--muted); font-size: 13px; text-decoration: none; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); transition: color 0.15s, border-color 0.15s; }
     .nav-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+    .btn-generate {
+      background: var(--bronze); color: #000; border: 1px solid var(--bronze);
+      font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 7px;
+      cursor: pointer; font-family: var(--font);
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: opacity 0.15s;
+    }
+    .btn-generate:hover:not(:disabled) { opacity: 0.85; }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Source pill on cards */
+    .source-pill {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .source-pill.news { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+    .source-pill.idea { background: rgba(200,200,200,0.12); color: var(--bronze); border: 1px solid var(--bronze-dim); }
+    .news-link { font-size: 11px; color: var(--bronze); text-decoration: none; margin-left: 6px; }
+    .news-link:hover { text-decoration: underline; }
+
+    /* Progress overlay for Generate Ideas */
+    .gen-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 9998;
+    }
+    .gen-overlay.visible { display: flex; }
+    .gen-overlay-inner {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 32px 40px; text-align: center; max-width: 380px;
+    }
+    .gen-overlay-inner .spinner { width: 36px; height: 36px; margin-bottom: 18px; }
+    .gen-overlay-inner h3 { font-size: 16px; margin-bottom: 8px; }
+    .gen-overlay-inner p  { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
     /* ── Filters ── */
     .filters { padding: 20px 32px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -147,10 +180,20 @@
     <div class="header-meta" id="header-meta">Loading ideas…</div>
   </div>
   <nav class="header-nav">
-    <a href="/admin/blog-picker/" class="nav-link">Blog Picker</a>
+    <button class="btn-generate" id="generateBtn" onclick="generateIdeas()">
+      ✦ Generate Ideas
+    </button>
     <a href="/admin/assistant/" class="nav-link">Assistant</a>
   </nav>
 </header>
+
+<div class="gen-overlay" id="genOverlay">
+  <div class="gen-overlay-inner">
+    <div class="spinner"></div>
+    <h3 id="genTitle">Researching Coachella Valley news…</h3>
+    <p id="genSubtitle">Tavily search → Claude scoring. Usually 30–60 seconds.</p>
+  </div>
+</div>
 
 <div class="filters" id="filters">
   <button class="filter-btn active" data-filter="pending" onclick="setFilter('pending')">Pending <span class="filter-count" id="count-pending">0</span></button>
@@ -171,23 +214,112 @@
   const secret = new URLSearchParams(location.search).get('secret') || ''
   const apiBase = secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas'
 
-  let allIdeas = []
+  let allIdeas = []           // unified list — entries tagged with _source ('idea' or 'article')
+  let currentDate = ''        // date string for the loaded articles batch
   let currentFilter = 'pending'
+
+  // Article local status lives in localStorage (server has no per-article status)
+  function articleStatusMap() {
+    try { return JSON.parse(localStorage.getItem('sg_article_status') || '{}') }
+    catch { return {} }
+  }
+  function setArticleStatus(id, status) {
+    const m = articleStatusMap()
+    if (status === 'pending') delete m[id]
+    else m[id] = status
+    localStorage.setItem('sg_article_status', JSON.stringify(m))
+  }
+
+  // Derive urgency for a news article from how recent it is
+  function urgencyFromDate(iso) {
+    const ts = Date.parse(iso || '')
+    if (isNaN(ts)) return 'evergreen'
+    const ageDays = (Date.now() - ts) / (1000 * 60 * 60 * 24)
+    if (ageDays < 1.5) return 'breaking'
+    if (ageDays < 7)   return 'timely'
+    return 'evergreen'
+  }
+
+  // Map ScoredArticle → idea-shaped card record
+  function articleToCard(a, statuses) {
+    return {
+      _source: 'article',
+      id: `article:${a.id}`,
+      rawId: a.id,
+      title: a.title,
+      angle: a.whyItMatters || a.summary || '',
+      summary: a.summary || '',
+      category: a.category,
+      urgency: urgencyFromDate(a.publishedDate),
+      sourceLabels: [a.source].filter(Boolean),
+      sourceUrl: a.url,
+      score: { total: typeof a.score === 'number' ? Math.round(a.score) : 0 },
+      status: statuses[a.id] || 'pending',
+    }
+  }
+
+  // Ensure every idea has _source: 'idea'
+  function tagIdea(i) {
+    return { ...i, _source: 'idea' }
+  }
 
   // ── Fetch ────────────────────────────────────────────────────────────────────
   async function loadIdeas() {
     try {
-      const res = await fetch(apiBase + (secret ? '&filter=all' : '?filter=all'))
-      if (res.status === 401) {
+      const ideasUrl    = apiBase + (secret ? '&filter=all' : '?filter=all')
+      const articlesUrl = '/api/blog/articles'
+      const [ideasRes, articlesRes] = await Promise.all([
+        fetch(ideasUrl),
+        fetch(articlesUrl).catch(() => null),
+      ])
+
+      if (ideasRes.status === 401) {
         document.getElementById('main').innerHTML = `<div class="state-msg"><div class="icon">🔒</div><strong>Not authorized</strong>Open this page from the link in your email digest.</div>`
         return
       }
-      const data = await res.json()
-      allIdeas = data.ideas ?? []
+
+      const ideaData = ideasRes.ok ? await ideasRes.json() : { ideas: [] }
+      const articleData = articlesRes && articlesRes.ok ? await articlesRes.json() : { articles: [], date: '' }
+      currentDate = articleData.date || ''
+      const statuses = articleStatusMap()
+
+      const ideas    = (ideaData.ideas || []).map(tagIdea)
+      const articles = (articleData.articles || []).map(a => articleToCard(a, statuses))
+
+      // Newest / highest-scoring first across both sources
+      allIdeas = [...articles, ...ideas].sort((a, b) => (b.score?.total || 0) - (a.score?.total || 0))
+
       updateCounts()
       renderIdeas()
     } catch {
       document.getElementById('main').innerHTML = `<div class="state-msg"><div class="icon">⚠️</div><strong>Failed to load</strong>Check your connection and reload.</div>`
+    }
+  }
+
+  // ── Generate Ideas: re-run today's research ────────────────────────────────
+  async function generateIdeas() {
+    const btn = document.getElementById('generateBtn')
+    const overlay = document.getElementById('genOverlay')
+    btn.disabled = true
+    btn.innerHTML = '<span class="spinner" style="width:13px;height:13px;border-width:2px;border-color:rgba(0,0,0,0.25);border-top-color:#000;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Researching…'
+    overlay.classList.add('visible')
+    try {
+      const res = await fetch('/api/blog/run-research?type=daily', { method: 'POST' })
+      if (res.status === 401) {
+        localStorage.removeItem('sg_auth')
+        window.location.href = '/admin/assistant/login.html'
+        return
+      }
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || `Server error (${res.status})`)
+      await loadIdeas()
+      showToast(`✓ Generated ${data.articleCount || ''} fresh articles and ideas`)
+    } catch (err) {
+      showToast(`Research failed: ${err.message}`, true)
+    } finally {
+      overlay.classList.remove('visible')
+      btn.disabled = false
+      btn.innerHTML = '✦ Generate Ideas'
     }
   }
 
@@ -196,7 +328,10 @@
     document.getElementById('count-approved').textContent = allIdeas.filter(i => i.status === 'approved').length
     document.getElementById('count-all').textContent      = allIdeas.length
     const pending = allIdeas.filter(i => i.status === 'pending').length
-    document.getElementById('header-meta').textContent = `${allIdeas.length} total ideas · ${pending} pending review`
+    const articles = allIdeas.filter(i => i._source === 'article').length
+    const ideas = allIdeas.length - articles
+    document.getElementById('header-meta').textContent =
+      `${pending} pending · ${articles} news article${articles !== 1 ? 's' : ''} + ${ideas} scored idea${ideas !== 1 ? 's' : ''}`
   }
 
   function setFilter(f) {
@@ -214,9 +349,9 @@
 
     if (filtered.length === 0) {
       const msgs = {
-        pending:  { icon: '✅', title: 'All caught up!', body: 'No pending ideas right now. Check back after the daily 6 AM cron runs.' },
-        approved: { icon: '📝', title: 'None approved yet', body: 'Approve ideas from the Pending tab to see them here.' },
-        all:      { icon: '💡', title: 'No ideas yet', body: 'Ideas appear here after the 6 AM daily research cron runs.' },
+        pending:  { icon: '✅', title: 'All caught up!', body: 'Nothing pending. Click ✦ Generate Ideas to pull fresh Coachella Valley news and scored ideas.' },
+        approved: { icon: '📝', title: 'None approved yet', body: 'Approve from the Pending tab to see them here.' },
+        all:      { icon: '💡', title: 'No content yet', body: 'Click ✦ Generate Ideas to research today\'s Coachella Valley news, or wait for the daily 6 AM cron.' },
       }
       const m = msgs[currentFilter] || msgs.all
       main.innerHTML = `<div class="state-msg"><div class="icon">${m.icon}</div><strong>${m.title}</strong>${m.body}</div>`
@@ -277,6 +412,14 @@
 
   function renderCard(idea) {
     const isTopPick = idea.score.total >= 75
+    const isArticle = idea._source === 'article'
+    const sourcePill = `<span class="source-pill ${isArticle ? 'news' : 'idea'}">${isArticle ? '📰 News' : '💡 Idea'}</span>`
+    const sourceLinks = (idea.sourceLabels || [])
+      .map(l => `<span class="source-label">${escHtml(l)}</span>`)
+      .join('')
+    const externalLink = isArticle && idea.sourceUrl
+      ? `<a class="news-link" href="${escHtml(idea.sourceUrl)}" target="_blank" rel="noopener">View source ↗</a>`
+      : ''
     return `
     <div class="idea-card status-${idea.status}" id="card-${idea.id}">
       <div class="card-top">
@@ -286,14 +429,15 @@
         </div>
         <div class="card-body">
           <div class="card-badges">
+            ${sourcePill}
             ${isTopPick ? '<span class="badge badge-top-pick">★ Top Pick</span>' : ''}
             <span class="${catBadgeClass(idea.category)}">${(idea.category || '').replace(/-/g, ' ')}</span>
             <span class="badge badge-${idea.urgency}">${idea.urgency}</span>
           </div>
           <div class="card-title">${escHtml(idea.title)}</div>
           <div class="card-angle">${escHtml(idea.angle)}</div>
-          <div class="card-sources">${(idea.sourceLabels || []).map(l => `<span class="source-label">${escHtml(l)}</span>`).join('')}</div>
-          ${renderScoreBars(idea.score)}
+          <div class="card-sources">${sourceLinks}${externalLink}</div>
+          ${isArticle ? '' : renderScoreBars(idea.score)}
           <div class="card-actions" id="actions-${idea.id}">${renderActions(idea)}</div>
           <div id="result-${idea.id}"></div>
         </div>
@@ -303,9 +447,16 @@
 
   // ── Actions ────────────────────────────────────────────────────────────────
   async function setStatus(id, status) {
-    // Optimistic update
     const idea = allIdeas.find(i => i.id === id)
     if (idea) { idea.status = status; updateCounts(); renderIdeas() }
+
+    // Articles: persist locally only (server has no idea-style status for raw articles)
+    if (idea && idea._source === 'article') {
+      setArticleStatus(idea.rawId, status)
+      const labels = { approved: 'Approved ✓', skipped: 'Skipped', deferred: 'Deferred', pending: 'Reset to pending' }
+      showToast(labels[status] || status)
+      return
+    }
 
     try {
       const res = await fetch(secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas', {
@@ -323,18 +474,42 @@
   }
 
   async function writePost(id) {
+    const idea = allIdeas.find(i => i.id === id)
     const btn = document.getElementById(`write-btn-${id}`)
     const resultEl = document.getElementById(`result-${id}`)
     if (btn) { btn.disabled = true; btn.textContent = 'Writing…' }
     if (resultEl) resultEl.innerHTML = ''
 
     try {
-      const res = await fetch(secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas', {
+      let res, data
+      if (idea && idea._source === 'article') {
+        // News article path: write a single post via the batch publish endpoint
+        res = await fetch('/api/blog/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ date: currentDate, articleIds: [idea.rawId] }),
+        })
+        data = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(data.error || 'Write failed')
+        const post = (data.posts || [])[0]
+        if (!post) throw new Error('No post returned from server')
+        const blogUrl = `https://shanasells.com/blog/post.html?slug=${encodeURIComponent(post.slug)}`
+        if (resultEl) resultEl.innerHTML = `<div class="write-result">✓ Written: <strong>${escHtml(post.title || idea.title)}</strong> — queued in <a href="/admin/va-queue/">Media Queue</a> · <a href="${blogUrl}" target="_blank">Preview →</a></div>`
+        if (btn) btn.remove()
+        setArticleStatus(idea.rawId, 'approved')
+        idea.status = 'approved'
+        updateCounts()
+        showToast('Post written — review in Media Queue')
+        return
+      }
+
+      // Scored-idea path (unchanged)
+      res = await fetch(secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
       })
-      const data = await res.json()
+      data = await res.json()
 
       if (!res.ok) {
         if (res.status === 422 && data.violations) {
@@ -355,13 +530,11 @@
       if (resultEl) resultEl.innerHTML = resultHtml
       if (btn) btn.remove()
 
-      // Update idea in memory
-      const idea = allIdeas.find(i => i.id === id)
-      if (idea) { idea.status = 'approved' }
+      if (idea) idea.status = 'approved'
       updateCounts()
       showToast('Post published to blog ✓')
     } catch (err) {
-      if (resultEl) resultEl.innerHTML = `<div class="write-error">Network error — try again</div>`
+      if (resultEl) resultEl.innerHTML = `<div class="write-error">${escHtml(err.message || 'Network error — try again')}</div>`
       if (btn) { btn.disabled = false; btn.textContent = 'Write & Publish →' }
     }
   }
