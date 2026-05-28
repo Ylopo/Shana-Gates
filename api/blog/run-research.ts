@@ -4,8 +4,15 @@
  * Auth: sg_assistant_session cookie OR ?secret=ADMIN_SECRET query param
  *       (matches /api/content/ideas — works regardless of how the admin
  *       page was opened).
+ *
+ * Imports are static (not dynamic) so Vercel's file-tracer bundles
+ * lib/research.ts and lib/weekly-research.ts into /var/task. Dynamic
+ * imports here previously produced ERR_MODULE_NOT_FOUND at runtime.
  */
 import { createHmac } from 'crypto'
+import { runWeeklyResearch } from '../../lib/weekly-research'
+import { runDailyResearch } from '../../lib/research'
+import { storeWeeklyTopics, storeDailyArticles, incrementShownCount } from '../../lib/blog-store'
 
 const COOKIE_NAME = 'sg_assistant_session'
 
@@ -69,12 +76,6 @@ export default async function handler(req: any, res: any) {
     }
 
     if (type === 'weekly') {
-      let runWeeklyResearch: any, storeWeeklyTopics: any
-      try {
-        ;({ runWeeklyResearch } = await import('../../lib/weekly-research'))
-        ;({ storeWeeklyTopics } = await import('../../lib/blog-store'))
-      } catch (err) { return fail(res, 'import weekly modules', err) }
-
       try {
         const topics = await runWeeklyResearch()
         if (topics.length === 0) return res.status(200).json({ ok: true, count: 0, topics: [] })
@@ -84,12 +85,6 @@ export default async function handler(req: any, res: any) {
     }
 
     if (type === 'daily') {
-      let runDailyResearch: any, storeDailyArticles: any, incrementShownCount: any
-      try {
-        ;({ runDailyResearch } = await import('../../lib/research'))
-        ;({ storeDailyArticles, incrementShownCount } = await import('../../lib/blog-store'))
-      } catch (err) { return fail(res, 'import daily modules', err) }
-
       const today = new Date().toISOString().split('T')[0]
       let articles: any[]
       try {
