@@ -77,6 +77,7 @@
     }
     .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
     .status-media_ready   { background: rgba(59,130,246,0.15); color: var(--blue);  border: 1px solid rgba(59,130,246,0.25); }
+    .status-scheduled     { background: rgba(20,184,166,0.15); color: #5eead4;      border: 1px solid rgba(20,184,166,0.25); }
 
     .cat-badge {
       font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
@@ -196,7 +197,10 @@
         ? `<img class="post-thumb" src="${post.heroImageUrl}" alt="${post.title}" loading="lazy">`
         : `<div class="post-thumb-placeholder">🌵</div>`
       const statusClass = `status-${post.workflowStatus || 'media_pending'}`
-      const statusLabel = post.workflowStatus === 'media_ready' ? 'Ready' : 'Needs Review'
+      const statusLabel =
+        post.workflowStatus === 'media_ready' ? 'Ready' :
+        post.workflowStatus === 'scheduled'   ? 'Scheduled' :
+        'Needs Review'
       const catLabel = CATEGORY_LABELS[post.category] || post.category
       const safeTitle = post.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')
       return `
@@ -227,7 +231,7 @@
         document.getElementById('loadingState').style.display = 'none'
 
         const pending = posts.filter(p => p.workflowStatus === 'media_pending' || !p.workflowStatus)
-        const ready   = posts.filter(p => p.workflowStatus === 'media_ready')
+        const ready   = posts.filter(p => p.workflowStatus === 'media_ready' || p.workflowStatus === 'scheduled')
 
         document.getElementById('headerMeta').textContent =
           `${posts.length} post${posts.length !== 1 ? 's' : ''} awaiting review`

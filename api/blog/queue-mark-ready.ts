@@ -36,7 +36,7 @@ export default async function handler(req: any, res: any) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 
-  const { slug, socialCopy, heroImageBase64, heroImageUrl, title, videoScript, videoUrl, videoThumbnailUrl } = req.body ?? {}
+  const { slug, socialCopy, heroImageBase64, heroImageUrl, title, videoScript, videoUrl, videoThumbnailUrl, captions } = req.body ?? {}
   if (!slug || typeof slug !== 'string') {
     return res.status(400).json({ error: 'slug required' })
   }
@@ -67,6 +67,7 @@ export default async function handler(req: any, res: any) {
       videoScript ?? undefined,
       videoUrl ?? undefined,
       videoThumbnailUrl ?? undefined,
+      captions && typeof captions === 'object' ? captions : undefined,
     )
     return res.status(200).json({ ok: true })
   } catch (err: any) {

@@ -43,6 +43,58 @@
     }
     .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
     .status-media_ready   { background: rgba(59,130,246,0.15);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.3); }
+    .status-scheduled     { background: rgba(20,184,166,0.15);  color: #5eead4;      border: 1px solid rgba(20,184,166,0.3); }
+
+    /* ── Caption platform tabs ── */
+    .tab-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+    .tab-btn {
+      background: var(--surf2); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--muted); padding: 6px 10px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font); display: inline-flex; align-items: center; gap: 5px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .tab-btn:hover:not(.active) { color: var(--text); border-color: rgba(200,200,200,0.3); }
+    .tab-btn.active { background: rgba(255,255,255,0.08); border-color: rgba(200,200,200,0.4); color: var(--text); }
+    .tab-btn .tab-icon { font-size: 13px; }
+
+    /* ── Publish delay picker ── */
+    .delay-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+    }
+    .delay-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .delay-btn {
+      background: var(--surf2); border: 1px solid var(--border); border-radius: 6px;
+      color: rgba(255,255,255,0.6); padding: 5px 10px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .delay-btn:hover:not(.active) { color: var(--text); border-color: rgba(200,200,200,0.3); }
+    .delay-btn.active {
+      background: var(--bronze); color: #000; border-color: var(--bronze);
+    }
+    .delay-when { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+    .btn-schedule {
+      width: 100%; padding: 13px; border-radius: 8px;
+      background: #14b8a6; color: #000;
+      border: none; font-size: 15px; font-weight: 700; cursor: pointer;
+      font-family: var(--font); display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .btn-schedule:hover:not(:disabled) { opacity: 0.85; }
+    .btn-schedule:disabled { opacity: 0.3; cursor: not-allowed; }
+    .scheduled-banner {
+      background: rgba(20,184,166,0.08); border: 1px solid rgba(20,184,166,0.25);
+      border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;
+    }
+    .scheduled-banner-title { font-size: 12px; font-weight: 700; color: #5eead4; margin-bottom: 4px; }
+    .scheduled-banner-time { font-size: 13px; color: var(--text); margin-bottom: 8px; }
+    .btn-cancel-schedule {
+      background: none; border: 1px solid rgba(239,68,68,0.4); color: var(--red);
+      border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+      cursor: pointer; font-family: var(--font);
+    }
+    .btn-cancel-schedule:hover { background: rgba(239,68,68,0.08); }
 
     /* ── Editor grid ── */
     .editor-wrap { max-width: 1120px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -300,6 +352,27 @@
     let pendingVideoUrl = null        // Vercel Blob URL after upload
     let heygenPollInterval = null     // polling timer for HeyGen status
     let publishPollTimers = {}        // per-platform Blotato poll timers
+    let publishDelay = null           // null = publish now, otherwise hours of delay
+    let activeCaptionTab = 'facebook' // which platform tab is shown
+
+    const PLATFORM_TABS = [
+      { key: 'facebook',  icon: '📘', label: 'Facebook'  },
+      { key: 'linkedin',  icon: '💼', label: 'LinkedIn'  },
+      { key: 'twitter',   icon: '𝕏',  label: 'X'         },
+      { key: 'threads',   icon: '🧵', label: 'Threads'   },
+      { key: 'instagram', icon: '📸', label: 'Instagram' },
+      { key: 'youtube',   icon: '▶️', label: 'YouTube'   },
+      { key: 'tiktok',    icon: '🎵', label: 'TikTok'    },
+    ]
+    const PLATFORM_HINTS = {
+      facebook:  "Long-form caption for Shana's Facebook page. The blog URL is appended on publish.",
+      linkedin:  "Professional take for LinkedIn. A category hashtag and the blog URL are appended on publish.",
+      twitter:   "Short caption for X — keep it punchy. The blog URL is appended on publish.",
+      threads:   "Conversational caption for Threads. The blog URL is appended on publish.",
+      instagram: "Caption for Instagram. Hashtags + the blog URL are appended on publish.",
+      youtube:   "Description for the YouTube Short. The blog URL is appended on publish.",
+      tiktok:    "Caption for TikTok. A category hashtag and the blog URL are appended on publish.",
+    }
 
     // ── Global helpers (survive innerHTML reinsertion) ──────────────────────
 
@@ -469,19 +542,104 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
       })
     }
 
+    let currentCaptions = {} // per-platform captions, updated as user edits
+
+    function switchCaptionTab(key) {
+      // Save current textarea content into the previous tab's slot
+      const ta = document.getElementById('captionArea')
+      if (ta) currentCaptions[activeCaptionTab] = ta.value
+      activeCaptionTab = key
+      document.querySelectorAll('#captionTabs .tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === key)
+      })
+      if (ta) ta.value = currentCaptions[key] || ''
+      const hint = document.getElementById('captionHint')
+      if (hint) hint.textContent = PLATFORM_HINTS[key] || ''
+    }
+
+    function collectCaptions() {
+      // Snapshot the active textarea before returning
+      const ta = document.getElementById('captionArea')
+      if (ta) currentCaptions[activeCaptionTab] = ta.value
+      const out = {}
+      PLATFORM_TABS.forEach(t => {
+        const v = (currentCaptions[t.key] || '').trim()
+        if (v) out[t.key] = v
+      })
+      return out
+    }
+
+    function formatScheduledTime(iso) {
+      return new Date(iso).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+      })
+    }
+
+    function setPublishDelay(hours) {
+      publishDelay = hours
+      document.querySelectorAll('#delayRow .delay-btn').forEach(btn => {
+        btn.classList.toggle('active', String(btn.dataset.hours) === String(hours))
+      })
+      const when = document.getElementById('delayWhen')
+      if (when) {
+        if (hours === null || hours === 0) {
+          when.style.display = 'none'
+        } else {
+          when.style.display = 'block'
+          when.textContent = `Publishes at: ${formatScheduledTime(new Date(Date.now() + hours * 3600 * 1000).toISOString())}`
+        }
+      }
+      const btn = document.getElementById('publishBtn')
+      if (btn) {
+        if (hours === null || hours === 0) {
+          btn.className = 'btn-publish'
+          btn.innerHTML = 'Publish'
+        } else {
+          btn.className = 'btn-schedule'
+          btn.innerHTML = '📅 Schedule'
+        }
+      }
+    }
+
+    async function cancelSchedule() {
+      if (!currentPost) return
+      if (!confirm('Cancel the scheduled publish? The post will return to "Ready to Publish".')) return
+      try {
+        const r = await fetch('/api/blog/queue-schedule', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: currentPost.slug }),
+        })
+        if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        const d = await r.json()
+        if (!r.ok) throw new Error(d.error || 'Failed')
+        window.location.reload()
+      } catch (err) {
+        document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
+      }
+    }
+
     function render(post) {
       currentPost = post
       const status = post.workflowStatus || 'media_pending'
-      const isPending = status === 'media_pending'
-      const isReady   = status === 'media_ready'
-      const catLabel  = CATEGORY_LABELS[post.category] || post.category
-      const prompt    = buildImagePrompt(post)
+      const isPending   = status === 'media_pending'
+      const isReady     = status === 'media_ready'
+      const isScheduled = status === 'scheduled'
+      const catLabel    = CATEGORY_LABELS[post.category] || post.category
+      const prompt      = buildImagePrompt(post)
+
+      // Seed caption state from stored fields
+      currentCaptions = Object.assign({}, post.captions || {})
+      // Backwards compat: if no per-platform captions yet, seed Facebook from socialCopy
+      if (!currentCaptions.facebook && post.socialCopy) currentCaptions.facebook = post.socialCopy
+      activeCaptionTab = 'facebook'
+      publishDelay = null
 
       document.getElementById('topbarTitle').textContent = post.title
       document.title = `Review: ${post.title}`
       const pill = document.getElementById('statusPill')
       pill.className = `status-pill status-${status}`
-      pill.textContent = isPending ? 'Media Pending' : 'Ready to Publish'
+      pill.textContent = isPending ? 'Media Pending' : isScheduled ? 'Scheduled' : 'Ready to Publish'
 
       const thumbHtml = post.heroImageUrl
         ? `<img id="thumbImg" src="${post.heroImageUrl}" alt="">`
@@ -518,16 +676,23 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             ${post.excerpt ? `<div class="post-excerpt">${post.excerpt}</div>` : ''}
           </div>
 
-          <!-- Facebook caption -->
+          <!-- Social captions (per platform) -->
           <div class="card">
-            <div class="card-label">Facebook Post Caption</div>
-            <div class="caption-hint">This text will be posted to Shana's Facebook page. Edit it before publishing.</div>
+            <div class="card-label">Social Captions</div>
+            <div class="caption-hint" id="captionHint">${PLATFORM_HINTS[activeCaptionTab]}</div>
             <button class="gen-btn" id="genBtn">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              Generate Caption
+              Generate All Captions
             </button>
-            <textarea id="captionArea" placeholder="Facebook post caption will appear here after generating or editing…">${post.socialCopy || ''}</textarea>
-            <div class="url-hint">The blog post URL will be appended automatically when published.</div>
+            <div class="tab-row" id="captionTabs">
+              ${PLATFORM_TABS.map(t => `
+                <button class="tab-btn ${t.key === activeCaptionTab ? 'active' : ''}" data-tab="${t.key}" onclick="switchCaptionTab('${t.key}')">
+                  <span class="tab-icon">${t.icon}</span>${t.label}
+                </button>
+              `).join('')}
+            </div>
+            <textarea id="captionArea" placeholder="Caption for the selected platform — generate, then edit before publishing…"></textarea>
+            <div class="url-hint">The blog post URL is appended automatically when published.</div>
             <div id="genError"></div>
           </div>
 
@@ -605,14 +770,36 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
                 <li id="bulletVideo" style="display:none;">Publish video to YouTube, TikTok, Facebook Reel, LinkedIn, X, Threads &amp; Instagram</li>
               </ul>
             </div>
+            ${isScheduled && post.scheduledPublishAt ? `
+              <div class="scheduled-banner">
+                <div class="scheduled-banner-title">📅 Scheduled</div>
+                <div class="scheduled-banner-time">${formatScheduledTime(post.scheduledPublishAt)}</div>
+                <button class="btn-cancel-schedule" onclick="cancelSchedule()">Cancel scheduled publish</button>
+              </div>
+            ` : ''}
             <div id="platformStatus" style="display:none;" class="platform-list"></div>
-            <button class="btn-publish" id="publishBtn" ${!isReady ? 'disabled' : ''}>
-              Publish
-            </button>
+            ${!isScheduled ? `
+              <div class="delay-label">When to publish</div>
+              <div class="delay-row" id="delayRow">
+                <button class="delay-btn active" data-hours="" onclick="setPublishDelay(null)">Now</button>
+                <button class="delay-btn" data-hours="1"  onclick="setPublishDelay(1)">+1h</button>
+                <button class="delay-btn" data-hours="2"  onclick="setPublishDelay(2)">+2h</button>
+                <button class="delay-btn" data-hours="4"  onclick="setPublishDelay(4)">+4h</button>
+                <button class="delay-btn" data-hours="8"  onclick="setPublishDelay(8)">+8h</button>
+                <button class="delay-btn" data-hours="12" onclick="setPublishDelay(12)">+12h</button>
+                <button class="delay-btn" data-hours="24" onclick="setPublishDelay(24)">+1 day</button>
+                <button class="delay-btn" data-hours="48" onclick="setPublishDelay(48)">+2 days</button>
+                <button class="delay-btn" data-hours="72" onclick="setPublishDelay(72)">+3 days</button>
+              </div>
+              <div class="delay-when" id="delayWhen" style="display:none;"></div>
+              <button class="btn-publish" id="publishBtn" ${!isReady ? 'disabled' : ''}>
+                Publish
+              </button>
+            ` : ''}
             <button class="btn-mark-ready" id="markReadyBtn" ${!isPending ? 'disabled' : ''}>
               Mark as Ready
             </button>
-            <div class="publish-prereq" id="publishPrereq" ${isReady ? 'style="display:none"' : ''}>
+            <div class="publish-prereq" id="publishPrereq" ${isReady || isScheduled ? 'style="display:none"' : ''}>
               Upload a thumbnail, then click<br>"Mark as Ready" first.
             </div>
             <div id="actionError"></div>
@@ -623,6 +810,15 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
 
       document.getElementById('editorGrid').style.display = 'grid'
       document.getElementById('loadingState').style.display = 'none'
+
+      // Seed caption textarea with active platform value + listen for edits
+      const captionEl = document.getElementById('captionArea')
+      if (captionEl) {
+        captionEl.value = currentCaptions[activeCaptionTab] || ''
+        captionEl.addEventListener('input', () => {
+          currentCaptions[activeCaptionTab] = captionEl.value
+        })
+      }
 
       // File upload
       document.getElementById('fileInput').addEventListener('change', async (e) => {
@@ -641,14 +837,14 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
 
       updatePublishBullet()
 
-      // Generate caption
+      // Generate all platform captions
       document.getElementById('genBtn').addEventListener('click', async () => {
         const btn = document.getElementById('genBtn')
         btn.disabled = true
-        btn.innerHTML = `<span class="spinner spinner-muted"></span> Generating…`
+        btn.innerHTML = `<span class="spinner spinner-muted"></span> Generating all platforms…`
         document.getElementById('genError').innerHTML = ''
         try {
-          const r = await fetch('/api/blog/generate-caption', {
+          const r = await fetch('/api/blog/generate-platform-captions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ slug: post.slug }),
@@ -656,12 +852,17 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
           const d = await r.json()
           if (!r.ok) throw new Error(d.error || 'Failed')
-          document.getElementById('captionArea').value = d.caption
+          // d.captions has facebook/youtube/linkedin/twitter/tiktok/threads/instagram
+          PLATFORM_TABS.forEach(t => {
+            if (d.captions[t.key]) currentCaptions[t.key] = d.captions[t.key]
+          })
+          const ta = document.getElementById('captionArea')
+          if (ta) ta.value = currentCaptions[activeCaptionTab] || ''
         } catch (err) {
           document.getElementById('genError').innerHTML = `<div class="inline-error">${err.message}</div>`
         } finally {
           btn.disabled = false
-          btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Generate Caption`
+          btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Generate All Captions`
         }
       })
 
@@ -725,9 +926,11 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
         btn.disabled = true
         btn.textContent = 'Saving…'
         document.getElementById('actionError').innerHTML = ''
+        const captions = collectCaptions()
         const body = {
           slug: post.slug,
-          socialCopy: document.getElementById('captionArea').value,
+          socialCopy: captions.facebook || '',
+          captions,
           title: document.getElementById('titleInput').value.trim() || post.title,
           videoScript: document.getElementById('scriptArea').value.trim() || undefined,
           videoUrl: pendingVideoUrl || undefined,
@@ -750,24 +953,64 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
         }
       })
 
-      // Publish
-      document.getElementById('publishBtn').addEventListener('click', async () => {
+      // Publish (or Schedule, depending on publishDelay)
+      const publishBtnEl = document.getElementById('publishBtn')
+      if (publishBtnEl) publishBtnEl.addEventListener('click', async () => {
         const btn = document.getElementById('publishBtn')
-        btn.disabled = true
-        btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing…`
+        const captions = collectCaptions()
+        const saveBody = {
+          slug: post.slug,
+          socialCopy: captions.facebook || '',
+          captions,
+          title: document.getElementById('titleInput').value.trim() || post.title,
+          videoScript: document.getElementById('scriptArea').value.trim() || undefined,
+          videoUrl: pendingVideoUrl || undefined,
+        }
+        if (pendingImageBase64) saveBody.heroImageBase64 = pendingImageBase64
         document.getElementById('actionError').innerHTML = ''
 
-        try {
-          // 1. Save video fields + mark published in Redis
-          const saveBody = {
-            slug: post.slug,
-            socialCopy: document.getElementById('captionArea').value,
-            title: document.getElementById('titleInput').value.trim() || post.title,
-            videoScript: document.getElementById('scriptArea').value.trim() || undefined,
-            videoUrl: pendingVideoUrl || undefined,
+        // ── Schedule path ─────────────────────────────────────────────────
+        if (publishDelay && publishDelay > 0) {
+          btn.disabled = true
+          btn.innerHTML = `<span class="spinner spinner-green"></span> Scheduling…`
+          try {
+            // Save edits first
+            const saveRes = await fetch('/api/blog/queue-mark-ready', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(saveBody),
+            })
+            if (!saveRes.ok) {
+              const sd = await saveRes.json().catch(() => ({}))
+              throw new Error(sd.error || 'Failed to save before scheduling')
+            }
+            const scheduledPublishAt = new Date(Date.now() + publishDelay * 3600 * 1000).toISOString()
+            const sr = await fetch('/api/blog/queue-schedule', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                slug: post.slug,
+                scheduledPublishAt,
+                videoUrl: pendingVideoUrl || undefined,
+              }),
+            })
+            if (sr.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+            const sd = await sr.json()
+            if (!sr.ok) throw new Error(sd.error || 'Schedule failed')
+            window.location.reload()
+          } catch (err) {
+            document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
+            btn.disabled = false
+            btn.innerHTML = '📅 Schedule'
           }
-          if (pendingImageBase64) saveBody.heroImageBase64 = pendingImageBase64
+          return
+        }
 
+        // ── Publish-now path ──────────────────────────────────────────────
+        btn.disabled = true
+        btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing…`
+
+        try {
           const saveRes = await fetch('/api/blog/queue-mark-ready', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

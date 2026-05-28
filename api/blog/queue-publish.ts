@@ -67,7 +67,16 @@ export default async function handler(req: any, res: any) {
     if (post.heroImageUrl && process.env.BLOTATO_API_KEY) {
       const articleUrl = `${SITE_URL}/blog/post.html?slug=${post.slug}`
 
-      const captions = post.socialCopy
+      const stored = post.captions
+      const captions = stored
+        ? {
+            facebook:  stored.facebook  || post.socialCopy || post.excerpt,
+            linkedin:  stored.linkedin  || post.socialCopy || post.excerpt,
+            twitter:   stored.twitter   || post.title,
+            threads:   stored.threads   || post.socialCopy || post.excerpt,
+            instagram: stored.instagram || post.socialCopy || post.excerpt,
+          }
+        : post.socialCopy
         ? {
             facebook:  post.socialCopy,
             linkedin:  post.socialCopy,

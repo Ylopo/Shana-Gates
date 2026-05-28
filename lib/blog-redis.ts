@@ -12,7 +12,17 @@ import type { HeroImageResult } from './blog-images'
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export type BlogWorkflowStatus = 'media_pending' | 'media_ready' | 'published'
+export type BlogWorkflowStatus = 'media_pending' | 'media_ready' | 'scheduled' | 'published'
+
+export interface PlatformCaptions {
+  facebook?: string
+  youtube?: string
+  linkedin?: string
+  twitter?: string
+  tiktok?: string
+  threads?: string
+  instagram?: string
+}
 
 export interface BlogPostSummary {
   _id: string
@@ -26,9 +36,11 @@ export interface BlogPostSummary {
   city?: string
   workflowStatus?: BlogWorkflowStatus
   socialCopy?: string
+  captions?: PlatformCaptions
   videoScript?: string
   videoUrl?: string
   videoThumbnailUrl?: string
+  scheduledPublishAt?: string
 }
 
 export interface BlogPostFull extends BlogPostSummary {
@@ -129,6 +141,7 @@ export async function markPostReady(
   videoScript?: string,
   videoUrl?: string,
   videoThumbnailUrl?: string,
+  captions?: PlatformCaptions,
 ): Promise<void> {
   const key = `blog_post:${slug}`
   const raw = await redis.get<string>(key)
@@ -141,6 +154,7 @@ export async function markPostReady(
   if (videoScript !== undefined) post.videoScript = videoScript
   if (videoUrl !== undefined) post.videoUrl = videoUrl
   if (videoThumbnailUrl !== undefined) post.videoThumbnailUrl = videoThumbnailUrl
+  if (captions !== undefined) post.captions = captions
   await redis.set(key, JSON.stringify(post))
 
   // Mirror status into queue summary
@@ -157,8 +171,73 @@ export async function markPostReady(
     if (videoScript !== undefined) queue[idx].videoScript = videoScript
     if (videoUrl !== undefined) queue[idx].videoUrl = videoUrl
     if (videoThumbnailUrl !== undefined) queue[idx].videoThumbnailUrl = videoThumbnailUrl
+    if (captions !== undefined) queue[idx].captions = captions
     await redis.set('blog_posts_queue', JSON.stringify(queue))
   }
+}
+
+// ── Scheduling ─────────────────────────────────────────────────────────────
+
+export async function markPostScheduled(
+  slug: string,
+  scheduledPublishAt: string,
+  videoUrl?: string,
+  videoThumbnailUrl?: string,
+): Promise<void> {
+  const key = `blog_post:${slug}`
+  const raw = await redis.get<string>(key)
+  if (!raw) throw new Error(`Post not found: ${slug}`)
+  const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
+  post.workflowStatus = 'scheduled'
+  post.scheduledPublishAt = scheduledPublishAt
+  if (videoUrl !== undefined) post.videoUrl = videoUrl
+  if (videoThumbnailUrl !== undefined) post.videoThumbnailUrl = videoThumbnailUrl
+  await redis.set(key, JSON.stringify(post))
+
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  const queue: BlogPostSummary[] = qRaw
+    ? (typeof qRaw === 'string' ? JSON.parse(qRaw) : (qRaw as BlogPostSummary[]))
+    : []
+  const idx = queue.findIndex((p) => p.slug === slug)
+  if (idx >= 0) {
+    queue[idx].workflowStatus = 'scheduled'
+    queue[idx].scheduledPublishAt = scheduledPublishAt
+    if (videoUrl !== undefined) queue[idx].videoUrl = videoUrl
+    if (videoThumbnailUrl !== undefined) queue[idx].videoThumbnailUrl = videoThumbnailUrl
+    await redis.set('blog_posts_queue', JSON.stringify(queue))
+  }
+}
+
+export async function cancelPostSchedule(slug: string): Promise<void> {
+  const key = `blog_post:${slug}`
+  const raw = await redis.get<string>(key)
+  if (!raw) throw new Error(`Post not found: ${slug}`)
+  const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
+  post.workflowStatus = 'media_ready'
+  delete post.scheduledPublishAt
+  await redis.set(key, JSON.stringify(post))
+
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  const queue: BlogPostSummary[] = qRaw
+    ? (typeof qRaw === 'string' ? JSON.parse(qRaw) : (qRaw as BlogPostSummary[]))
+    : []
+  const idx = queue.findIndex((p) => p.slug === slug)
+  if (idx >= 0) {
+    queue[idx].workflowStatus = 'media_ready'
+    delete queue[idx].scheduledPublishAt
+    await redis.set('blog_posts_queue', JSON.stringify(queue))
+  }
+}
+
+export async function getDueScheduledPosts(now: Date = new Date()): Promise<BlogPostSummary[]> {
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  if (!qRaw) return []
+  const queue: BlogPostSummary[] = typeof qRaw === 'string' ? JSON.parse(qRaw) : qRaw
+  return queue.filter((p) =>
+    p.workflowStatus === 'scheduled' &&
+    p.scheduledPublishAt &&
+    new Date(p.scheduledPublishAt).getTime() <= now.getTime()
+  )
 }
 
 export async function publishQueuedPost(slug: string): Promise<void> {
@@ -167,6 +246,7 @@ export async function publishQueuedPost(slug: string): Promise<void> {
   if (!raw) throw new Error(`Post not found: ${slug}`)
   const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
   post.workflowStatus = 'published'
+  delete post.scheduledPublishAt
   await redis.set(key, JSON.stringify(post))
 
   // Remove from queue
