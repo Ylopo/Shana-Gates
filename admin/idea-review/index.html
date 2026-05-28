@@ -335,9 +335,11 @@
       let data = {}
       try { data = JSON.parse(rawText) } catch { /* HTML error page from Vercel */ }
       if (!res.ok) {
-        const detail = data.error || rawText.slice(0, 600) || `HTTP ${res.status}`
+        const phaseLabel = data.phase ? ` [${data.phase}]` : ''
+        const detail = (data.error || rawText.slice(0, 800) || `HTTP ${res.status}`) +
+          (data.stack ? `\n\n--- stack ---\n${data.stack.slice(0, 800)}` : '')
         console.error('[generateIdeas] server returned', res.status, rawText)
-        showGenError(`Research failed (HTTP ${res.status})`, detail)
+        showGenError(`Research failed (HTTP ${res.status})${phaseLabel}`, detail)
         return
       }
       overlay.classList.remove('visible')
