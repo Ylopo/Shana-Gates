@@ -5,10 +5,25 @@
  */
 
 import { getPendingIdeas, getAllIdeas, getIdea, updateIdeaStatus, addCoveredTopic } from '../../lib/idea-store'
-import { writePostFromIdea } from '../../lib/writer'
+import { writePostFromIdea, type BlogPostOutput } from '../../lib/writer'
 import { checkFairHousing, saveFHResult } from '../../lib/fair-housing'
-import { publishBlogPost } from '../../lib/sanity'
+import { publishBlogPost } from '../../lib/blog-redis'
+import { generateHeroImage } from '../../lib/blog-images'
 import { getLearnings } from '../../lib/learnings'
+import type { PortableTextBlock } from '../../lib/types'
+
+// Convert Sanity-style PortableText blocks back to markdown for the Redis blog store
+function portableTextToMarkdown(blocks: PortableTextBlock[]): string {
+  return blocks.map((b) => {
+    const text = (b.children || []).map((c) => c.text || '').join('')
+    if (b.style === 'h2') return `## ${text}`
+    if (b.style === 'h3') return `### ${text}`
+    if (b.style === 'blockquote') return `> ${text}`
+    return text
+  }).join('\n\n')
+}
+
+export const config = { maxDuration: 120 }
 
 function parseCookies(cookieHeader: string | undefined): Record<string, string> {
   if (!cookieHeader) return {}
@@ -67,8 +82,10 @@ export default async function handler(req: any, res: any) {
     try {
       const idea = await getIdea(id)
       if (!idea) return res.status(404).json({ error: 'Idea not found' })
+
+      // Mark approved up-front so single-click "Approve & Write" works from pending state
       if (idea.status !== 'approved') {
-        return res.status(400).json({ error: 'Idea must be approved before writing' })
+        await updateIdeaStatus(id, 'approved')
       }
 
       // Write post
@@ -76,8 +93,8 @@ export default async function handler(req: any, res: any) {
       const draft = await writePostFromIdea(idea, learnings)
 
       // Fair housing check (block on violation, warn otherwise)
-      const bodyText = draft.body.map((b) => b.children?.map((c) => c.text).join('') ?? '').join('\n')
-      const fhResult = await checkFairHousing(bodyText, 'blog-post')
+      const markdownBody = portableTextToMarkdown(draft.body)
+      const fhResult = await checkFairHousing(markdownBody, 'blog-post')
 
       if (fhResult.severity === 'violation') {
         await saveFHResult(id, fhResult)
@@ -87,19 +104,36 @@ export default async function handler(req: any, res: any) {
         })
       }
 
-      // Publish to Sanity
-      const sanityId = await publishBlogPost(draft)
-      await saveFHResult(id, fhResult)
+      // Build a BlogPostOutput for the Redis Media Queue (matches the article path)
+      const post: BlogPostOutput = {
+        title: draft.title,
+        slug: draft.slug,
+        excerpt: draft.excerpt,
+        body: markdownBody,
+        category: draft.category,
+        sourceUrl: draft.sourceUrl || '',
+        sourceTitle: draft.sourceTitle || '',
+        pipeline: 'daily',
+        city: idea.cityTarget,
+      }
+      const heroImage = await generateHeroImage(
+        post.title,
+        idea.whyItMatters || post.excerpt,
+        post.category,
+        post.sourceUrl,
+        post.body,
+      )
 
-      // Mark covered + move out of queue
-      await updateIdeaStatus(id, 'approved')
-      await addCoveredTopic(draft.slug)
+      // Publish to Redis as media_pending — lands in the VA / Media Queue
+      const published = await publishBlogPost(post, heroImage)
+      await saveFHResult(id, fhResult)
+      await addCoveredTopic(post.slug)
 
       return res.status(200).json({
         ok: true,
-        sanityId,
-        title: draft.title,
-        slug: draft.slug,
+        sanityId: published._id, // kept as `sanityId` for client back-compat
+        title: post.title,
+        slug: post.slug,
         fhSeverity: fhResult.severity,
       })
     } catch (err: any) {

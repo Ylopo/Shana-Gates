@@ -391,11 +391,12 @@
   function renderActions(idea) {
     if (idea.status === 'pending') {
       return `
-        <button class="btn btn-approve" onclick="setStatus('${idea.id}', 'approved')">✓ Approve</button>
-        <button class="btn btn-skip"    onclick="setStatus('${idea.id}', 'skipped')">✗ Skip</button>
-        <button class="btn btn-defer"   onclick="setStatus('${idea.id}', 'deferred')">⏸ Defer</button>`
+        <button class="btn btn-write" id="write-btn-${idea.id}" onclick="writePost('${idea.id}')">✓ Approve &amp; Write →</button>
+        <button class="btn btn-skip"  onclick="setStatus('${idea.id}', 'skipped')">✗ Skip</button>
+        <button class="btn btn-defer" onclick="setStatus('${idea.id}', 'deferred')">⏸ Defer</button>`
     }
     if (idea.status === 'approved') {
+      // Legacy state — items approved before single-click flow. Keep the write button here.
       return `
         <span class="status-pill approved">Approved</span>
         <button class="btn btn-write" id="write-btn-${idea.id}" onclick="writePost('${idea.id}')">Write &amp; Publish →</button>
@@ -405,7 +406,7 @@
       return `<span class="status-pill skipped">Skipped</span><button class="btn btn-undo" onclick="setStatus('${idea.id}', 'pending')">Undo</button>`
     }
     if (idea.status === 'deferred') {
-      return `<span class="status-pill deferred">Deferred</span><button class="btn btn-approve" onclick="setStatus('${idea.id}', 'approved')">Approve Now</button><button class="btn btn-undo" onclick="setStatus('${idea.id}', 'pending')">Undo</button>`
+      return `<span class="status-pill deferred">Deferred</span><button class="btn btn-write" id="write-btn-${idea.id}" onclick="writePost('${idea.id}')">Approve &amp; Write →</button><button class="btn btn-undo" onclick="setStatus('${idea.id}', 'pending')">Undo</button>`
     }
     return ''
   }
@@ -477,8 +478,8 @@
     const idea = allIdeas.find(i => i.id === id)
     const btn = document.getElementById(`write-btn-${id}`)
     const resultEl = document.getElementById(`result-${id}`)
-    if (btn) { btn.disabled = true; btn.textContent = 'Writing…' }
-    if (resultEl) resultEl.innerHTML = ''
+    if (btn) { btn.disabled = true; btn.textContent = 'Writing post… (30–60s)' }
+    if (resultEl) resultEl.innerHTML = `<div class="write-result" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.25);color:#93c5fd;">Writing post and generating hero image… this takes 30–60 seconds. Don't close this tab.</div>`
 
     try {
       let res, data
@@ -522,8 +523,7 @@
         return
       }
 
-      const blogUrl = `https://shanasells.com/blog/post.html?slug=${encodeURIComponent(data.slug)}`
-      let resultHtml = `<div class="write-result">✓ Published: <strong>${escHtml(data.title)}</strong> — <a href="${blogUrl}" target="_blank">View post →</a></div>`
+      let resultHtml = `<div class="write-result">✓ Written: <strong>${escHtml(data.title)}</strong> — queued in <a href="/admin/va-queue/">Media Queue</a> for thumbnail + video</div>`
       if (data.fhSeverity === 'warning') {
         resultHtml += `<div class="fh-warning">⚠️ Fair Housing review: warnings flagged — review before sharing</div>`
       }
@@ -532,7 +532,7 @@
 
       if (idea) idea.status = 'approved'
       updateCounts()
-      showToast('Post published to blog ✓')
+      showToast('Post written — review in Media Queue')
     } catch (err) {
       if (resultEl) resultEl.innerHTML = `<div class="write-error">${escHtml(err.message || 'Network error — try again')}</div>`
       if (btn) { btn.disabled = false; btn.textContent = 'Write & Publish →' }
