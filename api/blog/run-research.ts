@@ -1,7 +1,9 @@
 /**
  * POST /api/blog/run-research?type=weekly|daily
  * Manually triggers research pipelines from the admin UI.
- * Auth: same sg_assistant_session cookie as the other admin endpoints.
+ * Auth: sg_assistant_session cookie OR ?secret=ADMIN_SECRET query param
+ *       (matches /api/content/ideas — works regardless of how the admin
+ *       page was opened).
  */
 import { createHmac } from 'crypto'
 
@@ -26,15 +28,20 @@ function verifyToken(token: string, secret: string): boolean {
   return sig === expected
 }
 
+function isAuthed(req: any, secret: string): boolean {
+  if (req.query?.secret === secret) return true
+  const cookies = parseCookies(req.headers?.cookie)
+  const token = cookies[COOKIE_NAME]
+  return !!(token && verifyToken(token, secret))
+}
+
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   const secret = process.env.ADMIN_SECRET
   if (!secret) return res.status(500).json({ error: 'Not configured' })
 
-  const cookies = parseCookies(req.headers.cookie)
-  const token = cookies[COOKIE_NAME]
-  if (!token || !verifyToken(token, secret)) {
+  if (!isAuthed(req, secret)) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 

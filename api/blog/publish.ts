@@ -30,13 +30,15 @@ function verifyToken(token: string, secret: string): boolean {
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  // Auth via session cookie
+  // Auth: session cookie OR ?secret=ADMIN_SECRET query param
   const secret = process.env.ADMIN_SECRET
   if (!secret) return res.status(500).json({ error: 'Not configured' })
 
+  const urlSecretOk = req.query?.secret === secret
   const cookies = parseCookies(req.headers.cookie)
   const token = cookies[COOKIE_NAME]
-  if (!token || !verifyToken(token, secret)) {
+  const cookieOk = !!(token && verifyToken(token, secret))
+  if (!urlSecretOk && !cookieOk) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 

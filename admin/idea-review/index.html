@@ -303,17 +303,22 @@
     btn.disabled = true
     btn.innerHTML = '<span class="spinner" style="width:13px;height:13px;border-width:2px;border-color:rgba(0,0,0,0.25);border-top-color:#000;display:inline-block;vertical-align:middle;margin-right:6px;"></span> Researching…'
     overlay.classList.add('visible')
+    const subtitle = document.getElementById('genSubtitle')
+    if (subtitle) subtitle.textContent = 'Tavily search → Claude scoring. Usually 30–60 seconds.'
     try {
-      const res = await fetch('/api/blog/run-research?type=daily', { method: 'POST' })
+      const url = '/api/blog/run-research?type=daily' + (secret ? `&secret=${encodeURIComponent(secret)}` : '')
+      const res = await fetch(url, { method: 'POST' })
       if (res.status === 401) {
-        localStorage.removeItem('sg_auth')
-        window.location.href = '/admin/assistant/login.html'
+        const msg = secret
+          ? 'Auth rejected. Check that the secret in the URL matches ADMIN_SECRET.'
+          : 'Not logged in. Open /admin/assistant/login.html, sign in, then come back.'
+        showToast(msg, true)
         return
       }
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || `Server error (${res.status})`)
       await loadIdeas()
-      showToast(`✓ Generated ${data.articleCount || ''} fresh articles and ideas`)
+      showToast(`✓ Generated ${data.count || 0} fresh articles + ideas`)
     } catch (err) {
       showToast(`Research failed: ${err.message}`, true)
     } finally {
@@ -485,7 +490,8 @@
       let res, data
       if (idea && idea._source === 'article') {
         // News article path: write a single post via the batch publish endpoint
-        res = await fetch('/api/blog/publish', {
+        const publishUrl = '/api/blog/publish' + (secret ? `?secret=${encodeURIComponent(secret)}` : '')
+        res = await fetch(publishUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ date: currentDate, articleIds: [idea.rawId] }),
