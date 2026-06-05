@@ -170,13 +170,18 @@
   </main>
 
   <script>
+    // ?secret=… deep-link from Idea Review acts as auth — drop the flag so the
+    // localStorage gate below passes. Server-side API calls still validate.
+    const _sgSecret = new URLSearchParams(location.search).get('secret')
+    if (_sgSecret) try { localStorage.setItem('sg_auth', '1') } catch {}
+
     if (!localStorage.getItem('sg_auth')) {
       window.location.href = '/admin/assistant/login.html'
     }
 
     if (new URLSearchParams(location.search).get('published') === '1') {
       document.getElementById('publishedBanner').style.display = 'flex'
-      history.replaceState(null, '', '/admin/va-queue/')
+      history.replaceState(null, '', '/admin/va-queue/' + (_sgSecret ? '?secret=' + encodeURIComponent(_sgSecret) : ''))
     }
 
     const CATEGORY_LABELS = {
@@ -205,7 +210,7 @@
       const safeTitle = post.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')
       return `
         <div class="post-card-wrap">
-          <a class="post-card" href="/admin/va-queue/editor.html?slug=${encodeURIComponent(post.slug)}">
+          <a class="post-card" href="/admin/va-queue/editor.html?slug=${encodeURIComponent(post.slug)}${_sgSecret ? '&secret=' + encodeURIComponent(_sgSecret) : ''}">
             ${thumb}
             <div class="post-body">
               <div class="post-title">${post.title}</div>

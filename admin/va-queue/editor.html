@@ -316,7 +316,7 @@
 
   <div class="topbar" id="topbar">
     <div class="topbar-left">
-      <a class="back-link" href="/admin/va-queue/">
+      <a class="back-link" id="backLink" href="/admin/va-queue/">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
         Back to Queue
       </a>
@@ -332,9 +332,21 @@
   </div>
 
   <script>
+    // ?secret=… deep-link from Idea Review or VA Queue listing acts as auth.
+    // Set the flag so the localStorage gate below passes. Server-side API
+    // calls still validate the secret.
+    const _sgSecret = new URLSearchParams(location.search).get('secret')
+    if (_sgSecret) try { localStorage.setItem('sg_auth', '1') } catch {}
+
     if (!localStorage.getItem('sg_auth')) {
       window.location.href = '/admin/assistant/login.html'
     }
+
+    // Back-to-queue link carries the secret forward
+    document.addEventListener('DOMContentLoaded', () => {
+      const back = document.getElementById('backLink')
+      if (back && _sgSecret) back.href = '/admin/va-queue/?secret=' + encodeURIComponent(_sgSecret)
+    })
 
     const CATEGORY_LABELS = {
       'market-update':'Market Update','investor-tips':'Investor Tips','seller-tips':'Seller Tips',
@@ -1092,7 +1104,7 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             btn.innerHTML = '✓ Published'
             btn.style.opacity = '0.5'
           } else {
-            window.location.href = '/admin/va-queue/?published=1'
+            window.location.href = '/admin/va-queue/?published=1' + (_sgSecret ? '&secret=' + encodeURIComponent(_sgSecret) : '')
           }
         } catch (err) {
           document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`

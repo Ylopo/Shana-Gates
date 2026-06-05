@@ -696,7 +696,7 @@
         const post = (data.posts || [])[0]
         if (!post) throw new Error('No post returned from server')
         const blogUrl = `https://shanasells.com/blog/post.html?slug=${encodeURIComponent(post.slug)}`
-        if (resultEl) resultEl.innerHTML = `<div class="write-result">✓ Written: <strong>${escHtml(post.title || idea.title)}</strong> — queued in <a href="/admin/va-queue/">Media Queue</a> · <a href="${blogUrl}" target="_blank">Preview →</a></div>`
+        if (resultEl) resultEl.innerHTML = `<div class="write-result">✓ Written: <strong>${escHtml(post.title || idea.title)}</strong> — queued in <a href="${adminUrl('/admin/va-queue/')}">Media Queue</a> · <a href="${blogUrl}" target="_blank">Preview →</a></div>`
         if (btn) btn.remove()
         setArticleStatus(idea.rawId, 'approved')
         idea.status = 'approved'
@@ -724,7 +724,7 @@
         return
       }
 
-      let resultHtml = `<div class="write-result">✓ Written: <strong>${escHtml(data.title)}</strong> — queued in <a href="/admin/va-queue/">Media Queue</a> for thumbnail + video</div>`
+      let resultHtml = `<div class="write-result">✓ Written: <strong>${escHtml(data.title)}</strong> — queued in <a href="${adminUrl('/admin/va-queue/')}">Media Queue</a> for thumbnail + video</div>`
       if (data.fhSeverity === 'warning') {
         resultHtml += `<div class="fh-warning">⚠️ Fair Housing review: warnings flagged — review before sharing</div>`
       }
@@ -755,6 +755,17 @@
     t.classList.add('show')
     clearTimeout(toastTimer)
     toastTimer = setTimeout(() => t.classList.remove('show'), 3000)
+  }
+
+  // When opened via ?secret=… (e.g. the VA's bookmarked link), drop a
+  // localStorage flag so subsequent admin pages (VA Queue, Media editor)
+  // don't bounce to /admin/assistant/login.html. Real auth still happens
+  // server-side on every API call.
+  if (secret) try { localStorage.setItem('sg_auth', '1') } catch {}
+
+  // Helper: build a URL to another admin page that carries the secret forward
+  window.adminUrl = function (path) {
+    return path + (secret ? (path.indexOf('?') === -1 ? '?' : '&') + 'secret=' + encodeURIComponent(secret) : '')
   }
 
   renderSidebarCategories()
