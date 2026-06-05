@@ -4,6 +4,20 @@
     { "source": "/:city(palm-springs|palm-desert|rancho-mirage|indian-wells|la-quinta|indio|cathedral-city|desert-hot-springs|coachella)/:slug", "destination": "/:city/:slug/index.html" },
     { "source": "/:city(palm-springs|palm-desert|rancho-mirage|indian-wells|la-quinta|indio|cathedral-city|desert-hot-springs|coachella)/:slug/", "destination": "/:city/:slug/index.html" }
   ],
+  "headers": [
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
+      ]
+    },
+    {
+      "source": "/admin-nav.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
+      ]
+    }
+  ],
   "functions": {
     "api/assistant/chat.ts": {
       "maxDuration": 120
