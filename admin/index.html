@@ -290,6 +290,12 @@
 </main>
 
 <script>
+  // ?secret=… deep-link from a bookmarked link acts as auth. Set the
+  // localStorage flag so the gate below passes, just like the va-queue +
+  // idea-review pages already do. Server-side endpoints still validate.
+  const _sgSecret = new URLSearchParams(location.search).get('secret')
+  if (_sgSecret) try { localStorage.setItem('sg_auth', '1') } catch {}
+
   // Auth guard
   if (!localStorage.getItem('sg_auth')) {
     window.location.href = '/admin/assistant/login.html'

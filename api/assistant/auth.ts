@@ -1,7 +1,10 @@
 import { createHmac } from 'crypto'
 
 const COOKIE_NAME = 'sg_assistant_session'
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
+// 10 years — effectively "stays logged in until they clear cookies / log out".
+// The browser may still drop the cookie on its own (incognito, OS clean-up,
+// "Clear browsing data") but we won't be the ones forcing a re-login.
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 10
 
 function signToken(secret: string): string {
   const payload = `assistant:${Date.now()}`
