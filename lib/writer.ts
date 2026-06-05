@@ -275,9 +275,42 @@ export async function writePostFromIdea(
     ? ''
     : `\n8. *Ready to make your move in the Coachella Valley? Reach out to Shana Gates at Craft & Bauer — she knows this market inside and out. [Contact Shana →](mailto:shana@craftbauer.com)*`
 
+  // Force structured output via tool_use. Anthropic validates the response
+  // against the schema, so no more text→JSON parse failures.
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 6000,
+    max_tokens: 8000,
+    tools: [{
+      name: 'submit_blog_post',
+      description: 'Submit the completed blog post with all required fields.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          slug: {
+            type: 'string',
+            description: 'URL slug (lowercase, kebab-case, 1–96 chars, alphanumerics + dashes only).',
+          },
+          excerpt: {
+            type: 'string',
+            description: '2–3 sentence summary used on the blog listing page.',
+          },
+          metaTitle: {
+            type: 'string',
+            description: 'SEO <title> under 60 characters.',
+          },
+          metaDescription: {
+            type: 'string',
+            description: 'SEO meta description, 120–160 characters.',
+          },
+          body: {
+            type: 'string',
+            description: 'Full post body as markdown. Use ## for h2, ### for h3, - for bullets, [text](url) for links. Must end with a ## Frequently Asked Questions section containing exactly 3 ### question-and-answer pairs.',
+          },
+        },
+        required: ['slug', 'excerpt', 'metaTitle', 'metaDescription', 'body'],
+      },
+    }],
+    tool_choice: { type: 'tool', name: 'submit_blog_post' },
     messages: [{
       role: 'user',
       content: `You are Shana Gates, writing for the Shana Gates Real Estate blog. You are an experienced Coachella Valley REALTOR® at Craft & Bauer | Real Broker. You write to genuinely inform local buyers, sellers, homeowners, and investors — not to sell, but to help them make smarter decisions.
@@ -306,63 +339,17 @@ SEO RULES:
 3. Add 1 internal link where it genuinely helps the reader. Use markdown link syntax.
 4. COMMUNITY LINK RULE: On the FIRST mention of any CV city by name, format as a markdown link: [Palm Springs](/palm-springs.html), [Palm Desert](/palm-desert.html), [Rancho Mirage](/rancho-mirage.html), [Indian Wells](/indian-wells.html), [La Quinta](/la-quinta.html), [Indio](/indio.html), [Cathedral City](/cathedral-city.html), [Desert Hot Springs](/desert-hot-springs.html), [Coachella](/coachella.html). Only the first mention of each.${closingCta}
 
-Return a JSON object with EXACTLY these fields:
-{
-  "title": "${idea.title}",
-  "slug": "url-slug",
-  "excerpt": "2–3 sentence summary for blog listing page",
-  "metaTitle": "SEO title under 60 chars",
-  "metaDescription": "SEO description 120–160 chars",
-  "body": "Full post in plain text. Use ## for h2, ### for h3, - for bullets. Must include FAQ section at end."
-}
-
-Return ONLY valid JSON, no markdown fences.`,
+When the post is complete, call the submit_blog_post tool with the slug, excerpt, metaTitle, metaDescription, and body fields. Do not return any other content.`,
     }],
   })
 
-  const rawText = response.content[0].type === 'text' ? response.content[0].text.trim() : '{}'
-  // Strip markdown code fences if Claude wrapped the JSON despite instructions
-  const stripped = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
-
-  // Repair literal control characters (newlines, tabs, carriage returns) inside JSON strings.
-  // Claude sometimes emits real \n characters instead of the escape sequence \n — this breaks JSON.parse.
-  function repairJsonControlChars(src: string): string {
-    let out = ''
-    let inString = false
-    let escaped = false
-    for (let i = 0; i < src.length; i++) {
-      const ch = src[i]
-      if (escaped) { out += ch; escaped = false; continue }
-      if (ch === '\\' && inString) { out += ch; escaped = true; continue }
-      if (ch === '"') { inString = !inString; out += ch; continue }
-      if (inString) {
-        if (ch === '\n') { out += '\\n'; continue }
-        if (ch === '\r') { out += '\\r'; continue }
-        if (ch === '\t') { out += '\\t'; continue }
-      }
-      out += ch
-    }
-    return out
+  const toolBlock = response.content.find(
+    (b): b is Anthropic.ToolUseBlock => b.type === 'tool_use' && b.name === 'submit_blog_post'
+  )
+  if (!toolBlock) {
+    throw new Error(`Claude did not call submit_blog_post (stop_reason: ${response.stop_reason}). Try approving again.`)
   }
-
-  const text = repairJsonControlChars(stripped)
-
-  let raw: Record<string, string>
-  try {
-    raw = JSON.parse(text)
-  } catch {
-    // Try greedy extraction of the first complete JSON object in the response
-    const jsonMatch = stripped.match(/\{[\s\S]*\}/)
-    if (jsonMatch) {
-      try {
-        raw = JSON.parse(repairJsonControlChars(jsonMatch[0]))
-      } catch {
-        throw new Error(`Failed to parse post JSON (stop_reason: ${response.stop_reason}). Try approving again.`)
-      }
-    } else {
-      throw new Error(`Failed to parse post JSON (stop_reason: ${response.stop_reason}). Try approving again.`)
-    }
-  }
+  const raw = toolBlock.input as Record<string, string>
 
   const blocks = bodyTextToBlocks(raw.body ?? '')
 
