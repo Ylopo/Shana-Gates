@@ -314,6 +314,14 @@
 </head>
 <body>
 
+  <!-- Vercel Blob client-upload SDK (loaded as an ES module from esm.sh,
+       since this is a static HTML page with no bundler). Exposes the
+       upload() function as window.sgBlobUpload for handleVideoUpload. -->
+  <script type="module">
+    import { upload } from 'https://esm.sh/@vercel/blob@0.27.0/client'
+    window.sgBlobUpload = upload
+  </script>
+
   <div class="topbar" id="topbar">
     <div class="topbar-left">
       <a class="back-link" id="backLink" href="/admin/va-queue/">
@@ -415,7 +423,7 @@
       panel.innerHTML = `<label class="upload-label" id="videoUploadLabel">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           Upload Video
-          <input class="upload-input" type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" onchange="handleVideoUpload(event)">
+          <input class="upload-input" type="file" id="videoInput" accept="video/*" onchange="handleVideoUpload(event)">
         </label>
         <div class="url-hint" style="margin-top:8px;">MP4, MOV, or WebM — up to 500 MB. Without a video, social posts will use the thumbnail image.</div>`
     }
@@ -482,48 +490,42 @@
     async function handleVideoUpload(e) {
       const file = e.target.files[0]
       if (!file) return
+
       const panel = document.getElementById('videoPanel')
       panel.innerHTML = `<div class="progress-wrap"><div class="progress-label"><span>Uploading ${file.name}…</span><span id="videoUploadPct">0%</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" id="videoUploadBar" style="width:0%;"></div></div></div>`
+
+      if (!window.sgBlobUpload) {
+        panel.innerHTML = `<div class="inline-error">Upload SDK is still loading. Wait a moment and try again.</div>`
+        e.target.value = ''
+        return
+      }
+
       try {
-        const tokenRes = await fetch(`/api/content/upload-token?filename=${encodeURIComponent(file.name)}`)
-        if (!tokenRes.ok) {
-          if (tokenRes.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
-          throw new Error('Failed to get upload token')
-        }
-        const { token, uploadUrl } = await tokenRes.json()
-        const blobUrl = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest()
-          xhr.open('PUT', uploadUrl)
-          xhr.setRequestHeader('Authorization', `Bearer ${token}`)
-          xhr.setRequestHeader('x-content-type', file.type || 'video/mp4')
-          xhr.upload.onprogress = (ev) => {
-            if (ev.lengthComputable) {
-              const pct = Math.round((ev.loaded / ev.total) * 100)
-              const bar = document.getElementById('videoUploadBar')
-              const pctEl = document.getElementById('videoUploadPct')
-              if (bar) bar.style.width = pct + '%'
-              if (pctEl) pctEl.textContent = pct + '%'
-            }
-          }
-          xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              try { resolve(JSON.parse(xhr.responseText).url) }
-              catch { reject(new Error('Invalid response from Vercel Blob')) }
-            } else {
-              const sizeMB = (file.size / 1024 / 1024).toFixed(1)
-              const mime = file.type || '(none detected)'
-              reject(new Error(`Upload failed (${xhr.status}). File: ${file.name} · ${sizeMB} MB · ${mime}. Response: ${xhr.responseText ? xhr.responseText.slice(0, 200) : 'empty'}`))
-            }
-          }
-          xhr.onerror = () => reject(new Error('Network error during upload'))
-          xhr.send(file)
+        // Vercel's client-upload SDK negotiates with /api/content/upload-token
+        // (which calls handleUpload) and PUTs the file to the right Blob URL.
+        // The window.fetch monkey-patch at the top of this file appends the
+        // ?secret URL param to the negotiation call automatically.
+        const blob = await window.sgBlobUpload(file.name, file, {
+          access: 'public',
+          handleUploadUrl: '/api/content/upload-token',
+          contentType: file.type || 'video/mp4',
+          onUploadProgress: (ev) => {
+            const pct = Math.round(ev.percentage || 0)
+            const bar = document.getElementById('videoUploadBar')
+            const pctEl = document.getElementById('videoUploadPct')
+            if (bar) bar.style.width = pct + '%'
+            if (pctEl) pctEl.textContent = pct + '%'
+          },
         })
-        pendingVideoUrl = blobUrl
+        pendingVideoUrl = blob.url
         updatePublishBullet()
         panel.innerHTML = `<div class="panel-info green"><div class="panel-info-icon">🎥</div><div class="panel-info-body"><div class="panel-info-title">Video uploaded</div><div class="panel-info-sub" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${file.name}</div></div><button onclick="clearSavedVideo()" style="font-size:11px;color:rgba(255,255,255,0.4);background:none;border:none;cursor:pointer;flex-shrink:0;margin-left:8px;">Remove</button></div>`
       } catch (err) {
         pendingVideoUrl = null
-        panel.innerHTML = `<div class="inline-error">${err.message}</div><label class="upload-label" style="margin-top:10px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload Video<input class="upload-input" type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" onchange="handleVideoUpload(event)"></label>`
+        const sizeMB = (file.size / 1024 / 1024).toFixed(1)
+        const mime = file.type || '(none detected)'
+        const detail = err && err.message ? err.message : String(err)
+        panel.innerHTML = `<div class="inline-error">Upload failed: ${detail}<br><br>File: ${file.name} · ${sizeMB} MB · ${mime}</div><label class="upload-label" style="margin-top:10px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Try Again<input class="upload-input" type="file" id="videoInput" accept="video/*" onchange="handleVideoUpload(event)"></label>`
       }
       e.target.value = ''
     }
@@ -762,7 +764,7 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
                   : `<label class="upload-label" id="videoUploadLabel">
                       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                       Upload Video
-                      <input class="upload-input" type="file" id="videoInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" onchange="handleVideoUpload(event)">
+                      <input class="upload-input" type="file" id="videoInput" accept="video/*" onchange="handleVideoUpload(event)">
                     </label>
                     <div class="url-hint" style="margin-top:8px;">MP4, MOV, or WebM — up to 500 MB. Without a video, social posts will use the thumbnail image.</div>`
                 }

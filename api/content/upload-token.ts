@@ -1,39 +1,40 @@
+/**
+ * POST /api/content/upload-token
+ *
+ * Server side of Vercel Blob's client-upload pattern. The browser uses
+ * `upload()` from @vercel/blob/client which POSTs here to negotiate a
+ * tokenized upload URL, then PUTs the file directly to Blob.
+ *
+ * Replaces the previous manual XHR + generateClientTokenFromReadWriteToken
+ * setup, which was returning bare 403s because the upload URL / Authorization
+ * header format had drifted from what the Blob storage backend expects.
+ */
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client'
 import { checkAdminAuth } from '../../lib/admin-auth'
-import { generateClientTokenFromReadWriteToken } from '@vercel/blob/client'
 
+export const config = { maxDuration: 30 }
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   const auth = checkAdminAuth(req)
   if (!auth.ok) return res.status(auth.status).json({ error: auth.error })
 
-  const blobToken = process.env.BLOB_READ_WRITE_TOKEN
-  if (!blobToken) return res.status(500).json({ error: 'BLOB_READ_WRITE_TOKEN not configured' })
-
-  const filename = (req.query?.filename as string) ?? 'video.mp4'
-  const ext = filename.split('.').pop()?.toLowerCase() ?? 'mp4'
-  const pathname = `videos/sg-${Date.now()}.${ext}`
-
   try {
-    // No content-type allowlist — the admin is uploading their own marketing
-    // video and Vercel Blob's narrow MIME whitelist was rejecting valid
-    // formats (e.g. iPhone HEVC .mov reporting as video/mov, .mkv, etc.) with
-    // a generic 403. Size cap stays at 1 GB.
-    const clientToken = await generateClientTokenFromReadWriteToken({
-      token: blobToken,
-      pathname,
-      addRandomSuffix: false,
-      maximumSizeInBytes: 1024 * 1024 * 1024,
+    const jsonResponse = await handleUpload({
+      body: req.body as HandleUploadBody,
+      request: req,
+      onBeforeGenerateToken: async (_pathname) => ({
+        // No MIME allowlist — admin uploads only. Cap at 1 GB.
+        allowedContentTypes: undefined,
+        maximumSizeInBytes: 1024 * 1024 * 1024,
+        addRandomSuffix: true,
+      }),
+      onUploadCompleted: async () => { /* no-op; the client stores the URL */ },
     })
-
-    return res.status(200).json({
-      token: clientToken,
-      uploadUrl: `https://blob.vercel-storage.com/${pathname}`,
-      pathname,
-    })
+    return res.status(200).json(jsonResponse)
   } catch (err: any) {
     console.error('[upload-token]', err)
-    return res.status(500).json({ error: err?.message ?? 'Failed to generate upload token' })
+    return res.status(400).json({ error: err?.message ?? 'Upload failed' })
   }
 }
