@@ -380,6 +380,45 @@
     return { ...i, _source: 'idea', _category: canonicalCategory(i.category) }
   }
 
+  // Collapse duplicate cards that share the same title.
+  // Cause: scored ideas are generated from articles, so the same topic can
+  // surface as both an Article card and an Idea card. Pressing "Generate
+  // Ideas" again mints new idea IDs for the same article, compounding the
+  // duplication. We keep the BEST card per title (ideas > articles, then
+  // higher score, then newer createdAt) so the list stays clean even after
+  // multiple research runs.
+  function normalizeTitle(t) {
+    return (t || '')
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')   // strip punctuation
+      .replace(/\s+/g, ' ')        // collapse whitespace
+      .trim()
+  }
+  function dedupeByTitle(list) {
+    const best = new Map()
+    for (const card of list) {
+      const key = normalizeTitle(card.title)
+      if (!key) continue
+      const existing = best.get(key)
+      if (!existing) { best.set(key, card); continue }
+      // Prefer ideas over articles (richer metadata + persistent server status)
+      const winner = preferCard(existing, card)
+      if (winner !== existing) best.set(key, winner)
+    }
+    return Array.from(best.values()).sort((a, b) => (b.score?.total || 0) - (a.score?.total || 0))
+  }
+  function preferCard(a, b) {
+    // Ideas beat articles
+    if (a._source !== b._source) return a._source === 'idea' ? a : b
+    // Higher score wins
+    const sa = a.score?.total || 0, sb = b.score?.total || 0
+    if (sa !== sb) return sa > sb ? a : b
+    // Newer createdAt wins (ideas) — articles don't carry createdAt, fall through
+    const ta = Date.parse(a.createdAt || '') || 0
+    const tb = Date.parse(b.createdAt || '') || 0
+    return tb > ta ? b : a
+  }
+
   // ── Fetch ────────────────────────────────────────────────────────────────────
   async function loadIdeas() {
     try {
@@ -403,8 +442,9 @@
       const ideas    = (ideaData.ideas || []).map(tagIdea)
       const articles = (articleData.articles || []).map(a => articleToCard(a, statuses))
 
-      // Newest / highest-scoring first across both sources
-      allIdeas = [...articles, ...ideas].sort((a, b) => (b.score?.total || 0) - (a.score?.total || 0))
+      // Newest / highest-scoring first across both sources, then dedupe by title
+      const merged = [...articles, ...ideas].sort((a, b) => (b.score?.total || 0) - (a.score?.total || 0))
+      allIdeas = dedupeByTitle(merged)
 
       updateCounts()
       renderIdeas()
