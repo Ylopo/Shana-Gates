@@ -44,6 +44,25 @@
     .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
     .status-media_ready   { background: rgba(59,130,246,0.15);  color: var(--blue);  border: 1px solid rgba(59,130,246,0.3); }
     .status-scheduled     { background: rgba(20,184,166,0.15);  color: #5eead4;      border: 1px solid rgba(20,184,166,0.3); }
+    .status-published     { background: rgba(34,197,94,0.15);   color: #4ade80;      border: 1px solid rgba(34,197,94,0.3); }
+
+    /* Republish-to-social panel (shown when post is already live) */
+    .republish-card { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-top: 14px; }
+    .republish-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .republish-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .republish-hint { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
+    .btn-republish {
+      width: 100%; padding: 11px; border-radius: 8px; margin-bottom: 8px;
+      background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.35);
+      color: #4ade80; font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: var(--font); transition: background 0.15s;
+    }
+    .btn-republish:hover:not(:disabled) { background: rgba(34,197,94,0.22); }
+    .btn-republish:disabled { opacity: 0.45; cursor: not-allowed; }
+    .republish-diag { margin-top: 14px; padding: 10px 12px; background: var(--surf2); border: 1px solid var(--border); border-radius: 8px; font-size: 11px; color: var(--muted); font-family: 'Courier New', monospace; line-height: 1.7; }
+    .republish-diag b { color: var(--text); font-weight: 600; }
+    .republish-diag .env-ok { color: #4ade80; }
+    .republish-diag .env-missing { color: #f87171; }
 
     /* ── Caption platform tabs ── */
     .tab-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
@@ -631,6 +650,76 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
       }
     }
 
+    async function republishSocial(mode) {
+      if (!currentPost) return
+      const btnImage = document.getElementById('republishImageBtn')
+      const btnVideo = document.getElementById('republishVideoBtn')
+      const resultEl = document.getElementById('republishResult')
+      const buttons = [btnImage, btnVideo].filter(Boolean)
+      buttons.forEach(b => { b.disabled = true })
+      const fireBtn = mode === 'video' ? btnVideo : btnImage
+      const origText = fireBtn?.textContent
+      if (fireBtn) fireBtn.textContent = 'Publishing… (10–30s)'
+      if (resultEl) resultEl.innerHTML = `<div class="republish-diag">Submitting to Blotato…</div>`
+
+      try {
+        const r = await fetch('/api/blog/republish-social', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: currentPost.slug, mode }),
+        })
+        const d = await r.json().catch(() => ({}))
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`)
+
+        const env = d.diagnostics?.envStatus || {}
+        const envHtml = Object.keys(env)
+          .map(k => `<span class="${env[k] ? 'env-ok' : 'env-missing'}">${env[k] ? '✓' : '✗'} ${k}</span>`)
+          .join('<br>')
+
+        const platformLabel = {
+          facebook: '📘 Facebook',  linkedin: '💼 LinkedIn', twitter: '𝕏 X / Twitter',
+          threads:  '🧵 Threads',   instagram: '📸 Instagram',
+          facebookReel: '🎬 Facebook Reel', youtube: '▶️ YouTube', tiktok: '🎵 TikTok',
+          linkedinVideo: '💼 LinkedIn (video)', twitterVideo: '𝕏 X (video)',
+          threadsVideo: '🧵 Threads (video)', instagramReel: '📸 Instagram Reel',
+        }
+        const results = d.results || {}
+        const platformHtml = Object.entries(results)
+          .filter(([k]) => !k.startsWith('_'))
+          .map(([k, v]) => {
+            const label = platformLabel[k] || k
+            if (v.ok) return `<span class="env-ok">✓ ${label}: queued (${(v.postSubmissionId || '').slice(0, 16)}…)</span>`
+            return `<span class="env-missing">✗ ${label}: ${v.error}</span>`
+          })
+          .join('<br>')
+
+        const skipped = []
+        if (results._imageSkipped) skipped.push(results._imageSkipped)
+        if (results._videoSkipped) skipped.push(results._videoSkipped)
+
+        if (resultEl) resultEl.innerHTML = `
+          <div class="republish-diag">
+            <b>Result</b><br>
+            ${platformHtml || '<span class="env-missing">No platforms attempted</span>'}
+            ${skipped.length ? '<br><br><b>Skipped</b><br>' + skipped.join('<br>') : ''}
+            <br><br>
+            <b>Env vars</b><br>
+            ${envHtml}
+            <br><br>
+            <b>Post</b><br>
+            slug: ${currentPost.slug}<br>
+            heroImageUrl: ${d.diagnostics?.post?.heroImageUrl || '(none)'}<br>
+            videoUrl: ${d.diagnostics?.post?.videoUrl || '(none)'}
+          </div>
+        `
+      } catch (err) {
+        if (resultEl) resultEl.innerHTML = `<div class="republish-diag"><span class="env-missing">Republish failed: ${err.message}</span></div>`
+      } finally {
+        buttons.forEach(b => { b.disabled = false })
+        if (fireBtn && origText) fireBtn.textContent = origText
+      }
+    }
+
     async function cancelSchedule() {
       if (!currentPost) return
       if (!confirm('Cancel the scheduled publish? The post will return to "Ready to Publish".')) return
@@ -655,6 +744,7 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
       const isPending   = status === 'media_pending'
       const isReady     = status === 'media_ready'
       const isScheduled = status === 'scheduled'
+      const isPublished = status === 'published'
       const catLabel    = CATEGORY_LABELS[post.category] || post.category
       const prompt      = buildImagePrompt(post)
 
@@ -669,7 +759,7 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
       document.title = `Review: ${post.title}`
       const pill = document.getElementById('statusPill')
       pill.className = `status-pill status-${status}`
-      pill.textContent = isPending ? 'Media Pending' : isScheduled ? 'Scheduled' : 'Ready to Publish'
+      pill.textContent = isPending ? 'Media Pending' : isScheduled ? 'Scheduled' : isPublished ? 'Published' : 'Ready to Publish'
 
       const thumbHtml = post.heroImageUrl
         ? `<img id="thumbImg" src="${post.heroImageUrl}" alt="">`
@@ -829,11 +919,33 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             <button class="btn-mark-ready" id="markReadyBtn" ${!isPending ? 'disabled' : ''}>
               Mark as Ready
             </button>
-            <div class="publish-prereq" id="publishPrereq" ${isReady || isScheduled ? 'style="display:none"' : ''}>
+            <div class="publish-prereq" id="publishPrereq" ${isReady || isScheduled || isPublished ? 'style="display:none"' : ''}>
               Upload a thumbnail, then click<br>"Mark as Ready" first.
             </div>
             <div id="actionError"></div>
           </div>
+
+          ${isPublished ? `
+          <!-- Republish to social — for posts already live on the website -->
+          <div class="republish-card">
+            <div class="republish-head">
+              <span style="font-size:18px;">✓</span>
+              <span class="republish-title">Live on the website</span>
+            </div>
+            <div class="republish-hint">If the social platforms didn't receive the post the first time (Blotato outage, missing env var, etc.), re-fire the social publish without re-touching the blog. The website post stays as is.</div>
+            ${post.heroImageUrl ? `
+              <button class="btn-republish" id="republishImageBtn" onclick="republishSocial('image')">📸 Republish to image platforms (Facebook · LinkedIn · X · Threads · Instagram)</button>
+            ` : `
+              <button class="btn-republish" disabled title="Post has no heroImageUrl">📸 Republish to image platforms (no hero image)</button>
+            `}
+            ${post.videoUrl ? `
+              <button class="btn-republish" id="republishVideoBtn" onclick="republishSocial('video')">🎬 Republish to video platforms (YouTube · TikTok · Facebook Reel · LinkedIn · X · Threads · Instagram Reel)</button>
+            ` : `
+              <button class="btn-republish" disabled title="Post has no videoUrl">🎬 Republish to video platforms (no video uploaded)</button>
+            `}
+            <div id="republishResult"></div>
+          </div>
+          ` : ''}
 
         </div>
       `

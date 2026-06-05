@@ -78,6 +78,7 @@
     .status-media_pending { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
     .status-media_ready   { background: rgba(59,130,246,0.15); color: var(--blue);  border: 1px solid rgba(59,130,246,0.25); }
     .status-scheduled     { background: rgba(20,184,166,0.15); color: #5eead4;      border: 1px solid rgba(20,184,166,0.25); }
+    .status-published     { background: rgba(34,197,94,0.15);  color: #4ade80;      border: 1px solid rgba(34,197,94,0.25); }
 
     .cat-badge {
       font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
@@ -155,6 +156,15 @@
       <div id="readyList"></div>
     </div>
 
+    <!-- Recently published — for republishing to social if Blotato missed it -->
+    <div class="section" id="publishedSection" style="display:none;">
+      <div class="section-label">
+        Recently Published
+        <span class="count-badge" id="publishedCount">0</span>
+      </div>
+      <div id="publishedList"></div>
+    </div>
+
     <!-- Loading skeletons -->
     <div id="loadingState">
       <div class="section-label" style="margin-bottom:16px;">Loading…</div>
@@ -219,6 +229,7 @@
       const statusLabel =
         post.workflowStatus === 'media_ready' ? 'Ready' :
         post.workflowStatus === 'scheduled'   ? 'Scheduled' :
+        post.workflowStatus === 'published'   ? 'Published' :
         'Needs Review'
       const catLabel = CATEGORY_LABELS[post.category] || post.category
       const safeTitle = post.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')
@@ -242,20 +253,28 @@
 
     async function loadQueue() {
       try {
-        const res = await fetch('/api/blog/queue')
-        if (res.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
-        const data = await res.json()
+        const [queueRes, publishedRes] = await Promise.all([
+          fetch('/api/blog/queue'),
+          // Recently published — used so the operator can open the editor to
+          // re-fire Blotato if the original publish missed social platforms.
+          fetch('/api/blog/posts?limit=30').catch(() => null),
+        ])
+        if (queueRes.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        const data = await queueRes.json()
         const posts = data.posts || []
+        const publishedData = publishedRes && publishedRes.ok ? await publishedRes.json() : { posts: [] }
+        const published = (publishedData.posts || []).map(p => ({ ...p, workflowStatus: 'published' }))
 
         document.getElementById('loadingState').style.display = 'none'
 
         const pending = posts.filter(p => p.workflowStatus === 'media_pending' || !p.workflowStatus)
         const ready   = posts.filter(p => p.workflowStatus === 'media_ready' || p.workflowStatus === 'scheduled')
 
+        const reviewCount = pending.length + ready.length
         document.getElementById('headerMeta').textContent =
-          `${posts.length} post${posts.length !== 1 ? 's' : ''} awaiting review`
+          `${reviewCount} awaiting review · ${published.length} recently published`
 
-        if (!posts.length) {
+        if (!posts.length && !published.length) {
           document.getElementById('emptyState').style.display = 'block'
           return
         }
@@ -270,6 +289,12 @@
           document.getElementById('readySection').style.display = 'block'
           document.getElementById('readyCount').textContent = ready.length
           document.getElementById('readyList').innerHTML = ready.map(cardHtml).join('')
+        }
+
+        if (published.length) {
+          document.getElementById('publishedSection').style.display = 'block'
+          document.getElementById('publishedCount').textContent = published.length
+          document.getElementById('publishedList').innerHTML = published.map(cardHtml).join('')
         }
       } catch (err) {
         document.getElementById('loadingState').innerHTML =
