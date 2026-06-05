@@ -175,6 +175,20 @@
     const _sgSecret = new URLSearchParams(location.search).get('secret')
     if (_sgSecret) try { localStorage.setItem('sg_auth', '1') } catch {}
 
+    // Auto-forward ?secret onto every /api/ fetch so the server-side
+    // checkAdminAuth() accepts the request without a session cookie.
+    if (_sgSecret) {
+      const _origFetch = window.fetch
+      window.fetch = function(input, init) {
+        let url = typeof input === 'string' ? input : (input && input.url) || ''
+        if ((url.startsWith('/api/') || url.startsWith(location.origin + '/api/')) && url.indexOf('secret=') === -1) {
+          url += (url.indexOf('?') === -1 ? '?' : '&') + 'secret=' + encodeURIComponent(_sgSecret)
+          input = typeof input === 'string' ? url : new Request(url, input)
+        }
+        return _origFetch.call(this, input, init)
+      }
+    }
+
     if (!localStorage.getItem('sg_auth')) {
       window.location.href = '/admin/assistant/login.html'
     }

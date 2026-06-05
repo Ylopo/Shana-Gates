@@ -7,6 +7,14 @@
 
   var path = location.pathname.replace(/\/$/, '') || '/admin'
 
+  // Carry ?secret=… across admin nav links so a VA on a URL-secret session
+  // never hits the login page when clicking between Idea Review / Media Queue.
+  var secret = new URLSearchParams(location.search).get('secret') || ''
+  function withAuth(href) {
+    if (!secret) return href
+    return href + (href.indexOf('?') === -1 ? '?' : '&') + 'secret=' + encodeURIComponent(secret)
+  }
+
   function isActive(href) {
     var h = href.replace(/\/$/, '')
     if (path.indexOf('/admin/va-queue') === 0 && h === '/admin/va-queue') return true
@@ -35,7 +43,7 @@
 
   var brand = document.createElement('a')
   brand.className = 'sg-brand'
-  brand.href = '/admin/'
+  brand.href = withAuth('/admin/')
   brand.textContent = 'Shana Gates'
   nav.appendChild(brand)
 
@@ -47,7 +55,7 @@
   PIPELINE.forEach(function (item) {
     var a = document.createElement('a')
     a.className = 'sg-link' + (isActive(item.href) ? ' active' : '')
-    a.href = item.href
+    a.href = withAuth(item.href)
     a.textContent = item.label
     nav.appendChild(a)
   })

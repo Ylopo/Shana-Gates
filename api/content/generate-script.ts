@@ -1,29 +1,12 @@
-import { createHmac } from 'crypto'
+import { checkAdminAuth } from '../../lib/admin-auth'
 import Anthropic from '@anthropic-ai/sdk'
 
-const COOKIE_NAME = 'sg_assistant_session'
-
-function parseCookies(h: string | undefined): Record<string, string> {
-  if (!h) return {}
-  return Object.fromEntries(h.split(';').map(c => { const [k, ...v] = c.trim().split('='); return [k.trim(), v.join('=')] }))
-}
-function verifyToken(token: string, secret: string): boolean {
-  const dot = token.lastIndexOf('.')
-  if (dot === -1) return false
-  const payload = token.slice(0, dot)
-  const sig = token.slice(dot + 1)
-  return createHmac('sha256', secret).update(payload).digest('hex') === sig
-}
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const secret = process.env.ADMIN_SECRET
-  if (!secret) return res.status(500).json({ error: 'Not configured' })
-
-  const cookies = parseCookies(req.headers.cookie)
-  const token = cookies[COOKIE_NAME]
-  if (!token || !verifyToken(token, secret)) return res.status(401).json({ error: 'Unauthorized' })
+  const auth = checkAdminAuth(req)
+  if (!auth.ok) return res.status(auth.status).json({ error: auth.error })
 
   const { title, excerpt, category } = req.body ?? {}
   if (!title) return res.status(400).json({ error: 'title required' })
