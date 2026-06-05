@@ -146,7 +146,9 @@ export async function getPostStatus(postSubmissionId: string): Promise<BlotatoPo
   const data = await res.json()
   return {
     status: data.status ?? 'pending',
-    postUrl: data.postUrl ?? data.url ?? undefined,
+    // Blotato's field is `publicUrl` (verified against /v2/posts/{id} response).
+    // Keep postUrl / url fallbacks in case they normalize the field name later.
+    postUrl: data.publicUrl ?? data.postUrl ?? data.url ?? undefined,
     errorMessage: data.errorMessage ?? data.error ?? undefined,
   }
 }
