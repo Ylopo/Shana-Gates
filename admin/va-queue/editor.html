@@ -510,7 +510,9 @@
               try { resolve(JSON.parse(xhr.responseText).url) }
               catch { reject(new Error('Invalid response from Vercel Blob')) }
             } else {
-              reject(new Error(`Upload failed (${xhr.status})`))
+              const sizeMB = (file.size / 1024 / 1024).toFixed(1)
+              const mime = file.type || '(none detected)'
+              reject(new Error(`Upload failed (${xhr.status}). File: ${file.name} · ${sizeMB} MB · ${mime}. Response: ${xhr.responseText ? xhr.responseText.slice(0, 200) : 'empty'}`))
             }
           }
           xhr.onerror = () => reject(new Error('Network error during upload'))

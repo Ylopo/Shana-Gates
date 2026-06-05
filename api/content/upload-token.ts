@@ -16,12 +16,15 @@ export default async function handler(req: any, res: any) {
   const pathname = `videos/sg-${Date.now()}.${ext}`
 
   try {
+    // No content-type allowlist — the admin is uploading their own marketing
+    // video and Vercel Blob's narrow MIME whitelist was rejecting valid
+    // formats (e.g. iPhone HEVC .mov reporting as video/mov, .mkv, etc.) with
+    // a generic 403. Size cap stays at 1 GB.
     const clientToken = await generateClientTokenFromReadWriteToken({
       token: blobToken,
       pathname,
       addRandomSuffix: false,
-      maximumSizeInBytes: 500 * 1024 * 1024,
-      allowedContentTypes: ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v'],
+      maximumSizeInBytes: 1024 * 1024 * 1024,
     })
 
     return res.status(200).json({
