@@ -185,12 +185,29 @@
     .source-label { font-size: 11px; color: var(--muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; }
 
     /* Score breakdown */
-    .score-bars { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; margin-bottom: 14px; }
-    .score-bar-row { display: flex; align-items: center; gap: 6px; }
-    .score-bar-label { font-size: 11px; color: var(--muted); width: 88px; flex-shrink: 0; }
-    .score-bar-track { flex: 1; height: 4px; background: rgba(255,255,255,0.07); border-radius: 2px; overflow: hidden; }
-    .score-bar-fill { height: 100%; border-radius: 2px; background: var(--bronze); transition: width 0.3s; }
-    .score-bar-val { font-size: 10px; color: var(--muted); width: 22px; text-align: right; flex-shrink: 0; }
+    /* Published-post count pill (sibling to .filter-count in category sidebar) */
+    .filter-count-pub {
+      font-size: 10px; background: rgba(78,205,196,0.12); color: rgba(78,205,196,0.85);
+      padding: 1px 6px; border-radius: 10px; min-width: 20px; text-align: center;
+      font-weight: 600;
+    }
+    .filter-btn.active .filter-count-pub {
+      background: rgba(78,205,196,0.20); color: rgba(78,205,196,1);
+    }
+    .filter-counts-wrap {
+      display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+    }
+    .sidebar-legend {
+      font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.32); padding: 0 8px 8px;
+      display: flex; gap: 10px; align-items: center;
+    }
+    .sidebar-legend-dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      margin-right: 4px; vertical-align: middle;
+    }
+    .sidebar-legend-pending { background: rgba(255,255,255,0.5); }
+    .sidebar-legend-pub { background: rgba(78,205,196,0.85); }
 
     /* Actions */
     .card-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -282,6 +299,7 @@
   const apiBase = secret ? `/api/content/ideas?secret=${encodeURIComponent(secret)}` : '/api/content/ideas'
 
   let allIdeas = []           // unified list — entries tagged with _source ('idea' or 'article')
+  let publishedCountsByCategory = {}   // map of canonical category slug → count of live published posts
   let currentDate = ''        // date string for the loaded articles batch
   let currentFilter = 'pending'
   let currentCategory = 'all'
@@ -424,9 +442,11 @@
     try {
       const ideasUrl    = apiBase + (secret ? '&filter=all' : '?filter=all')
       const articlesUrl = '/api/blog/articles'
-      const [ideasRes, articlesRes] = await Promise.all([
+      const postsUrl    = '/api/blog/posts?limit=200'   // for per-category published counts
+      const [ideasRes, articlesRes, postsRes] = await Promise.all([
         fetch(ideasUrl),
         fetch(articlesUrl).catch(() => null),
+        fetch(postsUrl).catch(() => null),
       ])
 
       if (ideasRes.status === 401) {
@@ -436,8 +456,18 @@
 
       const ideaData = ideasRes.ok ? await ideasRes.json() : { ideas: [] }
       const articleData = articlesRes && articlesRes.ok ? await articlesRes.json() : { articles: [], date: '' }
+      const postsData = postsRes && postsRes.ok ? await postsRes.json() : { posts: [] }
       currentDate = articleData.date || ''
       const statuses = articleStatusMap()
+
+      // Group published posts by canonical category so the sidebar can show
+      // how many are already live per category (helps avoid over-publishing
+      // to one or two topics).
+      publishedCountsByCategory = {}
+      for (const p of (postsData.posts || [])) {
+        const slug = canonicalCategory(p.category)
+        publishedCountsByCategory[slug] = (publishedCountsByCategory[slug] || 0) + 1
+      }
 
       const ideas    = (ideaData.ideas || []).map(tagIdea)
       const articles = (articleData.articles || []).map(a => articleToCard(a, statuses))
@@ -524,13 +554,18 @@
     document.getElementById('count-all').textContent      = allIdeas.length
 
     // Category counts respect the current status filter — shows what's available
-    // to review under the active status
+    // to review under the active status. Also populate the "published" pill so
+    // operators can see how many posts have already gone live per category and
+    // avoid over-publishing to one or two topics.
     const inStatus = ideasMatchingStatus()
     const catCount = (slug) => inStatus.filter(i => i._category === slug).length
+    const totalPublished = Object.values(publishedCountsByCategory).reduce((a, b) => a + b, 0)
     document.querySelectorAll('[data-cat]').forEach(btn => {
       const slug = btn.dataset.cat
       const countEl = btn.querySelector('.filter-count')
+      const pubEl   = btn.querySelector('.filter-count-pub')
       if (countEl) countEl.textContent = slug === 'all' ? inStatus.length : catCount(slug)
+      if (pubEl)   pubEl.textContent   = slug === 'all' ? totalPublished : (publishedCountsByCategory[slug] || 0)
     })
 
     const pending = allIdeas.filter(i => i.status === 'pending').length
@@ -545,11 +580,18 @@
     if (!wrap) return
     const items = [{ slug: 'all', label: 'All Categories' }, ...CATEGORIES]
     wrap.innerHTML = '<div class="sidebar-heading">Categories</div>' +
+      '<div class="sidebar-legend" title="Left pill: ideas pending under current status filter. Right pill: posts already published live.">' +
+        '<span><span class="sidebar-legend-dot sidebar-legend-pending"></span>pending</span>' +
+        '<span><span class="sidebar-legend-dot sidebar-legend-pub"></span>published</span>' +
+      '</div>' +
       items.map(c => `
         <button class="filter-btn ${c.slug === currentCategory ? 'active' : ''}"
                 data-cat="${c.slug}" onclick="setCategory('${c.slug}')">
           <span>${c.label}</span>
-          <span class="filter-count">0</span>
+          <span class="filter-counts-wrap">
+            <span class="filter-count">0</span>
+            <span class="filter-count-pub" title="Published posts in this category">0</span>
+          </span>
         </button>
       `).join('')
   }
@@ -611,23 +653,6 @@
     return 'badge badge-' + (cat || 'community-spotlight')
   }
 
-  function renderScoreBars(score) {
-    const dims = [
-      { label: 'Local Focus',  val: score.localRelevance,    max: 25 },
-      { label: 'Timeliness',   val: score.timeliness,         max: 20 },
-      { label: 'Format Fit',   val: score.formatFit,          max: 15 },
-      { label: 'Audience',     val: score.audienceValue,       max: 15 },
-      { label: 'Credibility',  val: score.sourceCredibility,  max: 10 },
-      { label: 'Novelty',      val: score.novelty,            max: 10 },
-    ]
-    return `<div class="score-bars">${dims.map(d => `
-      <div class="score-bar-row">
-        <div class="score-bar-label">${d.label}</div>
-        <div class="score-bar-track"><div class="score-bar-fill" style="width:${Math.round(d.val / d.max * 100)}%"></div></div>
-        <div class="score-bar-val">${d.val}</div>
-      </div>`).join('')}</div>`
-  }
-
   function renderActions(idea) {
     if (idea.status === 'pending') {
       return `
@@ -678,7 +703,6 @@
           <div class="card-title">${escHtml(idea.title)}</div>
           <div class="card-angle">${escHtml(idea.angle)}</div>
           <div class="card-sources">${sourceLinks}${externalLink}</div>
-          ${isArticle ? '' : renderScoreBars(idea.score)}
           <div class="card-actions" id="actions-${idea.id}">${renderActions(idea)}</div>
           <div id="result-${idea.id}"></div>
         </div>
