@@ -1153,6 +1153,7 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
         btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing…`
 
         try {
+          // 1. Save edits to the post first (captions, title, script, video URL, etc.)
           const saveRes = await fetch('/api/blog/queue-mark-ready', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1163,7 +1164,133 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             throw new Error(sd.error || 'Failed to save before publishing')
           }
 
-          // 2. Publish the blog post live
+          // ── No video: publish blog immediately (legacy fast path) ─────────
+          if (!pendingVideoUrl) {
+            const r = await fetch('/api/blog/queue-publish', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug: post.slug }),
+            })
+            if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+            const d = await r.json()
+            if (!r.ok) throw new Error(d.error || 'Publish failed')
+            window.location.href = '/admin/va-queue/?published=1' + (_sgSecret ? '&secret=' + encodeURIComponent(_sgSecret) : '')
+            return
+          }
+
+          // ── Video path: social FIRST, then wait for YouTube, then blog ──
+          // Order matters — we want YouTube live before the blog page goes
+          // public so the post renders with the embed already in place.
+          btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing to social…`
+          document.getElementById('publishBullets').style.display = 'none'
+          const pStatus = document.getElementById('platformStatus')
+          pStatus.style.display = 'flex'
+          pStatus.innerHTML = `
+            <div class="platform-row"><span class="platform-icon">▶️</span><span class="platform-name">YouTube (gates blog publish)</span><span class="platform-status pstatus-polling" id="ps-youtube">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">🎬</span><span class="platform-name">Facebook Reel</span><span class="platform-status pstatus-polling" id="ps-facebookReel">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">🎵</span><span class="platform-name">TikTok</span><span class="platform-status pstatus-polling" id="ps-tiktok">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">💼</span><span class="platform-name">LinkedIn</span><span class="platform-status pstatus-polling" id="ps-linkedin">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">𝕏</span><span class="platform-name">X / Twitter</span><span class="platform-status pstatus-polling" id="ps-twitter">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">🧵</span><span class="platform-name">Threads</span><span class="platform-status pstatus-polling" id="ps-threads">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">📸</span><span class="platform-name">Instagram Reel</span><span class="platform-status pstatus-polling" id="ps-instagramReel">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">🌐</span><span class="platform-name">Website</span><span class="platform-status pstatus-idle" id="ps-website">Waiting on YouTube…</span></div>
+          `
+
+          // Submit all 7 platforms in parallel via Blotato
+          const vr = await fetch('/api/content/publish-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slug: post.slug, videoUrl: pendingVideoUrl }),
+          })
+          const vd = await vr.json()
+          if (!vr.ok) throw new Error(vd.error || 'Social publish submission failed')
+
+          // For non-YouTube platforms: kick off background polling. These do
+          // NOT block the blog publish — we only wait on YouTube.
+          const bgPlatforms = ['facebookReel', 'tiktok', 'linkedin', 'twitter', 'threads', 'instagramReel']
+          bgPlatforms.forEach(platform => {
+            const el = document.getElementById(`ps-${platform}`)
+            if (!el) return
+            const result = vd[platform]
+            if (!result) { el.textContent = 'Skipped'; el.className = 'platform-status pstatus-idle'; return }
+            if (result.error) { el.textContent = 'Error'; el.className = 'platform-status pstatus-error'; el.title = result.error; return }
+            if (result.postSubmissionId) {
+              el.textContent = 'Queued'
+              el.className = 'platform-status pstatus-polling'
+              let attempts = 0
+              const timer = setInterval(async () => {
+                attempts++
+                try {
+                  const sr = await fetch(`/api/content/blotato-status?postSubmissionId=${encodeURIComponent(result.postSubmissionId)}`)
+                  const sd = await sr.json()
+                  if (sd.status === 'published') {
+                    clearInterval(timer); delete publishPollTimers[platform]
+                    el.textContent = 'Published'; el.className = 'platform-status pstatus-done'
+                  } else if (sd.status === 'failed') {
+                    clearInterval(timer); delete publishPollTimers[platform]
+                    el.textContent = 'Failed'; el.className = 'platform-status pstatus-error'
+                  } else if (attempts >= 30) {
+                    clearInterval(timer); delete publishPollTimers[platform]
+                    el.textContent = 'Queued'; el.className = 'platform-status pstatus-idle'
+                  }
+                } catch { /* keep polling */ }
+              }, 10000)
+              publishPollTimers[platform] = timer
+            }
+          })
+
+          // YouTube: gates the blog publish. Synchronous wait (up to 5 min).
+          // The server-side blotato-status handler captures the watch URL into
+          // the post record when status flips to 'published' (we pass slug +
+          // platform=youtube so it knows where to persist).
+          const ytResult = vd.youtube
+          const ytEl = document.getElementById('ps-youtube')
+          if (!ytResult || ytResult.error || !ytResult.postSubmissionId) {
+            if (ytEl) {
+              ytEl.textContent = 'Failed'
+              ytEl.className = 'platform-status pstatus-error'
+              if (ytResult?.error) ytEl.title = ytResult.error
+            }
+            throw new Error(`YouTube submission failed: ${ytResult?.error || 'no submission ID returned'}`)
+          }
+          if (ytEl) { ytEl.textContent = 'Publishing…'; ytEl.className = 'platform-status pstatus-polling' }
+
+          await new Promise((resolve, reject) => {
+            let attempts = 0
+            const timer = setInterval(async () => {
+              attempts++
+              try {
+                const qs = new URLSearchParams({
+                  postSubmissionId: ytResult.postSubmissionId,
+                  slug: post.slug,
+                  platform: 'youtube',
+                })
+                const sr = await fetch(`/api/content/blotato-status?${qs}`)
+                const sd = await sr.json()
+                if (sd.status === 'published') {
+                  clearInterval(timer); delete publishPollTimers['youtube']
+                  if (ytEl) { ytEl.textContent = 'Published'; ytEl.className = 'platform-status pstatus-done' }
+                  resolve(sd)
+                } else if (sd.status === 'failed') {
+                  clearInterval(timer); delete publishPollTimers['youtube']
+                  if (ytEl) { ytEl.textContent = 'Failed'; ytEl.className = 'platform-status pstatus-error' }
+                  reject(new Error(sd.errorMessage || 'YouTube publish failed'))
+                } else if (attempts >= 30) {
+                  clearInterval(timer); delete publishPollTimers['youtube']
+                  if (ytEl) { ytEl.textContent = 'Timed out'; ytEl.className = 'platform-status pstatus-error' }
+                  reject(new Error('YouTube did not confirm publish within 5 minutes. Try again or use the no-video publish path.'))
+                }
+              } catch { /* network blip — keep polling */ }
+            }, 10000)
+            publishPollTimers['youtube'] = timer
+          })
+
+          // YouTube is live and the watch URL is persisted on the post record.
+          // Now publish the blog — the page will render with the embed already.
+          btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing blog…`
+          const wEl = document.getElementById('ps-website')
+          if (wEl) { wEl.textContent = 'Publishing…'; wEl.className = 'platform-status pstatus-polling' }
+
           const r = await fetch('/api/blog/queue-publish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1171,71 +1298,12 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           })
           if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
           const d = await r.json()
-          if (!r.ok) throw new Error(d.error || 'Publish failed')
+          if (!r.ok) throw new Error(d.error || 'Blog publish failed')
 
-          // 3. If a video is ready, push to all social platforms
-          if (pendingVideoUrl) {
-            btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing to social…`
-            document.getElementById('publishBullets').style.display = 'none'
-            const pStatus = document.getElementById('platformStatus')
-            pStatus.style.display = 'flex'
-            pStatus.innerHTML = `
-              <div class="platform-row"><span class="platform-icon">🌐</span><span class="platform-name">Website</span><span class="platform-status pstatus-done">Live</span></div>
-              <div class="platform-row"><span class="platform-icon">🎬</span><span class="platform-name">Facebook Reel</span><span class="platform-status pstatus-polling" id="ps-facebookReel">Submitting…</span></div>
-              <div class="platform-row"><span class="platform-icon">▶️</span><span class="platform-name">YouTube</span><span class="platform-status pstatus-polling" id="ps-youtube">Submitting…</span></div>
-              <div class="platform-row"><span class="platform-icon">🎵</span><span class="platform-name">TikTok</span><span class="platform-status pstatus-polling" id="ps-tiktok">Submitting…</span></div>
-              <div class="platform-row"><span class="platform-icon">💼</span><span class="platform-name">LinkedIn</span><span class="platform-status pstatus-polling" id="ps-linkedin">Submitting…</span></div>
-              <div class="platform-row"><span class="platform-icon">𝕏</span><span class="platform-name">X / Twitter</span><span class="platform-status pstatus-polling" id="ps-twitter">Submitting…</span></div>
-              <div class="platform-row"><span class="platform-icon">🧵</span><span class="platform-name">Threads</span><span class="platform-status pstatus-polling" id="ps-threads">Submitting…</span></div>
-              <div class="platform-row"><span class="platform-icon">📸</span><span class="platform-name">Instagram Reel</span><span class="platform-status pstatus-polling" id="ps-instagramReel">Submitting…</span></div>
-            `
-
-            const vr = await fetch('/api/content/publish-video', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ slug: post.slug, videoUrl: pendingVideoUrl }),
-            })
-            const vd = await vr.json()
-
-            const platforms = ['facebookReel', 'youtube', 'tiktok', 'linkedin', 'twitter', 'threads', 'instagramReel']
-            platforms.forEach(platform => {
-              const el = document.getElementById(`ps-${platform}`)
-              if (!el) return
-              const result = vd[platform]
-              if (!result) { el.textContent = 'Skipped'; el.className = 'platform-status pstatus-idle'; return }
-              if (result.error) { el.textContent = 'Error'; el.className = 'platform-status pstatus-error'; el.title = result.error; return }
-              if (result.postSubmissionId) {
-                el.textContent = 'Queued'
-                el.className = 'platform-status pstatus-polling'
-                // Poll for final status
-                let attempts = 0
-                const timer = setInterval(async () => {
-                  attempts++
-                  try {
-                    const sr = await fetch(`/api/content/blotato-status?postSubmissionId=${encodeURIComponent(result.postSubmissionId)}`)
-                    const sd = await sr.json()
-                    if (sd.status === 'published') {
-                      clearInterval(timer); delete publishPollTimers[platform]
-                      el.textContent = 'Published'; el.className = 'platform-status pstatus-done'
-                    } else if (sd.status === 'failed') {
-                      clearInterval(timer); delete publishPollTimers[platform]
-                      el.textContent = 'Failed'; el.className = 'platform-status pstatus-error'
-                    } else if (attempts >= 30) {
-                      clearInterval(timer); delete publishPollTimers[platform]
-                      el.textContent = 'Queued'; el.className = 'platform-status pstatus-idle'
-                    }
-                  } catch { /* keep polling */ }
-                }, 10000)
-                publishPollTimers[platform] = timer
-              }
-            })
-
-            btn.disabled = false
-            btn.innerHTML = '✓ Published'
-            btn.style.opacity = '0.5'
-          } else {
-            window.location.href = '/admin/va-queue/?published=1' + (_sgSecret ? '&secret=' + encodeURIComponent(_sgSecret) : '')
-          }
+          if (wEl) { wEl.textContent = 'Live'; wEl.className = 'platform-status pstatus-done' }
+          btn.disabled = false
+          btn.innerHTML = '✓ Published'
+          btn.style.opacity = '0.5'
         } catch (err) {
           document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
           btn.disabled = false

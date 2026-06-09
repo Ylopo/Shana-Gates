@@ -41,6 +41,11 @@ export interface BlogPostSummary {
   videoUrl?: string
   videoThumbnailUrl?: string
   scheduledPublishAt?: string
+  // YouTube watch URL captured after Blotato confirms publish succeeded.
+  // Blog post page embeds this as an iframe between hero image and body.
+  // NOT the same as videoUrl (which is the source MP4 on Vercel Blob).
+  youtubeUrl?: string
+  youtubeSubmissionId?: string  // Blotato postSubmissionId, kept so editor can resume polling after reload
 }
 
 export interface BlogPostFull extends BlogPostSummary {
@@ -271,6 +276,48 @@ export async function publishQueuedPost(slug: string): Promise<void> {
   filteredIndex.unshift(summary)
   filteredIndex.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
   await redis.set('blog_posts_index', JSON.stringify(filteredIndex))
+}
+
+// Persist the YouTube watch URL on a blog post. Called by the Blotato status
+// poller when YouTube confirms 'published', and by /api/blog/set-youtube-url
+// for manual backfills. Patches the full record + queue summary + public index
+// summary in best-effort fashion — each patch is independent.
+export async function setYouTubeUrl(
+  slug: string,
+  youtubeUrl: string,
+  youtubeSubmissionId?: string,
+): Promise<void> {
+  const key = `blog_post:${slug}`
+  const raw = await redis.get<string>(key)
+  if (!raw) throw new Error(`Post not found: ${slug}`)
+  const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
+  post.youtubeUrl = youtubeUrl
+  if (youtubeSubmissionId) post.youtubeSubmissionId = youtubeSubmissionId
+  await redis.set(key, JSON.stringify(post))
+
+  // Mirror onto the queue summary if the post is still queued
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  if (qRaw) {
+    const queue: BlogPostSummary[] = typeof qRaw === 'string' ? JSON.parse(qRaw) : (qRaw as BlogPostSummary[])
+    const qIdx = queue.findIndex((p) => p.slug === slug)
+    if (qIdx >= 0) {
+      queue[qIdx].youtubeUrl = youtubeUrl
+      if (youtubeSubmissionId) queue[qIdx].youtubeSubmissionId = youtubeSubmissionId
+      await redis.set('blog_posts_queue', JSON.stringify(queue))
+    }
+  }
+
+  // Mirror onto the public index summary if the post is already published
+  const iRaw = await redis.get<string>('blog_posts_index')
+  if (iRaw) {
+    const index: BlogPostSummary[] = typeof iRaw === 'string' ? JSON.parse(iRaw) : (iRaw as BlogPostSummary[])
+    const iIdx = index.findIndex((p) => p.slug === slug)
+    if (iIdx >= 0) {
+      index[iIdx].youtubeUrl = youtubeUrl
+      if (youtubeSubmissionId) index[iIdx].youtubeSubmissionId = youtubeSubmissionId
+      await redis.set('blog_posts_index', JSON.stringify(index))
+    }
+  }
 }
 
 export async function deleteQueuedPost(slug: string): Promise<void> {

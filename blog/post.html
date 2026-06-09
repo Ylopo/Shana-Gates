@@ -174,6 +174,25 @@
       display: block;
     }
 
+    /* YouTube embed wrapper — sits between hero and body when post.youtubeUrl
+       is present. Matches the 16:9 + 12px radius rhythm of the hero image. */
+    .post-video-embed {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      margin: 40px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+    }
+    .post-video-embed iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     .post-meta {
       display: flex;
       align-items: center;
@@ -482,6 +501,7 @@
   <article class="post-wrap" id="postWrap">
     <div class="post-meta" id="postMeta"></div>
     <img id="heroImage" class="post-hero-image" style="display:none;" alt="" />
+    <div id="videoEmbed" class="post-video-embed" style="display:none;"></div>
     <div class="post-body" id="postBody"></div>
     <div class="source-credit" id="sourceCredit" style="display:none;"></div>
     <div id="cityLinkCard" style="display:none;"></div>
@@ -632,6 +652,17 @@
         img.src = post.heroImageUrl
         img.alt = post.title
         img.style.display = 'block'
+      }
+
+      // YouTube embed — supports watch?v=, youtu.be/, /shorts/, /embed/, /live/
+      if (post.youtubeUrl) {
+        const m = String(post.youtubeUrl).match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/)
+        const ytId = m ? m[1] : null
+        if (ytId) {
+          const wrap = document.getElementById('videoEmbed')
+          wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}" title="Watch on YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>`
+          wrap.style.display = 'block'
+        }
       }
 
       // Meta row

@@ -215,6 +215,26 @@ export default async function handler(req: any, res: any) {
       display: block;
     }
 
+    /* YouTube embed wrapper — sits between hero and body when post.youtubeUrl
+       is present. Matches the 16:9 aspect + 12px radius of the hero image so
+       the visual rhythm stays consistent. */
+    .post-video-embed {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      margin: 40px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+    }
+    .post-video-embed iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     .post-meta {
       display: flex;
       align-items: center;
@@ -515,6 +535,7 @@ export default async function handler(req: any, res: any) {
   <article class="post-wrap" id="postWrap">
     <div class="post-meta" id="postMeta"></div>
     <img id="heroImage" class="post-hero-image" style="display:none;" alt="" />
+    <div id="videoEmbed" class="post-video-embed" style="display:none;"></div>
     <div class="post-body" id="postBody"></div>
     <div class="source-credit" id="sourceCredit" style="display:none;"></div>
     <div id="cityLinkCard" style="display:none;"></div>
@@ -700,6 +721,19 @@ export default async function handler(req: any, res: any) {
         img.src = post.heroImageUrl
         img.alt = post.title
         img.style.display = 'block'
+      }
+
+      // YouTube embed — render below the hero when the post has a watch URL.
+      // Supports https://www.youtube.com/watch?v=ID, https://youtu.be/ID,
+      // and youtube.com/shorts/ID short-form video URLs.
+      if (post.youtubeUrl) {
+        const ytMatch = String(post.youtubeUrl).match(/(?:v=|youtu\\.be\\/|\\/shorts\\/|\\/embed\\/|\\/live\\/)([\\w-]{11})/)
+        const ytId = ytMatch ? ytMatch[1] : null
+        if (ytId) {
+          const wrap = document.getElementById('videoEmbed')
+          wrap.innerHTML = '<iframe src="https://www.youtube.com/embed/' + ytId + '" title="Watch on YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>'
+          wrap.style.display = 'block'
+        }
       }
 
       const color = CATEGORY_COLORS[post.category] || '#607D8B'
