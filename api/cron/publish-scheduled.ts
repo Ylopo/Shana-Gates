@@ -1,48 +1,37 @@
 import { getDueScheduledPosts, getPostBySlug, publishQueuedPost, setYouTubeUrl } from '../../lib/blog-redis'
-import {
-  publishToFacebook, publishToInstagram, publishToLinkedIn,
-  publishToX, publishToThreads,
-  publishToFacebookReel, publishToYouTube, publishToTikTok,
-  publishToInstagramReel,
-  getPostStatus,
-} from '../../lib/blotato-client'
-import {
-  generatePlatformCaptions,
-  buildLinkedInCaption, buildXCaption,
-  buildThreadsCaption, buildInstagramCaption,
-  buildTikTokCaption,
-  SITE_URL,
-} from '../../lib/publish-service'
+import { scheduleVideoNow, getYouTubeChannelId } from '../../lib/oneup-client'
+import { findNewestVideoSince } from '../../lib/youtube-rss'
+import { SITE_URL } from '../../lib/publish-service'
 
 export const config = { maxDuration: 300 }
 
-// Wait for Blotato to confirm a YouTube publish, capture the watch URL,
-// and persist it on the blog post. Best-effort with a 90-second cap to
-// keep cron runtime predictable when multiple posts are due.
-async function waitForYouTubePublish(
+// Wait for a new YouTube video to appear on Shana's channel after the
+// submission timestamp. Cron uses a 90-second cap (9 × 10 s) to keep
+// multi-post runs predictable. If RSS hasn't reflected the upload yet,
+// the blog still publishes — the youtubeUrl can be backfilled later via
+// /api/blog/set-youtube-url once it lands.
+async function waitForYouTubeRss(
   slug: string,
-  postSubmissionId: string,
+  since: string,
+  channelId: string,
   maxAttempts = 9,
   intervalMs = 10000,
 ): Promise<{ ok: boolean; url?: string; error?: string }> {
   for (let i = 0; i < maxAttempts; i++) {
     await new Promise((r) => setTimeout(r, intervalMs))
     try {
-      const status = await getPostStatus(postSubmissionId)
-      if (status.status === 'published' && status.postUrl) {
-        await setYouTubeUrl(slug, status.postUrl, postSubmissionId).catch((err) => {
+      const video = await findNewestVideoSince(channelId, since)
+      if (video) {
+        await setYouTubeUrl(slug, video.url).catch((err) => {
           console.error(`[publish-scheduled] setYouTubeUrl ${slug} failed:`, err)
         })
-        return { ok: true, url: status.postUrl }
-      }
-      if (status.status === 'failed') {
-        return { ok: false, error: status.errorMessage || 'YouTube publish failed' }
+        return { ok: true, url: video.url }
       }
     } catch (err: any) {
       // Transient — keep polling
     }
   }
-  return { ok: false, error: 'YouTube did not confirm publish within 90s — blog publishing anyway' }
+  return { ok: false, error: 'YouTube RSS did not reflect a new video within 90s — blog publishing anyway' }
 }
 
 export default async function handler(req: any, res: any) {
@@ -68,7 +57,8 @@ export default async function handler(req: any, res: any) {
   console.log(`[publish-scheduled] ${due.length} post(s) due`)
   if (due.length === 0) return res.status(200).json({ ok: true, published: 0 })
 
-  const results: Array<{ slug: string; ok: boolean; error?: string }> = []
+  const results: Array<{ slug: string; ok: boolean; error?: string; youtubeUrl?: string }> = []
+  const channelId = process.env.ONEUP_YOUTUBE_CHANNEL_ID ? getYouTubeChannelId() : null
 
   for (const summary of due) {
     try {
@@ -76,85 +66,43 @@ export default async function handler(req: any, res: any) {
       if (!post) { results.push({ slug: summary.slug, ok: false, error: 'not found' }); continue }
 
       const articleUrl = `${SITE_URL}/blog/post.html?slug=${post.slug}`
-      const stored = post.captions
-      const captions = stored
-        ? {
-            facebook:  stored.facebook  || post.socialCopy || post.excerpt,
-            youtube:   stored.youtube   || post.socialCopy || post.excerpt,
-            linkedin:  stored.linkedin  || post.socialCopy || post.excerpt,
-            twitter:   stored.twitter   || post.title,
-            tiktok:    stored.tiktok    || post.socialCopy || post.excerpt,
-            threads:   stored.threads   || post.socialCopy || post.excerpt,
-            instagram: stored.instagram || post.socialCopy || post.excerpt,
-          }
-        : post.socialCopy
-        ? {
-            facebook: post.socialCopy, youtube: post.socialCopy, linkedin: post.socialCopy,
-            twitter: post.title, tiktok: post.socialCopy, threads: post.socialCopy, instagram: post.socialCopy,
-          }
-        : await generatePlatformCaptions(post)
-
-      const videoUrl = post.videoUrl
-      const videoThumb = post.videoThumbnailUrl
+      const captionBase = (post.socialCopy && post.socialCopy.trim())
+        || (post.excerpt && post.excerpt.trim())
+        || post.title
 
       // ── Social FIRST (when video present), then blog ─────────────────────
-      // Mirror of the editor.html publish flow: submit to all platforms,
-      // wait for YouTube to confirm + capture the watch URL onto the post,
-      // THEN publish the blog so the page renders with the embed in place.
-      // Cron uses a 90s YouTube cap to keep multi-post runs bounded; if it
-      // misses the window, the blog still publishes (best-effort).
-      if (videoUrl && process.env.BLOTATO_API_KEY) {
-        const fbCopy = `${captions.facebook}\n\n${articleUrl}`
-        const ytDesc = `${captions.youtube}\n\n${articleUrl}`
-        const liCopy = buildLinkedInCaption(captions.linkedin, post.category, articleUrl)
-        const twCopy = buildXCaption(captions.twitter, post.category, articleUrl)
-        const ttCopy = buildTikTokCaption(captions.tiktok, post.category, articleUrl)
-        const thCopy = buildThreadsCaption(captions.threads, articleUrl)
-        const igCopy = buildInstagramCaption(captions.instagram, post.category, articleUrl)
+      // Submit to OneUp (one call → all 4 connected accounts in Shana's
+      // category). Wait for the YouTube upload to land via channel RSS, then
+      // publish the blog so the page renders with the embed in place.
+      if (post.videoUrl && process.env.ONEUP_API_KEY) {
+        const since = new Date().toISOString()
+        const submission = await scheduleVideoNow({
+          title: post.title,
+          content: `${captionBase}\n\n${articleUrl}`,
+          videoUrl: post.videoUrl,
+          thumbnailUrl: post.videoThumbnailUrl,
+        })
 
-        const submissions = await Promise.allSettled([
-          publishToFacebookReel(fbCopy, videoUrl),
-          publishToYouTube(post.title, ytDesc, videoUrl, videoThumb),
-          publishToTikTok(ttCopy, videoUrl),
-          publishToLinkedIn(liCopy, videoUrl),
-          publishToX(twCopy, videoUrl),
-          publishToThreads(thCopy, videoUrl),
-          publishToInstagramReel(igCopy, videoUrl),
-        ])
-
-        // submissions[1] is the YouTube call. Wait for it to confirm so we
-        // can stamp the watch URL onto the post before the blog goes live.
-        const ytSub = submissions[1]
-        if (ytSub.status === 'fulfilled' && ytSub.value?.postSubmissionId) {
-          const ytWait = await waitForYouTubePublish(summary.slug, ytSub.value.postSubmissionId)
+        if (!submission.ok) {
+          console.warn(`[publish-scheduled] ${summary.slug} OneUp submission failed:`, submission.message)
+        } else if (channelId) {
+          const ytWait = await waitForYouTubeRss(summary.slug, since, channelId)
           if (!ytWait.ok) {
             console.warn(`[publish-scheduled] ${summary.slug} YouTube wait: ${ytWait.error}`)
           }
-        } else if (ytSub.status === 'rejected') {
-          console.warn(`[publish-scheduled] ${summary.slug} YouTube submission failed:`, ytSub.reason)
         }
-      } else if (post.heroImageUrl && process.env.BLOTATO_API_KEY) {
-        // Image publish path — 5 platforms, no YouTube to gate on
-        const fbCopy = `${captions.facebook}\n\n${articleUrl}`
-        const liCopy = buildLinkedInCaption(captions.linkedin, post.category, articleUrl)
-        const twCopy = buildXCaption(captions.twitter, post.category, articleUrl)
-        const thCopy = buildThreadsCaption(captions.threads, articleUrl)
-        const igCopy = buildInstagramCaption(captions.instagram, post.category, articleUrl)
-
-        await Promise.allSettled([
-          publishToFacebook(fbCopy,   post.heroImageUrl),
-          publishToLinkedIn(liCopy,   post.heroImageUrl),
-          publishToX(twCopy,          post.heroImageUrl),
-          publishToThreads(thCopy,    post.heroImageUrl),
-          publishToInstagram(igCopy,  post.heroImageUrl),
-        ])
       }
 
-      // Now publish the blog — with youtubeUrl already on the post record
-      // if we caught it during the YouTube wait above.
+      // Now publish the blog. youtubeUrl will already be on the post if
+      // the RSS wait succeeded; otherwise it can be backfilled later.
       await publishQueuedPost(summary.slug)
 
-      results.push({ slug: summary.slug, ok: true })
+      const finalPost = await getPostBySlug(summary.slug)
+      results.push({
+        slug: summary.slug,
+        ok: true,
+        youtubeUrl: finalPost?.youtubeUrl,
+      })
     } catch (err: any) {
       results.push({ slug: summary.slug, ok: false, error: err?.message ?? 'unknown' })
     }

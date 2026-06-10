@@ -1178,107 +1178,71 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             return
           }
 
-          // ── Video path: social FIRST, then wait for YouTube, then blog ──
-          // Order matters — we want YouTube live before the blog page goes
-          // public so the post renders with the embed already in place.
+          // ── Video path: OneUp posts to social FIRST; we then wait for
+          //                YouTube to appear on Shana's channel via RSS,
+          //                capture the watch URL, then publish the blog
+          //                so the page renders with the embed in place.
           btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing to social…`
           document.getElementById('publishBullets').style.display = 'none'
           const pStatus = document.getElementById('platformStatus')
           pStatus.style.display = 'flex'
+          // Shana's "Shana Gates" OneUp category is wired to YouTube,
+          // Instagram, TikTok, and Facebook only — no Google Business Profile.
+          // OneUp doesn't surface per-platform submission status, so the
+          // non-YouTube rows are informational only ("Submitted").
           pStatus.innerHTML = `
             <div class="platform-row"><span class="platform-icon">▶️</span><span class="platform-name">YouTube (gates blog publish)</span><span class="platform-status pstatus-polling" id="ps-youtube">Submitting…</span></div>
-            <div class="platform-row"><span class="platform-icon">🎬</span><span class="platform-name">Facebook Reel</span><span class="platform-status pstatus-polling" id="ps-facebookReel">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">📸</span><span class="platform-name">Instagram</span><span class="platform-status pstatus-polling" id="ps-instagram">Submitting…</span></div>
             <div class="platform-row"><span class="platform-icon">🎵</span><span class="platform-name">TikTok</span><span class="platform-status pstatus-polling" id="ps-tiktok">Submitting…</span></div>
-            <div class="platform-row"><span class="platform-icon">💼</span><span class="platform-name">LinkedIn</span><span class="platform-status pstatus-polling" id="ps-linkedin">Submitting…</span></div>
-            <div class="platform-row"><span class="platform-icon">𝕏</span><span class="platform-name">X / Twitter</span><span class="platform-status pstatus-polling" id="ps-twitter">Submitting…</span></div>
-            <div class="platform-row"><span class="platform-icon">🧵</span><span class="platform-name">Threads</span><span class="platform-status pstatus-polling" id="ps-threads">Submitting…</span></div>
-            <div class="platform-row"><span class="platform-icon">📸</span><span class="platform-name">Instagram Reel</span><span class="platform-status pstatus-polling" id="ps-instagramReel">Submitting…</span></div>
+            <div class="platform-row"><span class="platform-icon">🎬</span><span class="platform-name">Facebook</span><span class="platform-status pstatus-polling" id="ps-facebook">Submitting…</span></div>
             <div class="platform-row"><span class="platform-icon">🌐</span><span class="platform-name">Website</span><span class="platform-status pstatus-idle" id="ps-website">Waiting on YouTube…</span></div>
           `
 
-          // Submit all 7 platforms in parallel via Blotato
+          // Single OneUp call submits to all 4 connected accounts in the
+          // category at once. Response includes the `since` timestamp the
+          // server captured BEFORE submission — we hand that to the
+          // YouTube RSS poller as the cutoff.
           const vr = await fetch('/api/content/publish-video', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ slug: post.slug, videoUrl: pendingVideoUrl }),
           })
           const vd = await vr.json()
-          if (!vr.ok) throw new Error(vd.error || 'Social publish submission failed')
+          if (!vr.ok || !vd.ok) throw new Error(vd.error || 'OneUp submission failed')
 
-          // For non-YouTube platforms: kick off background polling. These do
-          // NOT block the blog publish — we only wait on YouTube.
-          const bgPlatforms = ['facebookReel', 'tiktok', 'linkedin', 'twitter', 'threads', 'instagramReel']
-          bgPlatforms.forEach(platform => {
+          // Mark IG/TT/FB as "Submitted" — OneUp doesn't expose per-platform
+          // confirmation, but the submission succeeded so we can trust it'll
+          // post within a few minutes.
+          ;['instagram', 'tiktok', 'facebook'].forEach(platform => {
             const el = document.getElementById(`ps-${platform}`)
-            if (!el) return
-            const result = vd[platform]
-            if (!result) { el.textContent = 'Skipped'; el.className = 'platform-status pstatus-idle'; return }
-            if (result.error) { el.textContent = 'Error'; el.className = 'platform-status pstatus-error'; el.title = result.error; return }
-            if (result.postSubmissionId) {
-              el.textContent = 'Queued'
-              el.className = 'platform-status pstatus-polling'
-              let attempts = 0
-              const timer = setInterval(async () => {
-                attempts++
-                try {
-                  const sr = await fetch(`/api/content/blotato-status?postSubmissionId=${encodeURIComponent(result.postSubmissionId)}`)
-                  const sd = await sr.json()
-                  if (sd.status === 'published') {
-                    clearInterval(timer); delete publishPollTimers[platform]
-                    el.textContent = 'Published'; el.className = 'platform-status pstatus-done'
-                  } else if (sd.status === 'failed') {
-                    clearInterval(timer); delete publishPollTimers[platform]
-                    el.textContent = 'Failed'; el.className = 'platform-status pstatus-error'
-                  } else if (attempts >= 30) {
-                    clearInterval(timer); delete publishPollTimers[platform]
-                    el.textContent = 'Queued'; el.className = 'platform-status pstatus-idle'
-                  }
-                } catch { /* keep polling */ }
-              }, 10000)
-              publishPollTimers[platform] = timer
-            }
+            if (el) { el.textContent = 'Submitted via OneUp'; el.className = 'platform-status pstatus-idle' }
           })
 
-          // YouTube: gates the blog publish. Synchronous wait (up to 5 min).
-          // The server-side blotato-status handler captures the watch URL into
-          // the post record when status flips to 'published' (we pass slug +
-          // platform=youtube so it knows where to persist).
-          const ytResult = vd.youtube
+          // YouTube: gates the blog publish. Poll Shana's channel RSS
+          // every 10 s for up to 5 min (30 attempts). RSS typically reflects
+          // new uploads within 1–5 min. When found, the server-side
+          // youtube-wait endpoint also persists post.youtubeUrl so the
+          // blog page renders the embed immediately on first load.
           const ytEl = document.getElementById('ps-youtube')
-          if (!ytResult || ytResult.error || !ytResult.postSubmissionId) {
-            if (ytEl) {
-              ytEl.textContent = 'Failed'
-              ytEl.className = 'platform-status pstatus-error'
-              if (ytResult?.error) ytEl.title = ytResult.error
-            }
-            throw new Error(`YouTube submission failed: ${ytResult?.error || 'no submission ID returned'}`)
-          }
           if (ytEl) { ytEl.textContent = 'Publishing…'; ytEl.className = 'platform-status pstatus-polling' }
+          const since = vd.since
 
           await new Promise((resolve, reject) => {
             let attempts = 0
             const timer = setInterval(async () => {
               attempts++
               try {
-                const qs = new URLSearchParams({
-                  postSubmissionId: ytResult.postSubmissionId,
-                  slug: post.slug,
-                  platform: 'youtube',
-                })
-                const sr = await fetch(`/api/content/blotato-status?${qs}`)
+                const qs = new URLSearchParams({ slug: post.slug, since })
+                const sr = await fetch(`/api/content/youtube-wait?${qs}`)
                 const sd = await sr.json()
-                if (sd.status === 'published') {
+                if (sd.found) {
                   clearInterval(timer); delete publishPollTimers['youtube']
                   if (ytEl) { ytEl.textContent = 'Published'; ytEl.className = 'platform-status pstatus-done' }
                   resolve(sd)
-                } else if (sd.status === 'failed') {
-                  clearInterval(timer); delete publishPollTimers['youtube']
-                  if (ytEl) { ytEl.textContent = 'Failed'; ytEl.className = 'platform-status pstatus-error' }
-                  reject(new Error(sd.errorMessage || 'YouTube publish failed'))
                 } else if (attempts >= 30) {
                   clearInterval(timer); delete publishPollTimers['youtube']
-                  if (ytEl) { ytEl.textContent = 'Timed out'; ytEl.className = 'platform-status pstatus-error' }
-                  reject(new Error('YouTube did not confirm publish within 5 minutes. Try again or use the no-video publish path.'))
+                  if (ytEl) { ytEl.textContent = 'Not detected yet'; ytEl.className = 'platform-status pstatus-error' }
+                  reject(new Error('YouTube channel RSS did not show a new video within 5 minutes. Try again or refresh later.'))
                 }
               } catch { /* network blip — keep polling */ }
             }, 10000)
