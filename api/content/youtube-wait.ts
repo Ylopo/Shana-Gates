@@ -24,17 +24,23 @@ import { getYouTubeChannelId } from '../../lib/oneup-client'
 import { findNewestVideoSince } from '../../lib/youtube-rss'
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
-
-  const auth = checkAdminAuth(req)
-  if (!auth.ok) return res.status(auth.status).json({ error: auth.error })
-
-  const slug = typeof req.query?.slug === 'string' ? req.query.slug : null
-  const since = typeof req.query?.since === 'string' ? req.query.since : null
-  if (!slug)  return res.status(400).json({ error: 'slug is required' })
-  if (!since) return res.status(400).json({ error: 'since (ISO timestamp) is required' })
-
   try {
+    if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
+
+    const auth = checkAdminAuth(req)
+    if (!auth.ok) return res.status(auth.status).json({ error: auth.error })
+
+    if (!process.env.ONEUP_YOUTUBE_CHANNEL_ID) {
+      return res.status(500).json({
+        error: 'Server missing ONEUP_YOUTUBE_CHANNEL_ID env var. Add it in Vercel → Settings → Environment Variables, then redeploy.',
+      })
+    }
+
+    const slug = typeof req.query?.slug === 'string' ? req.query.slug : null
+    const since = typeof req.query?.since === 'string' ? req.query.since : null
+    if (!slug)  return res.status(400).json({ error: 'slug is required' })
+    if (!since) return res.status(400).json({ error: 'since (ISO timestamp) is required' })
+
     const channelId = getYouTubeChannelId()
     const video = await findNewestVideoSince(channelId, since)
     if (!video) {
