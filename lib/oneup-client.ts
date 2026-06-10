@@ -93,12 +93,11 @@ export async function scheduleVideoNow(params: {
   const apiKey = getApiKey()
   const categoryId = getCategoryId()
 
-  // OneUp parses scheduled_date_time in their local timezone (US Eastern),
-  // not UTC. To guarantee "now" without timezone surprises we set the
-  // value to a few minutes in the past — OneUp treats past timestamps as
-  // immediate-publish.
-  const now = new Date(Date.now() - 5 * 60 * 1000)
-  const scheduledAt = formatOneUpDateTime(now)
+  // Per OneUp docs: "For immediate publishing, set scheduled_date_time
+  // to the current timestamp." Past timestamps are NOT treated as
+  // immediate — they sit in the scheduled queue indefinitely. We format
+  // the exact current moment in US Eastern (OneUp's account timezone).
+  const scheduledAt = formatOneUpDateTime(new Date())
 
   const form = new URLSearchParams()
   form.set('apiKey', apiKey)
