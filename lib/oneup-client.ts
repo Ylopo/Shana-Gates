@@ -50,12 +50,27 @@ export interface OneUpScheduleResult {
   raw?: any
 }
 
-// Format a Date as "YYYY-MM-DD HH:MM" (OneUp's required format for
-// scheduled_date_time). All values use the local server timezone — for
-// our purposes that's Vercel UTC, which is fine for "post now."
+// Format a Date as "YYYY-MM-DD HH:MM" in **US Eastern Time**.
+//
+// OneUp interprets scheduled_date_time in the account's local timezone
+// (which is US Eastern by default, including for the agency-level API key
+// we're using). If we send a UTC-formatted string, OneUp reads the same
+// clock-face digits as Eastern time, which lands the post 4–5 hours in
+// the future — so it sits in the scheduled queue instead of publishing.
+//
+// Vercel functions run in UTC, so we explicitly convert via Intl.
 function formatOneUpDateTime(d: Date): string {
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(d)
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '00'
+  return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}`
 }
 
 /**
