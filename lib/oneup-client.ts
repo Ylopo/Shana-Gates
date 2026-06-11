@@ -50,18 +50,19 @@ export interface OneUpScheduleResult {
   raw?: any
 }
 
-// Format a Date as "YYYY-MM-DD HH:MM" in **US Eastern Time**.
+// Format a Date as "YYYY-MM-DD HH:MM" in **US Pacific Time**.
 //
-// OneUp interprets scheduled_date_time in the account's local timezone
-// (which is US Eastern by default, including for the agency-level API key
-// we're using). If we send a UTC-formatted string, OneUp reads the same
-// clock-face digits as Eastern time, which lands the post 4–5 hours in
-// the future — so it sits in the scheduled queue instead of publishing.
+// OneUp interprets scheduled_date_time in the account's local timezone.
+// Shana's connected accounts + OneUp account preferences are set to
+// Pacific (she's in Coachella Valley, CA), so we format in PT. If we
+// send the timestamp in any other zone, OneUp reads the same clock-face
+// digits as Pacific and the post lands several hours in the future —
+// sitting in the scheduled queue until that wall-clock time arrives.
 //
 // Vercel functions run in UTC, so we explicitly convert via Intl.
 function formatOneUpDateTime(d: Date): string {
   const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/New_York',
+    timeZone: 'America/Los_Angeles',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
