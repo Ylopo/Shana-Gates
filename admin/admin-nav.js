@@ -69,7 +69,11 @@
   live.textContent = '● Live'
   nav.appendChild(live)
 
-  var header = document.querySelector('header')
+  // Insert before <header> only if it's a DIRECT child of body (older admin
+  // pages structured this way). If <header> is nested (e.g. the blog dashboard
+  // wraps it inside .page), document.body.insertBefore would throw. Default
+  // to inserting at top of body so the nav always renders.
+  var header = document.querySelector('body > header')
   if (header) {
     document.body.insertBefore(nav, header)
   } else {

@@ -48,8 +48,10 @@
       font-weight: 300;
       -webkit-font-smoothing: antialiased;
       min-height: 100vh;
-      overflow-x: hidden;
     }
+    /* overflow-x containment moved off body so admin-nav's position: sticky
+       on the inserted top nav isn't broken by a body-level overflow context. */
+    .atmosphere, .grain { will-change: transform; }
 
     /* ─────────── Atmosphere ─────────── */
     .atmosphere {
