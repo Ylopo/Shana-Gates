@@ -12,383 +12,313 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/png" href="/images/favcon.png" />
-  <title>Blog Effectiveness Dashboard — Shana Gates</title>
+  <title>Content Performance — Shana Gates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
       --bronze: #C8C8C8;
-      --teal:   #1A444C;
-      --bg:     #0a0a0a;
-      --surf:   #141414;
-      --surf2:  #1c1c1c;
-      --border: rgba(255,255,255,0.08);
-      --text:   #fff;
-      --muted:  rgba(255,255,255,0.45);
-      --green:  #4CAF50;
-      --blue:   #2563eb;
-      --red:    #ef4444;
-      --font:   system-ui, -apple-system, sans-serif;
+      --teal: #1A444C;
+      --teal-soft: rgba(26,68,76,0.45);
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #181818;
+      --border: rgba(255,255,255,0.07);
+      --border-strong: rgba(255,255,255,0.13);
+      --text: #f4f2ee;
+      --muted: rgba(255,255,255,0.45);
+      --faint: rgba(255,255,255,0.22);
+      --gold: #C2A26B;
+      --gold-soft: rgba(194,162,107,0.14);
+      --up: #7FBF8E;
+      --down: #D98C7E;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Jost', system-ui, -apple-system, sans-serif;
     }
-    body { background: var(--bg); color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; min-height: 100vh; }
 
-    /* ── Header ── */
-    header { background: var(--surf); border-bottom: 1px solid var(--border); padding: 24px 32px 20px; }
-    .header-brand { color: var(--bronze); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
-    .header-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .header-meta { color: var(--muted); font-size: 13px; }
+    html { scroll-behavior: smooth; }
 
-    /* ── Layout ── */
-    main { max-width: 1100px; margin: 0 auto; padding: 36px 24px 100px; }
-    .section { margin-bottom: 40px; }
-    .section-title { font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
-
-    /* ── Stat cards row ── */
-    .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 40px; }
-    .stat-card { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
-    .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
-    .stat-value { font-size: 32px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
-    .stat-sub { font-size: 12px; color: var(--muted); }
-    .stat-card.highlight { border-color: rgba(200,200,200,0.3); background: rgba(200,200,200,0.06); }
-    .stat-card.highlight .stat-value { color: var(--bronze); }
-
-    /* ── GA status badge ── */
-    .ga-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 4px 10px; border-radius: 100px;
-      font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    .ga-badge.connected { background: rgba(74,197,80,0.12); color: var(--green); }
-    .ga-badge.pending { background: rgba(255,152,0,0.12); color: #FF9800; }
-    .ga-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-    /* ── Tables ── */
-    .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th { background: var(--surf2); text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
-    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
-    .td-muted { color: var(--muted); }
-    .td-pending { color: rgba(255,255,255,0.2); font-style: italic; }
+    /* ─────────── Atmosphere ─────────── */
+    .atmosphere {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(1100px 480px at 78% -8%, rgba(194,162,107,0.10), transparent 65%),
+        radial-gradient(900px 540px at 8% 4%, rgba(26,68,76,0.30), transparent 70%),
+        radial-gradient(700px 700px at 92% 88%, rgba(26,68,76,0.16), transparent 70%);
+    }
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.35;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
 
-    /* ── Category badges ── */
+    .page { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 0 32px 96px; }
+
+    /* ─────────── Masthead ─────────── */
+    .masthead { padding: 64px 0 48px; border-bottom: 1px solid var(--border); }
+    .masthead-eyebrow {
+      display: flex; align-items: center; gap: 16px;
+      font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase;
+      color: var(--gold); font-weight: 400; margin-bottom: 18px;
+    }
+    .masthead-eyebrow::after { content: ''; width: 56px; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); }
+    .masthead h1 {
+      font-family: var(--serif); font-weight: 300; font-size: clamp(38px, 5.4vw, 60px);
+      line-height: 1.04; letter-spacing: 0.01em; max-width: 720px;
+    }
+    .masthead h1 em { font-style: italic; color: var(--bronze); }
+    .masthead-sub {
+      margin-top: 18px; display: flex; align-items: baseline; gap: 22px; flex-wrap: wrap;
+      font-size: 13px; color: var(--muted); letter-spacing: 0.04em;
+    }
+    .masthead-sub .dot { color: var(--faint); }
+    .live-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--up); border: 1px solid rgba(127,191,142,0.3); border-radius: 100px;
+      padding: 4px 12px;
+    }
+    .live-chip .pulse {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--up);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(127,191,142,0.5); } 50% { opacity: 0.55; box-shadow: 0 0 0 5px rgba(127,191,142,0); } }
+
+    /* ─────────── Sections ─────────── */
+    .section { margin-top: 72px; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+    .section-kicker {
+      font-size: 10.5px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--faint); font-weight: 400; margin-bottom: 8px;
+    }
+    .section-title { font-family: var(--serif); font-weight: 300; font-size: 31px; letter-spacing: 0.01em; }
+    .section-title em { font-style: italic; color: var(--bronze); }
+    .section-note { font-size: 12.5px; color: var(--muted); letter-spacing: 0.04em; }
+
+    /* ─────────── Reveal animation ─────────── */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.9s cubic-bezier(.22,1,.36,1), transform 0.9s cubic-bezier(.22,1,.36,1); }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ─────────── KPI hero row ─────────── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 48px; }
+    .kpi {
+      background: var(--surface); padding: 36px 32px 32px; position: relative; overflow: hidden;
+      transition: background 0.4s ease;
+    }
+    .kpi:hover { background: var(--surface-2); }
+    .kpi::before {
+      content: ''; position: absolute; top: 0; left: 32px; right: 32px; height: 1px;
+      background: linear-gradient(90deg, var(--gold-soft), transparent);
+    }
+    .kpi-label { font-size: 10.5px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; font-weight: 400; }
+    .kpi-value {
+      font-family: var(--serif); font-weight: 300; font-size: 64px; line-height: 0.95;
+      letter-spacing: -0.01em; color: var(--text); font-variant-numeric: lining-nums;
+    }
+    .kpi-value .unit { font-size: 26px; color: var(--muted); font-style: italic; margin-left: 6px; }
+    .kpi-value.kpi-text { font-size: 30px; line-height: 1.15; font-style: italic; color: var(--bronze); padding-top: 8px; min-height: 64px; display: block; overflow: hidden; text-overflow: ellipsis; }
+    .kpi-foot { margin-top: 18px; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--muted); letter-spacing: 0.03em; min-height: 18px; }
+    .delta { font-weight: 500; letter-spacing: 0.04em; white-space: nowrap; }
+    .delta.up { color: var(--up); }
+    .delta.down { color: var(--down); }
+    .delta.flat { color: var(--muted); }
+
+    /* ─────────── Momentum chart ─────────── */
+    .panel {
+      background: var(--surface); border: 1px solid var(--border); padding: 36px 36px 28px;
+      position: relative;
+    }
+    .momentum-svg { width: 100%; height: auto; display: block; }
+    .momentum-bar { fill: var(--teal); transition: fill 0.3s ease; transform-origin: center bottom; transform-box: fill-box; animation: barGrow 1s cubic-bezier(.22,1,.36,1) both; }
+    .momentum-bar.peak { fill: var(--gold); }
+    .momentum-bar:hover { fill: #2A6470; }
+    .momentum-bar.peak:hover { fill: #D4B67E; }
+    @keyframes barGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+    .momentum-target { stroke: var(--bronze); stroke-width: 1; stroke-dasharray: 5 6; opacity: 0.5; }
+    .momentum-axis-label { font-family: var(--sans); font-size: 10px; fill: var(--faint); letter-spacing: 0.08em; }
+    .momentum-peak-label { font-family: var(--serif); font-size: 17px; fill: var(--gold); font-style: italic; }
+    .momentum-target-label { font-family: var(--sans); font-size: 10px; fill: var(--bronze); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; }
+    .momentum-legend { display: flex; gap: 26px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--muted); letter-spacing: 0.06em; }
+    .legend-key { display: inline-flex; align-items: center; gap: 8px; }
+    .legend-swatch { width: 12px; height: 12px; }
+    .legend-line { width: 18px; height: 1px; border-top: 1px dashed var(--bronze); }
+
+    /* ─────────── Network cards ─────────── */
+    .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .net-card {
+      background: var(--surface); border: 1px solid var(--border); padding: 30px 28px 26px;
+      display: flex; flex-direction: column; position: relative; transition: border-color 0.4s ease;
+    }
+    .net-card:hover { border-color: var(--border-strong); }
+    .net-card.preview .net-value, .net-card.preview .net-spark, .net-card.preview .net-top { opacity: 0.55; }
+    .net-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .net-name { display: flex; align-items: center; gap: 11px; font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text); font-weight: 400; }
+    .net-name svg { width: 17px; height: 17px; fill: var(--bronze); flex-shrink: 0; }
+    .connecting-chip {
+      font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold);
+      border: 1px solid rgba(194,162,107,0.35); border-radius: 100px; padding: 3px 9px;
+      display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .connecting-chip .pulse { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); animation: pulse 2s ease-in-out infinite; }
+    .live-mini-chip {
+      font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--up);
+      border: 1px solid rgba(127,191,142,0.3); border-radius: 100px; padding: 3px 9px; white-space: nowrap;
+    }
+    .net-value { font-family: var(--serif); font-weight: 300; font-size: 46px; line-height: 1; font-variant-numeric: lining-nums; }
+    .net-metric-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 8px; }
+    .net-delta-row { margin-top: 12px; font-size: 12px; min-height: 17px; }
+    .net-spark { margin-top: 20px; }
+    .net-spark svg { width: 100%; height: 36px; display: block; }
+    .spark-path { fill: none; stroke: var(--bronze); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0.8; }
+    .spark-fill { stroke: none; opacity: 0.10; fill: var(--bronze); }
+    .net-top { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .net-top-label { font-size: 9.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
+    .net-top-title { font-family: var(--serif); font-style: italic; font-size: 17px; color: var(--text); line-height: 1.25; }
+    .net-top-views { font-size: 11.5px; color: var(--muted); margin-top: 4px; letter-spacing: 0.04em; }
+    .preview-note { font-size: 10px; color: var(--faint); letter-spacing: 0.08em; margin-top: 14px; font-style: italic; }
+
+    /* ─────────── Top posts table ─────────── */
+    .posts-table-wrap { border: 1px solid var(--border); background: var(--surface); overflow-x: auto; }
+    table.posts { width: 100%; border-collapse: collapse; min-width: 760px; }
+    table.posts th {
+      text-align: left; padding: 18px 20px; font-size: 9.5px; font-weight: 500;
+      letter-spacing: 0.24em; text-transform: uppercase; color: var(--faint);
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    table.posts td { padding: 18px 20px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 13.5px; }
+    table.posts tr:last-child td { border-bottom: none; }
+    table.posts tbody tr { transition: background 0.3s ease; }
+    table.posts tbody tr:hover { background: rgba(255,255,255,0.018); }
+    tr.best-in-show { background: linear-gradient(90deg, rgba(194,162,107,0.07), rgba(194,162,107,0.015) 60%, transparent); position: relative; }
+    tr.best-in-show td:first-child { border-left: 2px solid var(--gold); }
+    .best-tag {
+      display: inline-block; font-size: 8.5px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid rgba(194,162,107,0.4); padding: 2px 8px; border-radius: 100px;
+      margin-left: 10px; vertical-align: middle; white-space: nowrap;
+    }
+    .thumb {
+      width: 52px; height: 52px; object-fit: cover; display: block;
+      border: 1px solid var(--border-strong); filter: saturate(0.9);
+    }
+    .thumb-mono {
+      width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-style: italic; font-size: 22px; font-weight: 400;
+      border: 1px solid var(--border-strong); color: var(--bronze); background: var(--teal-soft);
+    }
+    .post-title-cell a {
+      color: var(--text); text-decoration: none; font-weight: 400; line-height: 1.4;
+      transition: color 0.25s ease;
+    }
+    .post-title-cell a:hover { color: var(--gold); }
+    .td-num { font-variant-numeric: lining-nums tabular-nums; font-weight: 400; }
+    .td-muted { color: var(--muted); white-space: nowrap; }
+    .td-pending { color: var(--faint); font-style: italic; }
+    .age-pill { font-size: 11px; color: var(--faint); display: block; margin-top: 3px; }
+
     .cat-badge {
-      display: inline-block; font-size: 10px; font-weight: 600;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+      display: inline-block; font-size: 9.5px; font-weight: 500; letter-spacing: 0.18em;
+      text-transform: uppercase; padding: 4px 11px; border-radius: 100px;
+      border: 1px solid; background: transparent; white-space: nowrap;
     }
 
-    /* ── Benchmark table ── */
-    .bench-table td:first-child { color: var(--muted); font-size: 12px; }
-    .bench-status { display: inline-flex; align-items: center; gap: 6px; }
-    .bench-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .bench-dot.green { background: var(--green); }
-    .bench-dot.amber { background: #FF9800; }
-    .bench-dot.pending { background: rgba(255,255,255,0.2); }
+    /* ─────────── Category distribution ─────────── */
+    .cat-chart { display: flex; flex-direction: column; gap: 22px; }
+    .cat-row { display: grid; grid-template-columns: 170px 1fr 90px; gap: 22px; align-items: center; }
+    .cat-row-label { font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); text-align: right; font-weight: 400; }
+    .cat-track { height: 3px; background: rgba(255,255,255,0.05); position: relative; }
+    .cat-fill { height: 100%; width: 0; transition: width 1.3s cubic-bezier(.22,1,.36,1); position: relative; }
+    .cat-fill::after { content: ''; position: absolute; right: -3px; top: -3.5px; width: 9px; height: 9px; border-radius: 50%; background: inherit; }
+    .cat-count { font-family: var(--serif); font-size: 24px; font-weight: 300; font-variant-numeric: lining-nums; }
+    .cat-count .pct { font-family: var(--sans); font-size: 11px; color: var(--faint); margin-left: 8px; letter-spacing: 0.05em; }
 
-    /* ── Category breakdown ── */
-    .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-    .cat-item { background: var(--surf); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
-    .cat-item-count { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
-    .cat-item-label { font-size: 12px; color: var(--muted); }
-
-    /* ── Bar chart ── */
-    .bar-chart { display: flex; flex-direction: column; gap: 10px; }
-    .bar-row { display: flex; align-items: center; gap: 12px; }
-    .bar-label { font-size: 12px; color: var(--muted); width: 130px; flex-shrink: 0; text-align: right; }
-    .bar-track { flex: 1; height: 8px; background: var(--surf2); border-radius: 4px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 4px; background: var(--bronze); transition: width 0.6s ease; }
-    .bar-count { font-size: 12px; font-weight: 600; width: 28px; text-align: right; }
-
-    /* ── Post title link ── */
-    .post-link { color: var(--text); text-decoration: none; }
-    .post-link:hover { color: var(--bronze); }
-
-    /* ── Info callout ── */
-    .callout {
-      background: var(--surf); border: 1px solid var(--border); border-left: 3px solid var(--bronze);
-      border-radius: 0 10px 10px 0; padding: 16px 20px; font-size: 13px; line-height: 1.6;
-      color: rgba(255,255,255,0.7); margin-bottom: 32px;
+    /* ─────────── Footer ─────────── */
+    .meta-footer {
+      margin-top: 100px; padding-top: 32px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap;
+      font-size: 11.5px; color: var(--faint); letter-spacing: 0.08em;
     }
-    .callout strong { color: var(--text); }
-    .callout code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+    .meta-footer a { color: var(--muted); text-decoration: none; transition: color 0.25s ease; letter-spacing: 0.14em; text-transform: uppercase; font-size: 10.5px; }
+    .meta-footer a:hover { color: var(--gold); }
+    .meta-footer .brandline { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--muted); letter-spacing: 0.02em; }
 
-    /* ── Pipeline badge ── */
-    .pipe-badge {
-      display: inline-block; font-size: 10px; font-weight: 600;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      padding: 2px 6px; border-radius: 4px;
+    /* ─────────── Skeleton / states ─────────── */
+    .sk { background: linear-gradient(100deg, rgba(255,255,255,0.045) 40%, rgba(255,255,255,0.085) 50%, rgba(255,255,255,0.045) 60%); background-size: 200% 100%; animation: shimmer 1.6s linear infinite; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .sk-kpi { height: 196px; }
+    .sk-block { height: 280px; margin-top: 72px; }
+    .sk-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 48px; }
+
+    .state-msg { text-align: center; padding: 130px 24px; }
+    .state-msg h2 { font-family: var(--serif); font-weight: 300; font-style: italic; font-size: 32px; color: var(--bronze); margin-bottom: 14px; }
+    .state-msg p { font-size: 13.5px; color: var(--muted); letter-spacing: 0.04em; max-width: 420px; margin: 0 auto; line-height: 1.7; }
+    .state-msg .retry {
+      display: inline-block; margin-top: 28px; font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase;
+      color: var(--text); border: 1px solid var(--border-strong); padding: 12px 30px; background: none;
+      font-family: var(--sans); cursor: pointer; transition: border-color 0.3s ease, color 0.3s ease;
     }
-    .pipe-daily   { background: rgba(37,99,235,0.15); color: #60a5fa; }
-    .pipe-weekly  { background: rgba(156,39,176,0.15); color: #c084fc; }
-    .pipe-strategic { background: rgba(200,200,200,0.15); color: var(--bronze); }
+    .state-msg .retry:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* ── Loading ── */
-    .loading { text-align: center; padding: 80px 20px; color: var(--muted); font-size: 15px; }
-    .sk { background: rgba(255,255,255,0.06); border-radius: 8px; animation: pulse 1.4s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
+    /* ─────────── Responsive ─────────── */
+    @media (max-width: 1020px) {
+      .kpi-grid, .sk-row { grid-template-columns: repeat(2, 1fr); }
+      .network-grid { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 640px) {
-      main { padding: 24px 16px 60px; }
-      .stat-cards { grid-template-columns: repeat(2, 1fr); }
-      .bar-label { width: 90px; font-size: 11px; }
+      .page { padding: 0 18px 64px; }
+      .masthead { padding: 44px 0 36px; }
+      .kpi-grid, .network-grid, .sk-row { grid-template-columns: 1fr; }
+      .kpi { padding: 28px 24px 26px; }
+      .kpi-value { font-size: 52px; }
+      .panel { padding: 24px 20px 20px; }
+      .cat-row { grid-template-columns: 1fr; gap: 8px; }
+      .cat-row-label { text-align: left; }
+      .cat-count { font-size: 20px; }
+      .section { margin-top: 56px; }
+      .section-title { font-size: 26px; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="header-brand">Shana Gates · Admin</div>
-    <div class="header-title">Blog Effectiveness Dashboard</div>
-    <div class="header-meta" id="headerMeta">Loading…</div>
-  </header>
+  <div class="atmosphere"></div>
+  <div class="grain"></div>
 
-  <main id="mainContent">
-    <div class="loading">Loading dashboard data…</div>
-  </main>
+  <div class="page">
+    <header class="masthead">
+      <div class="masthead-eyebrow">Shana Gates · Craft &amp; Bauer | Real Broker</div>
+      <h1>The Content Engine, <em>at a glance</em></h1>
+      <div class="masthead-sub" id="mastheadSub">
+        <span class="live-chip"><span class="pulse"></span>Live</span>
+        <span>Coachella Valley, California</span>
+        <span class="dot">·</span>
+        <span id="mastheadMeta">Gathering the latest numbers…</span>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="sk-row">
+        <div class="sk sk-kpi"></div>
+        <div class="sk sk-kpi"></div>
+        <div class="sk sk-kpi"></div>
+        <div class="sk sk-kpi"></div>
+      </div>
+      <div class="sk sk-block"></div>
+      <div class="sk sk-block"></div>
+    </main>
+  </div>
 
   <script>
-    const CAT_COLORS = {
-      'buying-tips':         ['#4CAF50',  'rgba(76,175,80,0.12)'],
-      'selling-tips':        ['#0ea5e9',  'rgba(14,165,233,0.12)'],
-      'community-spotlight': ['#9C27B0',  'rgba(156,39,176,0.12)'],
-      'market-insight':      ['#4338CA',  'rgba(67,56,202,0.12)'],
-      'market-update':       ['#2563eb',  'rgba(37,99,235,0.12)'],
-      'investment':          ['#FF9800',  'rgba(255,152,0,0.12)'],
-      'local-area':          ['#D97706',  'rgba(217,119,6,0.12)'],
-      'news':                ['#607D8B',  'rgba(96,125,139,0.12)'],
-    }
-    const CAT_LABELS = {
-      'buying-tips': 'Buying Tips', 'selling-tips': 'Selling Tips',
-      'community-spotlight': 'Community Spotlight', 'market-insight': 'Market Insight',
-      'market-update': 'Market Update', 'investment': 'Investment',
-      'local-area': 'Local Area', 'news': 'News',
-    }
-
-    const BENCHMARKS = [
-      { metric: 'Pageviews per post / day',    key: 'pvPerDay',      low: 0.15, high: 0.35 },
-      { metric: 'Sessions per post / day',     key: 'sessPerDay',    low: 0.12, high: 0.30 },
-      { metric: 'Avg. engagement time (sec)',  key: 'engTime',       low: 30,   high: 60   },
-      { metric: 'Organic search share',        key: 'organicShare',  low: 55,   high: 70, isPercent: true },
-      { metric: 'Direct traffic share',        key: 'directShare',   low: 15,   high: 25, isPercent: true },
-    ]
-
-    const TRAFFIC_CHANNELS = ['Organic Search', 'Direct', 'Organic Social', 'Referral']
-
-    function catBadge(cat) {
-      const [color, bg] = CAT_COLORS[cat] || ['#607D8B', 'rgba(96,125,139,0.12)']
-      return `<span class="cat-badge" style="background:${bg};color:${color};">${CAT_LABELS[cat] || cat}</span>`
-    }
-
-    function pipeBadge(pipeline) {
-      const cls = pipeline === 'daily' ? 'pipe-daily' : pipeline === 'weekly' ? 'pipe-weekly' : 'pipe-strategic'
-      const label = pipeline === 'daily' ? 'Daily News' : pipeline === 'weekly' ? 'Weekly' : 'Strategic'
-      return `<span class="pipe-badge ${cls}">${label}</span>`
-    }
-
-    function fmtDate(iso) {
-      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    }
-
-    function benchStatus(val) {
-      // All GA data is pending until property connected
-      return `<span class="bench-status"><span class="bench-dot pending"></span><span style="color:rgba(255,255,255,0.25);font-size:12px;">Pending GA data</span></span>`
-    }
-
-    function buildDashboard(d) {
-      const generated = new Date(d.generatedAt).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
-      document.getElementById('headerMeta').textContent = `${d.recentPosts} posts in the last 90 days · Generated ${generated}`
-
-      const gaBadge = d.gaConnected
-        ? `<span class="ga-badge connected"><span class="ga-dot"></span>Google Analytics Connected</span>`
-        : `<span class="ga-badge pending"><span class="ga-dot"></span>GA4 Not Yet Connected</span>`
-
-      const catEntries = Object.entries(d.byCat).sort((a, b) => b[1] - a[1])
-      const maxCat = catEntries.length ? catEntries[0][1] : 1
-
-      const catBarsHtml = catEntries.map(([cat, count]) => {
-        const [color] = CAT_COLORS[cat] || ['#607D8B']
-        const pct = Math.round((count / maxCat) * 100)
-        return `<div class="bar-row">
-          <div class="bar-label">${CAT_LABELS[cat] || cat}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div>
-          <div class="bar-count">${count}</div>
-        </div>`
-      }).join('')
-
-      const postsHtml = d.posts.map(p => `
-        <tr>
-          <td><a class="post-link" href="/blog/post/${encodeURIComponent(p.slug)}" target="_blank">${escHtml(p.title)}</a></td>
-          <td>${catBadge(p.category)}</td>
-          <td>${pipeBadge(p.pipeline || 'weekly')}</td>
-          <td class="td-muted">${p.city ? p.city.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) : '—'}</td>
-          <td class="td-muted">${fmtDate(p.publishedAt)}</td>
-          <td class="td-muted">${p.ageDays}d</td>
-          <td class="td-pending">—</td>
-          <td class="td-pending">—</td>
-          <td class="td-pending">—</td>
-        </tr>`).join('')
-
-      const benchRows = BENCHMARKS.map(b => `
-        <tr>
-          <td>${b.metric}</td>
-          <td>${benchStatus(null)}</td>
-          <td class="td-muted">${b.low}${b.isPercent ? '%' : ''}–${b.high}${b.isPercent ? '%' : ''}</td>
-        </tr>`).join('')
-
-      const trafficRows = TRAFFIC_CHANNELS.map(ch => `
-        <tr>
-          <td>${ch}</td>
-          <td class="td-pending">—</td>
-          <td class="td-pending">—</td>
-          <td class="td-pending">—</td>
-        </tr>`).join('')
-
-      document.getElementById('mainContent').innerHTML = `
-        <!-- Stat cards -->
-        <div class="stat-cards">
-          <div class="stat-card highlight">
-            <div class="stat-label">Total Posts Published</div>
-            <div class="stat-value">${d.totalPosts}</div>
-            <div class="stat-sub">All time</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Last 90 Days</div>
-            <div class="stat-value">${d.recentPosts}</div>
-            <div class="stat-sub">posts published</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Posts / Week</div>
-            <div class="stat-value">${d.postsPerWeek}</div>
-            <div class="stat-sub">Benchmark: 3–7 / week</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Google Analytics</div>
-            <div style="margin-top:10px;">${gaBadge}</div>
-            <div class="stat-sub" style="margin-top:8px;">Property: ${escHtml(d.gaMeasurementId)}</div>
-          </div>
-        </div>
-
-        <!-- GA callout -->
-        ${!d.gaConnected ? `
-        <div class="callout">
-          <strong>Connect Google Analytics for live traffic metrics.</strong><br>
-          To enable site traffic, YLOPO click attribution, and per-post engagement data, add these environment variables to Vercel:<br><br>
-          <code>GOOGLE_ANALYTICS_PROPERTY_ID</code> — numeric GA4 property ID (GA4 → Admin → Property Settings → Property ID)<br>
-          <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> — service account key JSON with Viewer access to the GA4 property<br><br>
-          Once set, the Site Traffic and YLOPO Attribution sections below will populate automatically.
-        </div>` : ''}
-
-        <!-- Site Traffic -->
-        <div class="section">
-          <div class="section-title">Site Traffic — Last 30 Days</div>
-          <div class="stat-cards">
-            <div class="stat-card">
-              <div class="stat-label">Sessions</div>
-              <div class="stat-value ${!d.gaConnected || !d.siteTraffic ? 'td-pending' : ''}">${d.siteTraffic?.sessions ? Number(d.siteTraffic.sessions).toLocaleString() : '—'}</div>
-              <div class="stat-sub">website visits</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-label">Unique Users</div>
-              <div class="stat-value ${!d.gaConnected || !d.siteTraffic ? 'td-pending' : ''}">${d.siteTraffic?.users ? Number(d.siteTraffic.users).toLocaleString() : '—'}</div>
-              <div class="stat-sub">distinct visitors</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- YLOPO IDX Attribution -->
-        <div class="section">
-          <div class="section-title">YLOPO IDX Click Attribution — Last 30 Days</div>
-          <div class="stat-cards" style="margin-bottom:20px;">
-            <div class="stat-card highlight">
-              <div class="stat-label">Total IDX Clicks</div>
-              <div class="stat-value">${d.ylopoClicks != null ? d.ylopoClicks.total.toLocaleString() : '—'}</div>
-              <div class="stat-sub">listings clicked from this site</div>
-            </div>
-          </div>
-          ${d.gaConnected && d.topYlopoPages && d.topYlopoPages.length > 0 ? `
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Page</th><th>IDX Clicks</th></tr></thead>
-              <tbody>
-                ${d.topYlopoPages.map(p => `<tr>
-                  <td>${escHtml(p.page)}</td>
-                  <td style="font-weight:600;">${p.clicks.toLocaleString()}</td>
-                </tr>`).join('')}
-              </tbody>
-            </table>
-          </div>` : d.gaConnected ? `<div style="color:var(--muted);font-size:13px;">No IDX click events recorded yet. Make sure <code style="background:rgba(255,255,255,0.08);padding:1px 5px;border-radius:3px;font-size:12px;">/ylopo-tracking.js</code> is deployed and custom dimensions are registered in GA4.</div>` : ''}
-        </div>
-
-        <!-- Category breakdown -->
-        <div class="section">
-          <div class="section-title">Content Breakdown by Category (Last 90 Days)</div>
-          <div class="bar-chart">${catBarsHtml || '<div style="color:var(--muted);font-size:13px;">No posts in the last 90 days.</div>'}</div>
-        </div>
-
-        <!-- Benchmark comparison -->
-        <div class="section">
-          <div class="section-title">How We Compare to a Typical Real Estate Blog</div>
-          <div class="table-wrap">
-            <table class="bench-table">
-              <thead><tr><th>Metric</th><th>Current</th><th>Benchmark Range</th></tr></thead>
-              <tbody>
-                ${benchRows}
-                <tr>
-                  <td>Posts published (last 90 days)</td>
-                  <td><span style="color:${d.recentPosts >= 12 ? 'var(--green)' : '#FF9800'};font-weight:600;">${d.recentPosts} posts</span></td>
-                  <td class="td-muted">36–84 (3–7/wk)</td>
-                </tr>
-                <tr>
-                  <td>Posts per week</td>
-                  <td><span style="color:${parseFloat(d.postsPerWeek) >= 3 ? 'var(--green)' : '#FF9800'};font-weight:600;">${d.postsPerWeek}/wk</span></td>
-                  <td class="td-muted">3–7 / week</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.25);">Benchmark sources: HubSpot, Databox, SEMrush, SimilarWeb. Ranges reflect the middle 50% of mature informational posts on real estate blogs.</div>
-        </div>
-
-        <!-- Traffic sources -->
-        <div class="section">
-          <div class="section-title">Traffic by Channel (Last 90 Days)</div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Channel</th><th>Pageviews</th><th>Sessions</th><th>% of Pageviews</th></tr></thead>
-              <tbody>${trafficRows}</tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Per-post table -->
-        <div class="section">
-          <div class="section-title">Post-by-Post Results (Last 90 Days — ${d.recentPosts} posts)</div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Category</th>
-                  <th>Pipeline</th>
-                  <th>City</th>
-                  <th>Published</th>
-                  <th>Age</th>
-                  <th>PV / Day</th>
-                  <th>Sess / Day</th>
-                  <th>Eng. Time</th>
-                </tr>
-              </thead>
-              <tbody>${postsHtml || '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:32px;">No posts in the last 90 days.</td></tr>'}</tbody>
-            </table>
-          </div>
-        </div>
-      `
-    }
-
-    function escHtml(s) {
-      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
-    }
-
     // Auto-forward ?secret onto every /api/ fetch so a VA arriving via a
     // ?secret=… deep link from Idea Review / Media Queue isn't redirected
     // to a login page when this dashboard tries to load its data.
@@ -405,6 +335,462 @@
       }
     }
 
+    // TODO: replace with OneUp API once access is sorted
+    const SOCIAL_PLACEHOLDER = {
+      youtube: { views: 4280, delta: 0.31, topPost: 'Sunnylands', topPostViews: 1240 },
+      tiktok:  { views: 2150, delta: 0.18, topPost: 'Indian Wells vs La Quinta', topPostViews: 820 },
+      facebook:{ views: 1610, delta: -0.04, topPost: 'Marilyn Monroe Hideaway', topPostViews: 410 },
+    }
+
+    const PUBLISH_TARGET_PER_WEEK = 5
+
+    const CAT_META = {
+      'market-update':       { label: 'Market Update',   color: '#7FAEB8' },
+      'market-insight':      { label: 'Market Insight',  color: '#7FAEB8' },
+      'investor-tips':       { label: 'Investor Tips',   color: '#C2A26B' },
+      'investment':          { label: 'Investor Tips',   color: '#C2A26B' },
+      'seller-tips':         { label: 'Seller Tips',     color: '#D0937A' },
+      'selling-tips':        { label: 'Seller Tips',     color: '#D0937A' },
+      'buying-tips':         { label: 'Buying Tips',     color: '#9DB48C' },
+      'community':           { label: 'Community',       color: '#A795C7' },
+      'community-spotlight': { label: 'Community',       color: '#A795C7' },
+      'trending-topics':     { label: 'Trending Topics', color: '#D98C8C' },
+      'news':                { label: 'Trending Topics', color: '#D98C8C' },
+      'local-history':       { label: 'Local History',   color: '#C7B189' },
+      'local-area':          { label: 'Local Area',      color: '#C7B189' },
+    }
+    const FALLBACK_COLORS = ['#7FAEB8', '#C2A26B', '#D0937A', '#9DB48C', '#A795C7', '#D98C8C', '#C7B189']
+
+    function catMeta(cat) {
+      if (CAT_META[cat]) return CAT_META[cat]
+      const label = String(cat || 'General').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+      let h = 0
+      for (let i = 0; i < String(cat).length; i++) h = (h * 31 + String(cat).charCodeAt(i)) >>> 0
+      return { label, color: FALLBACK_COLORS[h % FALLBACK_COLORS.length] }
+    }
+
+    function catBadge(cat) {
+      const m = catMeta(cat)
+      return '<span class="cat-badge" style="color:' + m.color + ';border-color:' + hexAlpha(m.color, 0.45) + ';">' + escHtml(m.label) + '</span>'
+    }
+
+    function hexAlpha(hex, a) {
+      const n = parseInt(hex.slice(1), 16)
+      return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'
+    }
+
+    function escHtml(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    }
+
+    function fmtNum(n) {
+      if (n == null || isNaN(n)) return '—'
+      return Number(n).toLocaleString('en-US')
+    }
+
+    function fmtDelta(delta) {
+      if (delta == null || !isFinite(delta)) return '<span class="delta flat">—</span>'
+      const pct = Math.round(Math.abs(delta) * 100)
+      if (pct === 0) return '<span class="delta flat">— steady</span>'
+      const cls = delta > 0 ? 'up' : 'down'
+      const arrow = delta > 0 ? '↑' : '↓'
+      return '<span class="delta ' + cls + '">' + arrow + ' ' + pct + '%</span>'
+    }
+
+    function fmtDate(iso) {
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    }
+
+    function fmtEngTime(sec) {
+      if (sec == null || isNaN(sec)) return null
+      const s = Math.round(Number(sec))
+      if (s < 60) return s + 's'
+      return Math.floor(s / 60) + 'm ' + (s % 60) + 's'
+    }
+
+    /* ── derived metrics from posts[] ── */
+
+    function postsInWindow(posts, fromDay, toDay) {
+      return posts.filter(p => p.ageDays >= fromDay && p.ageDays <= toDay)
+    }
+
+    function computeStreak(posts) {
+      const days = new Set(posts.map(p => new Date(p.publishedAt).toDateString()))
+      let streak = 0
+      const cursor = new Date()
+      if (!days.has(cursor.toDateString())) cursor.setDate(cursor.getDate() - 1)
+      while (days.has(cursor.toDateString())) {
+        streak++
+        cursor.setDate(cursor.getDate() - 1)
+      }
+      return streak
+    }
+
+    function computeWeeklyCounts(posts) {
+      const weeks = new Array(12).fill(0)
+      posts.forEach(p => {
+        const idx = Math.floor(p.ageDays / 7)
+        if (idx >= 0 && idx < 12) weeks[11 - idx]++
+      })
+      return weeks
+    }
+
+    function findTopPerformer(d) {
+      const posts = d.posts || []
+      const withPv = posts.filter(p => p.pageviews != null && !isNaN(p.pageviews))
+      if (withPv.length) {
+        const best = withPv.slice().sort((a, b) => b.pageviews - a.pageviews)[0]
+        return { title: best.title, metric: fmtNum(best.pageviews) + ' views', slug: best.slug }
+      }
+      if (d.topYlopoPages && d.topYlopoPages.length) {
+        const top = d.topYlopoPages[0]
+        const m = /slug=([^&]+)/.exec(top.page || '')
+        const slug = m ? decodeURIComponent(m[1]) : null
+        const match = slug ? posts.find(p => p.slug === slug) : null
+        if (match) return { title: match.title, metric: fmtNum(top.clicks) + ' listing clicks', slug: match.slug }
+      }
+      if (posts.length) {
+        const newest = posts.slice().sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))[0]
+        return { title: newest.title, metric: 'views arriving soon', slug: newest.slug }
+      }
+      return { title: '—', metric: '', slug: null }
+    }
+
+    function shortTitle(t, max) {
+      const s = String(t || '')
+      const cut = s.split(/[:—–]/)[0].trim()
+      if (cut.length <= max) return cut
+      return cut.slice(0, max).replace(/\s+\S*$/, '') + '…'
+    }
+
+    /* ── sparklines ── */
+
+    function pseudoSeries(seed, points, trend) {
+      const out = []
+      let s = seed >>> 0
+      for (let i = 0; i < points; i++) {
+        s = (s * 1103515245 + 12345) >>> 0
+        const noise = ((s / 4294967296) - 0.5) * 0.5
+        const base = 0.45 + (i / (points - 1)) * trend
+        out.push(Math.max(0.06, base + noise))
+      }
+      return out
+    }
+
+    function sparklineSvg(series, w, h) {
+      if (!series || !series.length) return ''
+      const max = Math.max.apply(null, series) || 1
+      const pad = 3
+      const step = (w - pad * 2) / (series.length - 1)
+      const pts = series.map((v, i) => {
+        const x = pad + i * step
+        const y = h - pad - (v / max) * (h - pad * 2)
+        return x.toFixed(1) + ',' + y.toFixed(1)
+      })
+      const line = pts.join(' ')
+      const area = 'M' + pad + ',' + (h - pad) + ' L' + pts.map(p => p).join(' L') + ' L' + (w - pad) + ',' + (h - pad) + ' Z'
+      return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" aria-hidden="true">' +
+        '<path class="spark-fill" d="' + area + '"></path>' +
+        '<polyline class="spark-path" points="' + line + '"></polyline>' +
+        '</svg>'
+    }
+
+    /* ── momentum chart ── */
+
+    function momentumChart(weeks) {
+      const W = 960, H = 230
+      const padL = 10, padR = 10, padTop = 38, padBot = 30
+      const plotH = H - padTop - padBot
+      const n = weeks.length
+      const gap = 18
+      const barW = (W - padL - padR - gap * (n - 1)) / n
+      const maxVal = Math.max(Math.max.apply(null, weeks), PUBLISH_TARGET_PER_WEEK) * 1.25 || 1
+      const peakVal = Math.max.apply(null, weeks)
+      let peakDrawn = false
+
+      const targetY = padTop + plotH - (PUBLISH_TARGET_PER_WEEK / maxVal) * plotH
+
+      let bars = ''
+      let labels = ''
+      const now = new Date()
+      for (let i = 0; i < n; i++) {
+        const v = weeks[i]
+        const hgt = Math.max((v / maxVal) * plotH, v > 0 ? 4 : 1.5)
+        const x = padL + i * (barW + gap)
+        const y = padTop + plotH - hgt
+        const isPeak = v === peakVal && v > 0 && !peakDrawn
+        if (isPeak) peakDrawn = true
+        bars += '<rect class="momentum-bar' + (isPeak ? ' peak' : '') + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) +
+          '" width="' + barW.toFixed(1) + '" height="' + hgt.toFixed(1) + '" rx="1.5" style="animation-delay:' + (i * 60) + 'ms"' +
+          '><title>' + v + ' post' + (v === 1 ? '' : 's') + '</title></rect>'
+        if (isPeak) {
+          bars += '<text class="momentum-peak-label" x="' + (x + barW / 2).toFixed(1) + '" y="' + (y - 12).toFixed(1) + '" text-anchor="middle">' + v + '</text>'
+        }
+        const weekStart = new Date(now)
+        weekStart.setDate(weekStart.getDate() - (n - 1 - i) * 7 - 6)
+        if (i % 2 === 1 || i === n - 1) {
+          const lbl = i === n - 1 ? 'this wk' : weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+          labels += '<text class="momentum-axis-label" x="' + (x + barW / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + lbl + '</text>'
+        }
+      }
+
+      return '<svg class="momentum-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Posts published per week, last 12 weeks">' +
+        '<line class="momentum-target" x1="' + padL + '" y1="' + targetY.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + targetY.toFixed(1) + '"></line>' +
+        '<text class="momentum-target-label" x="' + (W - padR) + '" y="' + (targetY - 7).toFixed(1) + '" text-anchor="end">Target · ' + PUBLISH_TARGET_PER_WEEK + ' / wk</text>' +
+        bars + labels +
+        '</svg>'
+    }
+
+    /* ── network cards ── */
+
+    const PLATFORM_ICONS = {
+      youtube: '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg>',
+      tiktok: '<svg viewBox="0 0 24 24"><path d="M19.6 5.8a5.6 5.6 0 0 1-3.4-3.7c-.1-.4-.2-.9-.2-1.3h-3.7v14.8a3.1 3.1 0 1 1-3.1-3.1c.3 0 .6 0 .9.1V8.8a7 7 0 0 0-.9-.1 6.9 6.9 0 1 0 6.9 6.9V8.4a9.2 9.2 0 0 0 5.4 1.7V6.4c-.7 0-1.3-.2-1.9-.6z"/></svg>',
+      facebook: '<svg viewBox="0 0 24 24"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3.1V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg>',
+      website: '<svg viewBox="0 0 24 24"><path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm8.3 7.5h-3.4a16.6 16.6 0 0 0-1.8-4.6 9.6 9.6 0 0 1 5.2 4.6zM12 2.4c.9 1.1 1.9 2.9 2.5 5.1h-5C10.1 5.3 11.1 3.5 12 2.4zM2.7 14.4a9.7 9.7 0 0 1 0-4.8h4a25 25 0 0 0 0 4.8h-4zm1 2.1h3.4c.5 1.8 1.1 3.3 1.8 4.6a9.6 9.6 0 0 1-5.2-4.6zm3.4-9H3.7a9.6 9.6 0 0 1 5.2-4.6 16.6 16.6 0 0 0-1.8 4.6zM12 21.6c-.9-1.1-1.9-2.9-2.5-5.1h5c-.6 2.2-1.6 4-2.5 5.1zm2.9-7.2H9.1a22 22 0 0 1 0-4.8h5.8a22 22 0 0 1 0 4.8zm.2 6.7c.7-1.3 1.3-2.8 1.8-4.6h3.4a9.6 9.6 0 0 1-5.2 4.6zm2.2-6.7a25 25 0 0 0 0-4.8h4a9.7 9.7 0 0 1 0 4.8h-4z"/></svg>',
+    }
+
+    function networkCard(opts) {
+      const sparkSeries = opts.series || pseudoSeries(opts.seed, 14, opts.delta == null ? 0 : Math.max(-0.4, Math.min(0.6, opts.delta * 1.4)))
+      return '<div class="net-card' + (opts.preview ? ' preview' : '') + ' reveal">' +
+        '<div class="net-head">' +
+          '<span class="net-name">' + PLATFORM_ICONS[opts.icon] + escHtml(opts.name) + '</span>' +
+          (opts.preview
+            ? '<span class="connecting-chip"><span class="pulse"></span>Connecting…</span>'
+            : '<span class="live-mini-chip">Live · GA4</span>') +
+        '</div>' +
+        '<div class="net-value" data-countup="' + (opts.value == null ? '' : opts.value) + '">' + (opts.value == null ? '—' : '0') + '</div>' +
+        '<div class="net-metric-label">' + escHtml(opts.metricLabel) + '</div>' +
+        '<div class="net-delta-row">' + (opts.delta == null ? '<span class="delta flat">trend available next period</span>' : fmtDelta(opts.delta) + ' <span style="color:var(--faint);letter-spacing:0.04em;"> vs prior 30 days</span>') + '</div>' +
+        '<div class="net-spark">' + sparklineSvg(sparkSeries, 220, 36) + '</div>' +
+        '<div class="net-top">' +
+          '<div class="net-top-label">Top post</div>' +
+          '<div class="net-top-title">' + escHtml(opts.topPost || '—') + '</div>' +
+          '<div class="net-top-views">' + (opts.topPostViews != null ? fmtNum(opts.topPostViews) + ' views' : '&nbsp;') + '</div>' +
+        '</div>' +
+        (opts.preview ? '<div class="preview-note">Preview figures — live numbers arrive when OneUp analytics connects.</div>' : '') +
+        '</div>'
+    }
+
+    /* ── render ── */
+
+    function render(d) {
+      const posts = d.posts || []
+      const month = postsInWindow(posts, 0, 29)
+      const prevMonth = postsInWindow(posts, 30, 59)
+      const monthDelta = prevMonth.length > 0 ? (month.length - prevMonth.length) / prevMonth.length : null
+
+      const socialTotal = SOCIAL_PLACEHOLDER.youtube.views + SOCIAL_PLACEHOLDER.tiktok.views + SOCIAL_PLACEHOLDER.facebook.views
+      const sessions = d.gaConnected && d.siteTraffic && d.siteTraffic.sessions ? Number(d.siteTraffic.sessions) : 0
+      const totalReach = socialTotal + sessions
+      const reachDelta = (SOCIAL_PLACEHOLDER.youtube.views * SOCIAL_PLACEHOLDER.youtube.delta +
+                          SOCIAL_PLACEHOLDER.tiktok.views * SOCIAL_PLACEHOLDER.tiktok.delta +
+                          SOCIAL_PLACEHOLDER.facebook.views * SOCIAL_PLACEHOLDER.facebook.delta) / socialTotal
+
+      const streak = computeStreak(posts)
+      const topPerf = findTopPerformer(d)
+      const weeks = computeWeeklyCounts(posts)
+
+      const generated = new Date(d.generatedAt).toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' })
+      document.getElementById('mastheadMeta').textContent =
+        fmtNum(d.totalPosts) + ' posts published all-time · Updated ' + generated
+
+      /* top posts: prefer pageviews, fall back to recency */
+      const ranked = posts.slice().sort((a, b) => {
+        const av = a.pageviews != null ? Number(a.pageviews) : -1
+        const bv = b.pageviews != null ? Number(b.pageviews) : -1
+        if (av !== bv) return bv - av
+        return new Date(b.publishedAt) - new Date(a.publishedAt)
+      })
+      const topPosts = ranked.filter(p => p.ageDays <= 30).slice(0, 8)
+      const topList = topPosts.length ? topPosts : ranked.slice(0, 8)
+
+      const postsRows = topList.map((p, i) => {
+        const eng = fmtEngTime(p.avgEngagementTime)
+        const thumb = p.heroImageUrl
+          ? '<img class="thumb" src="' + escHtml(p.heroImageUrl) + '" alt="" loading="lazy" />'
+          : '<div class="thumb-mono">' + escHtml((catMeta(p.category).label || 'S').charAt(0)) + '</div>'
+        return '<tr class="' + (i === 0 ? 'best-in-show' : '') + '">' +
+          '<td style="width:72px;">' + thumb + '</td>' +
+          '<td class="post-title-cell"><a href="/blog/post.html?slug=' + encodeURIComponent(p.slug) + '" target="_blank" rel="noopener">' + escHtml(p.title) + '</a>' +
+            (i === 0 ? '<span class="best-tag">Best in show</span>' : '') + '</td>' +
+          '<td>' + catBadge(p.category) + '</td>' +
+          '<td class="td-muted">' + fmtDate(p.publishedAt) + '<span class="age-pill">' + p.ageDays + 'd ago</span></td>' +
+          '<td class="' + (p.pageviews != null ? 'td-num' : 'td-pending') + '">' + (p.pageviews != null ? fmtNum(p.pageviews) : '—') + '</td>' +
+          '<td class="' + (eng ? 'td-num' : 'td-pending') + '">' + (eng || '—') + '</td>' +
+          '<td class="' + (p.totalReach != null ? 'td-num' : 'td-pending') + '">' + (p.totalReach != null ? fmtNum(p.totalReach) : '—') + '</td>' +
+          '</tr>'
+      }).join('')
+
+      /* category distribution */
+      const catEntries = Object.entries(d.byCat || {}).sort((a, b) => b[1] - a[1])
+      const catTotal = catEntries.reduce((s, e) => s + e[1], 0) || 1
+      const catMax = catEntries.length ? catEntries[0][1] : 1
+      const catRows = catEntries.map(([cat, count]) => {
+        const m = catMeta(cat)
+        const pct = Math.round((count / catTotal) * 100)
+        return '<div class="cat-row">' +
+          '<div class="cat-row-label">' + escHtml(m.label) + '</div>' +
+          '<div class="cat-track"><div class="cat-fill" data-w="' + ((count / catMax) * 100).toFixed(1) + '" style="background:' + m.color + ';"></div></div>' +
+          '<div class="cat-count">' + count + '<span class="pct">' + pct + '%</span></div>' +
+          '</div>'
+      }).join('')
+
+      const websiteTopPerf = topPerf.slug ? shortTitle(topPerf.title, 34) : null
+
+      document.getElementById('main').innerHTML =
+        /* 1 ─ KPI row */
+        '<div class="kpi-grid">' +
+          '<div class="kpi reveal">' +
+            '<div class="kpi-label">Posts Published · 30 Days</div>' +
+            '<div class="kpi-value" data-countup="' + month.length + '">0</div>' +
+            '<div class="kpi-foot">' + fmtDelta(monthDelta) + '<span>vs prior 30 days</span></div>' +
+          '</div>' +
+          '<div class="kpi reveal">' +
+            '<div class="kpi-label">Total Reach · 30 Days</div>' +
+            '<div class="kpi-value" data-countup="' + totalReach + '">0</div>' +
+            '<div class="kpi-foot">' + fmtDelta(reachDelta) + '<span>across all platforms</span></div>' +
+          '</div>' +
+          '<div class="kpi reveal">' +
+            '<div class="kpi-label">Top Performer</div>' +
+            '<span class="kpi-value kpi-text" title="' + escHtml(topPerf.title) + '">' + escHtml(shortTitle(topPerf.title, 42)) + '</span>' +
+            '<div class="kpi-foot"><span style="color:var(--gold);">' + escHtml(topPerf.metric) + '</span></div>' +
+          '</div>' +
+          '<div class="kpi reveal">' +
+            '<div class="kpi-label">Publishing Streak</div>' +
+            '<div class="kpi-value"><span data-countup="' + streak + '">0</span><span class="unit">' + (streak === 1 ? 'day' : 'days') + '</span></div>' +
+            '<div class="kpi-foot"><span>consecutive days with a published post</span></div>' +
+          '</div>' +
+        '</div>' +
+
+        /* 2 ─ Momentum */
+        '<section class="section">' +
+          '<div class="section-head">' +
+            '<div><div class="section-kicker">Publishing Pace</div>' +
+            '<h2 class="section-title">Momentum</h2></div>' +
+            '<div class="section-note">Posts per week · last 12 weeks</div>' +
+          '</div>' +
+          '<div class="panel reveal">' +
+            momentumChart(weeks) +
+            '<div class="momentum-legend">' +
+              '<span class="legend-key"><span class="legend-swatch" style="background:var(--teal);"></span>Posts published</span>' +
+              '<span class="legend-key"><span class="legend-swatch" style="background:var(--gold);"></span>Peak week</span>' +
+              '<span class="legend-key"><span class="legend-line"></span>Target ' + PUBLISH_TARGET_PER_WEEK + ' / week</span>' +
+            '</div>' +
+          '</div>' +
+        '</section>' +
+
+        /* 3 ─ Across the Network */
+        '<section class="section">' +
+          '<div class="section-head">' +
+            '<div><div class="section-kicker">Distribution</div>' +
+            '<h2 class="section-title">Across the <em>Network</em></h2></div>' +
+            '<div class="section-note">Reach this month, by platform</div>' +
+          '</div>' +
+          '<div class="network-grid">' +
+            networkCard({ icon: 'website', name: 'Website', preview: false,
+              value: d.gaConnected && d.siteTraffic && d.siteTraffic.sessions ? Number(d.siteTraffic.sessions) : null,
+              metricLabel: 'sessions · 30 days', delta: null, seed: 41,
+              topPost: websiteTopPerf, topPostViews: null }) +
+            networkCard({ icon: 'youtube', name: 'YouTube', preview: true,
+              value: SOCIAL_PLACEHOLDER.youtube.views, metricLabel: 'views · 30 days',
+              delta: SOCIAL_PLACEHOLDER.youtube.delta, seed: 7,
+              topPost: SOCIAL_PLACEHOLDER.youtube.topPost, topPostViews: SOCIAL_PLACEHOLDER.youtube.topPostViews }) +
+            networkCard({ icon: 'tiktok', name: 'TikTok', preview: true,
+              value: SOCIAL_PLACEHOLDER.tiktok.views, metricLabel: 'views · 30 days',
+              delta: SOCIAL_PLACEHOLDER.tiktok.delta, seed: 19,
+              topPost: SOCIAL_PLACEHOLDER.tiktok.topPost, topPostViews: SOCIAL_PLACEHOLDER.tiktok.topPostViews }) +
+            networkCard({ icon: 'facebook', name: 'Facebook', preview: true,
+              value: SOCIAL_PLACEHOLDER.facebook.views, metricLabel: 'reach · 30 days',
+              delta: SOCIAL_PLACEHOLDER.facebook.delta, seed: 29,
+              topPost: SOCIAL_PLACEHOLDER.facebook.topPost, topPostViews: SOCIAL_PLACEHOLDER.facebook.topPostViews }) +
+          '</div>' +
+        '</section>' +
+
+        /* 4 ─ Top performing posts */
+        '<section class="section">' +
+          '<div class="section-head">' +
+            '<div><div class="section-kicker">Editorial</div>' +
+            '<h2 class="section-title">Top Performing <em>Posts</em></h2></div>' +
+            '<div class="section-note">Last 30 days</div>' +
+          '</div>' +
+          '<div class="posts-table-wrap reveal">' +
+            '<table class="posts">' +
+              '<thead><tr>' +
+                '<th></th><th>Title</th><th>Category</th><th>Published</th>' +
+                '<th>Pageviews</th><th>Engagement</th><th>Social Reach</th>' +
+              '</tr></thead>' +
+              '<tbody>' + (postsRows || '<tr><td colspan="7" style="text-align:center;padding:48px;color:var(--muted);font-style:italic;">No posts published yet this period.</td></tr>') + '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</section>' +
+
+        /* 5 ─ By category */
+        '<section class="section">' +
+          '<div class="section-head">' +
+            '<div><div class="section-kicker">Coverage</div>' +
+            '<h2 class="section-title">By <em>Category</em></h2></div>' +
+            '<div class="section-note">Posts per category · last 90 days</div>' +
+          '</div>' +
+          '<div class="panel reveal"><div class="cat-chart">' +
+            (catRows || '<div style="color:var(--muted);font-style:italic;font-size:13px;">No category data for this period.</div>') +
+          '</div></div>' +
+        '</section>' +
+
+        /* 6 ─ Footer */
+        '<footer class="meta-footer">' +
+          '<span class="brandline">Shana Gates · Coachella Valley Real Estate</span>' +
+          '<span>Updated ' + escHtml(generated) + ' &nbsp;·&nbsp; Powered by GA4 + OneUp</span>' +
+          '<a href="https://shana-gates.vercel.app" target="_blank" rel="noopener">View the site →</a>' +
+        '</footer>'
+
+      animate()
+    }
+
+    /* ── entrance animations ── */
+
+    function animate() {
+      const reveals = document.querySelectorAll('.reveal')
+      reveals.forEach((el, i) => setTimeout(() => el.classList.add('in'), 60 + i * 90))
+
+      document.querySelectorAll('[data-countup]').forEach(el => {
+        const raw = el.getAttribute('data-countup')
+        if (raw === '' || raw == null) return
+        const target = Number(raw)
+        if (isNaN(target)) return
+        const dur = 1400
+        const start = performance.now()
+        function tick(now) {
+          const t = Math.min((now - start) / dur, 1)
+          const eased = 1 - Math.pow(1 - t, 4)
+          el.textContent = fmtNum(Math.round(target * eased))
+          if (t < 1) requestAnimationFrame(tick)
+        }
+        requestAnimationFrame(tick)
+      })
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.querySelectorAll('.cat-fill').forEach(el => {
+            el.style.width = el.getAttribute('data-w') + '%'
+          })
+        })
+      })
+    }
+
+    /* ── load ── */
+
+    function showError(msg) {
+      document.getElementById('mastheadMeta').textContent = 'Unable to reach the data service'
+      document.getElementById('main').innerHTML =
+        '<div class="state-msg">' +
+          '<h2>A quiet moment in the desert</h2>' +
+          '<p>The performance data couldn’t be loaded just now. This is usually temporary — give it a beat and try again.</p>' +
+          '<button class="retry" onclick="location.reload()">Refresh</button>' +
+        '</div>'
+      console.error(msg)
+    }
+
     async function load() {
       try {
         const res = await fetch('/api/blog/dashboard')
@@ -413,12 +799,11 @@
           window.location.href = '/admin/assistant/login.html?next=' + encodeURIComponent(next)
           return
         }
-        if (!res.ok) throw new Error('Server error ' + res.status)
+        if (!res.ok) throw new Error('Server responded ' + res.status)
         const data = await res.json()
-        buildDashboard(data)
+        render(data)
       } catch (err) {
-        document.getElementById('mainContent').innerHTML =
-          `<div class="loading" style="color:#ff8a8a;">Failed to load dashboard.<br><small>${err.message}</small></div>`
+        showError(err && err.message)
       }
     }
 
