@@ -389,11 +389,28 @@
       return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
     }
 
+    // Auto-forward ?secret onto every /api/ fetch so a VA arriving via a
+    // ?secret=… deep link from Idea Review / Media Queue isn't redirected
+    // to a login page when this dashboard tries to load its data.
+    const _sgSecret = new URLSearchParams(location.search).get('secret')
+    if (_sgSecret) {
+      const _origFetch = window.fetch
+      window.fetch = function(input, init) {
+        let url = typeof input === 'string' ? input : (input && input.url) || ''
+        if ((url.startsWith('/api/') || url.startsWith(location.origin + '/api/')) && url.indexOf('secret=') === -1) {
+          url += (url.indexOf('?') === -1 ? '?' : '&') + 'secret=' + encodeURIComponent(_sgSecret)
+          input = typeof input === 'string' ? url : new Request(url, input)
+        }
+        return _origFetch.call(this, input, init)
+      }
+    }
+
     async function load() {
       try {
         const res = await fetch('/api/blog/dashboard')
         if (res.status === 401) {
-          window.location.href = '/admin/assistant/login.html?next=' + encodeURIComponent(window.location.pathname)
+          const next = window.location.pathname + (_sgSecret ? '?secret=' + encodeURIComponent(_sgSecret) : '')
+          window.location.href = '/admin/assistant/login.html?next=' + encodeURIComponent(next)
           return
         }
         if (!res.ok) throw new Error('Server error ' + res.status)
