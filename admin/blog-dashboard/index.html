@@ -335,11 +335,25 @@
       }
     }
 
-    // TODO: replace with OneUp API once access is sorted
-    const SOCIAL_PLACEHOLDER = {
-      youtube: { views: 4280, delta: 0.31, topPost: 'Sunnylands', topPostViews: 1240 },
-      tiktok:  { views: 2150, delta: 0.18, topPost: 'Indian Wells vs La Quinta', topPostViews: 820 },
-      facebook:{ views: 1610, delta: -0.04, topPost: 'Marilyn Monroe Hideaway', topPostViews: 410 },
+    // Normalizes one platform from the API's d.social[platform] envelope.
+    // Returns null when the platform fetch failed or wasn't returned at all
+    // (treated as "not connected" in the UI). Returns a populated object
+    // even when views=0 — that just means analytics haven't populated yet
+    // (e.g. YouTube takes 24-48h after a video posts).
+    function readPlatform(d, key) {
+      const s = d && d.social && d.social[key]
+      if (!s) return null
+      return {
+        views: Number(s.views) || 0,
+        delta: typeof s.delta === 'number' ? s.delta : 0,
+        viewsLabel: s.viewsLabel || 'Views',
+        followers: Number(s.followers) || 0,
+        topPost: s.topPost ? {
+          title: s.topPost.title || 'Untitled',
+          views: Number(s.topPost.views) || 0,
+          url: s.topPost.url || '',
+        } : null,
+      }
     }
 
     const PUBLISH_TARGET_PER_WEEK = 10
@@ -550,6 +564,31 @@
       website: '<svg viewBox="0 0 24 24"><path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm8.3 7.5h-3.4a16.6 16.6 0 0 0-1.8-4.6 9.6 9.6 0 0 1 5.2 4.6zM12 2.4c.9 1.1 1.9 2.9 2.5 5.1h-5C10.1 5.3 11.1 3.5 12 2.4zM2.7 14.4a9.7 9.7 0 0 1 0-4.8h4a25 25 0 0 0 0 4.8h-4zm1 2.1h3.4c.5 1.8 1.1 3.3 1.8 4.6a9.6 9.6 0 0 1-5.2-4.6zm3.4-9H3.7a9.6 9.6 0 0 1 5.2-4.6 16.6 16.6 0 0 0-1.8 4.6zM12 21.6c-.9-1.1-1.9-2.9-2.5-5.1h5c-.6 2.2-1.6 4-2.5 5.1zm2.9-7.2H9.1a22 22 0 0 1 0-4.8h5.8a22 22 0 0 1 0 4.8zm.2 6.7c.7-1.3 1.3-2.8 1.8-4.6h3.4a9.6 9.6 0 0 1-5.2 4.6zm2.2-6.7a25 25 0 0 0 0-4.8h4a9.7 9.7 0 0 1 0 4.8h-4z"/></svg>',
     }
 
+    // Wrapper that bridges from the API's social[platform] shape to networkCard().
+    // When `data` is null, the platform isn't connected → muted "Connecting…" card
+    // with no figures. When `data.views === 0`, OneUp has confirmed the account
+    // but YouTube/TikTok analytics haven't populated yet (24-48h delay).
+    function socialNetworkCard(iconKey, name, data, sparkSeed, metricLabel) {
+      if (!data) {
+        return networkCard({
+          icon: iconKey, name, preview: true,
+          value: null, metricLabel, delta: null, seed: sparkSeed,
+          topPost: '—', topPostViews: null,
+        })
+      }
+      const noData = data.views === 0 && !data.topPost
+      return networkCard({
+        icon: iconKey, name, preview: false,
+        liveLabel: 'Live · OneUp',
+        value: data.views,
+        metricLabel: noData ? metricLabel + ' · awaiting first metrics' : metricLabel,
+        delta: noData ? null : data.delta,
+        seed: sparkSeed,
+        topPost: data.topPost ? data.topPost.title : '—',
+        topPostViews: data.topPost ? data.topPost.views : null,
+      })
+    }
+
     function networkCard(opts) {
       const sparkSeries = opts.series || pseudoSeries(opts.seed, 14, opts.delta == null ? 0 : Math.max(-0.4, Math.min(0.6, opts.delta * 1.4)))
       return '<div class="net-card' + (opts.preview ? ' preview' : '') + ' reveal">' +
@@ -557,7 +596,7 @@
           '<span class="net-name">' + PLATFORM_ICONS[opts.icon] + escHtml(opts.name) + '</span>' +
           (opts.preview
             ? '<span class="connecting-chip"><span class="pulse"></span>Connecting…</span>'
-            : '<span class="live-mini-chip">Live · GA4</span>') +
+            : '<span class="live-mini-chip">' + escHtml(opts.liveLabel || 'Live · GA4') + '</span>') +
         '</div>' +
         '<div class="net-value" data-countup="' + (opts.value == null ? '' : opts.value) + '">' + (opts.value == null ? '—' : '0') + '</div>' +
         '<div class="net-metric-label">' + escHtml(opts.metricLabel) + '</div>' +
@@ -580,12 +619,23 @@
       const prevMonth = postsInWindow(posts, 30, 59)
       const monthDelta = prevMonth.length > 0 ? (month.length - prevMonth.length) / prevMonth.length : null
 
-      const socialTotal = SOCIAL_PLACEHOLDER.youtube.views + SOCIAL_PLACEHOLDER.tiktok.views + SOCIAL_PLACEHOLDER.facebook.views
+      const yt = readPlatform(d, 'youtube')
+      const tt = readPlatform(d, 'tiktok')
+      const fb = readPlatform(d, 'facebook')
+      const socialPlats = [yt, tt, fb].filter(Boolean)
+
       const sessions = d.gaConnected && d.siteTraffic && d.siteTraffic.sessions ? Number(d.siteTraffic.sessions) : 0
+      const priorSessions = d.gaConnected && d.siteTraffic && d.siteTraffic.priorSessions ? Number(d.siteTraffic.priorSessions) : 0
+      const socialTotal = socialPlats.reduce((s, p) => s + p.views, 0)
       const totalReach = socialTotal + sessions
-      const reachDelta = (SOCIAL_PLACEHOLDER.youtube.views * SOCIAL_PLACEHOLDER.youtube.delta +
-                          SOCIAL_PLACEHOLDER.tiktok.views * SOCIAL_PLACEHOLDER.tiktok.delta +
-                          SOCIAL_PLACEHOLDER.facebook.views * SOCIAL_PLACEHOLDER.facebook.delta) / socialTotal
+
+      // Weighted delta — each platform's delta is weighted by its share of total reach.
+      // Sessions contribute via the GA4 priorSessions baseline. Falls back to null
+      // when there's no prior-period baseline anywhere (renders as flat).
+      const totalCurrent = socialTotal + sessions
+      const socialPriorEst = socialPlats.reduce((s, p) => s + (p.delta !== -1 ? p.views / (1 + p.delta) : 0), 0)
+      const totalPrior = socialPriorEst + priorSessions
+      const reachDelta = totalPrior > 0 ? (totalCurrent - totalPrior) / totalPrior : null
 
       const streak = computeStreak(posts)
       const topPerf = findTopPerformer(d)
@@ -692,18 +742,9 @@
               value: d.gaConnected && d.siteTraffic && d.siteTraffic.sessions ? Number(d.siteTraffic.sessions) : null,
               metricLabel: 'sessions · 30 days', delta: null, seed: 41,
               topPost: websiteTopPerf, topPostViews: null }) +
-            networkCard({ icon: 'youtube', name: 'YouTube', preview: true,
-              value: SOCIAL_PLACEHOLDER.youtube.views, metricLabel: 'views · 30 days',
-              delta: SOCIAL_PLACEHOLDER.youtube.delta, seed: 7,
-              topPost: SOCIAL_PLACEHOLDER.youtube.topPost, topPostViews: SOCIAL_PLACEHOLDER.youtube.topPostViews }) +
-            networkCard({ icon: 'tiktok', name: 'TikTok', preview: true,
-              value: SOCIAL_PLACEHOLDER.tiktok.views, metricLabel: 'views · 30 days',
-              delta: SOCIAL_PLACEHOLDER.tiktok.delta, seed: 19,
-              topPost: SOCIAL_PLACEHOLDER.tiktok.topPost, topPostViews: SOCIAL_PLACEHOLDER.tiktok.topPostViews }) +
-            networkCard({ icon: 'facebook', name: 'Facebook', preview: true,
-              value: SOCIAL_PLACEHOLDER.facebook.views, metricLabel: 'reach · 30 days',
-              delta: SOCIAL_PLACEHOLDER.facebook.delta, seed: 29,
-              topPost: SOCIAL_PLACEHOLDER.facebook.topPost, topPostViews: SOCIAL_PLACEHOLDER.facebook.topPostViews }) +
+            socialNetworkCard('youtube', 'YouTube', yt, 7, 'views · 30 days') +
+            socialNetworkCard('tiktok', 'TikTok', tt, 19, 'views · 30 days') +
+            socialNetworkCard('facebook', 'Facebook', fb, 29, 'reach · 30 days') +
           '</div>' +
         '</section>' +
 

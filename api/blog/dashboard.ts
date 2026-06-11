@@ -10,6 +10,7 @@ import { redis } from '../../lib/blog-store'
 import type { BlogPostSummary } from '../../lib/blog-redis'
 import { runGA4Report } from '../../lib/ga4-client'
 import { checkAdminAuth } from '../../lib/admin-auth'
+import { fetchAllPlatforms } from '../../lib/oneup-analytics'
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
@@ -157,6 +158,10 @@ export default async function handler(req: any, res: any) {
 
   const posts = Object.values(postsMap)
 
+  // OneUp social analytics — runs in parallel with everything else above
+  // via the lib; doesn't block on individual platform failure (returns {}).
+  const social = await fetchAllPlatforms()
+
   res.setHeader('Cache-Control', 'private, no-store')
   return res.status(200).json({
     totalPosts: allPosts.length,
@@ -171,6 +176,7 @@ export default async function handler(req: any, res: any) {
     ylopoClicks,
     topYlopoPages,
     posts,
+    social,
     generatedAt: new Date().toISOString(),
   })
 }
