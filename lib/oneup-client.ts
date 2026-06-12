@@ -74,6 +74,18 @@ function formatOneUpDateTime(d: Date): string {
   return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}`
 }
 
+// YouTube hard-rejects video titles > 100 chars with "invalid or empty
+// video title". Trim cleanly at a word boundary when possible.
+function clampYoutubeTitle(title: string): string {
+  const MAX = 100
+  const t = title.trim()
+  if (t.length <= MAX) return t
+  const slice = t.slice(0, MAX)
+  const lastSpace = slice.lastIndexOf(' ')
+  // Only break on a space if it's at least halfway through — otherwise hard-cut.
+  return (lastSpace > MAX / 2 ? slice.slice(0, lastSpace) : slice).trim()
+}
+
 /**
  * Schedule a video post to fire ~immediately across all connected
  * accounts in the "Shana Gates" category.
@@ -100,12 +112,18 @@ export async function scheduleVideoNow(params: {
   // the exact current moment in US Eastern (OneUp's account timezone).
   const scheduledAt = formatOneUpDateTime(new Date())
 
+  // YouTube enforces a hard 100-char limit on video titles; longer titles
+  // are rejected with "invalid or empty video title" (HTTP 400). The blog's
+  // full title stays in Redis untouched — only the YouTube-bound copy is
+  // shortened. Cut at the last whitespace before 100 chars when possible.
+  const ytTitle = clampYoutubeTitle(params.title)
+
   const form = new URLSearchParams()
   form.set('apiKey', apiKey)
   form.set('category_id', categoryId)
   form.set('social_network_id', 'ALL')
   form.set('scheduled_date_time', scheduledAt)
-  form.set('title', params.title)
+  form.set('title', ytTitle)
   form.set('content', params.content)
   form.set('video_url', params.videoUrl)
   if (params.thumbnailUrl) form.set('thumbnail_url', params.thumbnailUrl)

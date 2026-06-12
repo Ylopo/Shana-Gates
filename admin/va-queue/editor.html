@@ -1219,8 +1219,10 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           })
 
           // YouTube: gates the blog publish. Poll Shana's channel RSS
-          // every 10 s for up to 5 min (30 attempts). RSS typically reflects
-          // new uploads within 1–5 min. When found, the server-side
+          // every 10 s for up to 15 min (90 attempts). RSS typically reflects
+          // new uploads within 1–10 min — earlier 5-min cap was timing out
+          // on slow days, leaving the blog stuck at media_ready even though
+          // YouTube had successfully published. When found, the server-side
           // youtube-wait endpoint also persists post.youtubeUrl so the
           // blog page renders the embed immediately on first load.
           const ytEl = document.getElementById('ps-youtube')
@@ -1239,10 +1241,10 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
                   clearInterval(timer); delete publishPollTimers['youtube']
                   if (ytEl) { ytEl.textContent = 'Published'; ytEl.className = 'platform-status pstatus-done' }
                   resolve(sd)
-                } else if (attempts >= 30) {
+                } else if (attempts >= 90) {
                   clearInterval(timer); delete publishPollTimers['youtube']
                   if (ytEl) { ytEl.textContent = 'Not detected yet'; ytEl.className = 'platform-status pstatus-error' }
-                  reject(new Error('YouTube channel RSS did not show a new video within 5 minutes. Try again or refresh later.'))
+                  reject(new Error('YouTube channel RSS did not show a new video within 15 minutes. Try again or refresh later.'))
                 }
               } catch { /* network blip — keep polling */ }
             }, 10000)
