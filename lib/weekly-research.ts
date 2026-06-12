@@ -8,14 +8,14 @@ const WEEKLY_CATEGORIES = [
   {
     key: 'local-area',
     label: 'Local Area Topic',
-    description: 'Seasonal events, local amenities, lifestyle features, things to do in specific Coachella Valley cities',
+    description: 'Seasonal events, local amenities, lifestyle features, things to do in specific Coachella Valley cities. Lean into the current season — in summer prefer indoor activities, new air-conditioned venues, golf simulators, restaurants/bars; in winter prefer snowbird events, holiday markets.',
     searchQuery: 'Coachella Valley Palm Springs events lifestyle amenities 2026',
   },
   {
     key: 'market-insight',
     label: 'Market Insight',
-    description: 'Current MLS data analysis, price trends, inventory interpretation for the valley',
-    searchQuery: 'Coachella Valley Palm Springs housing market data inventory 2026',
+    description: 'Current MLS data analysis, price trends, inventory interpretation for the valley. Strongly prefer mid-year / half-year / quarterly recaps and forward-looking forecasts when the calendar fits (mid-year report in June/July, year-end wrap in December).',
+    searchQuery: 'Coachella Valley Palm Springs housing market data inventory mid-year forecast 2026',
   },
   {
     key: 'buying-tips',
@@ -34,6 +34,18 @@ const WEEKLY_CATEGORIES = [
     label: 'Investment',
     description: 'STR ROI analysis, vacation property buying guide, desert market investment outlook',
     searchQuery: 'Coachella Valley Palm Springs vacation rental investment Airbnb ROI 2026',
+  },
+  {
+    key: 'development-watch',
+    label: 'Development & Community Investment',
+    description: 'New construction projects, major venue openings, infrastructure investments, civic projects — framed from a homeowner perspective: "here\'s what\'s being built and what it means for long-term value." Examples: pickleball stadium breaking ground, new school construction, hotel/resort expansion, hospital projects.',
+    searchQuery: 'Coachella Valley new development project construction breaking ground investment 2026',
+  },
+  {
+    key: 'homeowner-impact',
+    label: 'Homeowner Impact',
+    description: 'Practical informational content for homeowners: water restrictions, CVWD rate changes, new HOA rules, CA legislation, insurance changes, ordinance updates. Non-sales tone — community service journalism. "Here\'s what changed, here\'s what you should know."',
+    searchQuery: 'Coachella Valley water restrictions HOA rules homeowner law changes 2026',
   },
 ]
 
@@ -58,16 +70,27 @@ async function searchTavily(query: string): Promise<TavilyResult[]> {
 
 const TOPIC_SYSTEM = `You are a blog content strategist for Shana Gates, REALTOR® at Craft & Bauer | Real Broker in the Coachella Valley, CA.
 
-Your job: generate original, high-value blog post topic ideas for each content category. These are NOT news articles — they are original posts Shana's team will write to build local authority, attract buyers and sellers, and rank on Google.
+Your job: generate original, high-value blog post topic ideas for each content category. These are NOT news articles — they are original posts Shana's team will write to build local authority, attract buyers and sellers, and serve the broader homeowner community.
 
-WRITING VOICE: Shana Gates, experienced Coachella Valley REALTOR®
+WRITING VOICE: Shana Gates — knowledgeable Coachella Valley local FIRST, REALTOR® second. Posts should read as informative community service from someone who lives here and tracks what's happening, NOT as marketing copy. The reader should think "Shana is the person who knows what's going on in our valley." Sales-y "list with me" angles are weaker; "here's what you should know" angles are stronger.
+
 MARKET: Palm Springs, Palm Desert, Rancho Mirage, Indian Wells, La Quinta, Indio, Cathedral City, Desert Hot Springs, Coachella
+
+SEASONAL AWARENESS — strongly factor in the current month when generating topics:
+- May–September (summer in the desert, extreme heat 100-115°F): Indoor activities, air-conditioned venues, golf simulators, new indoor restaurants/bars, wellness/spa escapes, museum/gallery visits, summer market slowdown analysis, "best time to buy in summer" angles. AVOID outdoor activity recommendations during these months.
+- October–November (shoulder season, snowbirds arriving): Snowbird relocation guides, market-warming-up signals, holiday event preview, Q4 market wrap.
+- December–February (winter peak season for desert tourism): Winter event calendar, holiday markets, snowbird-buying guides, end-of-year tax/market analysis, January forecasts.
+- March–April (festival season, Coachella + Stagecoach): Festival housing demand, STR-investor topics, spring market kickoff, Q1 wrap.
+
+The post-generation system should look at the current date and emphasize seasonally-appropriate angles within each category. A "Local Area Topic" generated in July should be about indoor escapes, NOT about hiking trails.
 
 TOPIC RULES:
 - Each topic must be specific and actionable — not generic
 - Use real Coachella Valley context (specific cities, landmarks, events, market dynamics)
-- Topics should answer questions real buyers or sellers are Googling
+- Topics should answer questions real buyers, sellers, or homeowners are Googling
 - Tie in current market conditions, seasonal patterns, or timely local angles when possible
+- For "development-watch" topics: frame the project as a long-term-value signal. "$50M pickleball stadium breaking ground in Indian Wells is a sign that investors see this market continuing to grow."
+- For "homeowner-impact" topics: write as community service. "CVWD just changed tier-2 rates — here's what it means for your bill." No "call me to list your home" angle.
 
 EVERGREEN HIGH-PERFORMING FORMATS — at least 1 of every 3 topics you generate (across all categories combined) MUST follow one of these proven templates, rotating through CV cities and pairs so the same template isn't repeated for the same city in consecutive weeks:
 1. "What Does It Cost to Buy a Home in [City] in 2026?" — fits market-update

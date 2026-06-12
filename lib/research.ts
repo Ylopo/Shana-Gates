@@ -25,6 +25,10 @@ const TOPIC_QUERIES = [
   'Cathedral City Indio Coachella housing market',
   'California HOA law changes homeowners',
   'California property tax Prop 19 homeowners',
+  // Market Updates — mid-year & seasonal forecasts
+  'Coachella Valley mid-year housing market report 2026 forecast',
+  'Palm Springs second half 2026 real estate outlook',
+  'Coachella Valley summer real estate market slowdown trends',
   // Investor Tips
   'Palm Springs short-term rental ordinance Airbnb',
   'Coachella Valley investment property vacation rental ROI',
@@ -38,7 +42,16 @@ const TOPIC_QUERIES = [
   'best time to sell home Palm Springs market',
   'Coachella Valley luxury home sales seller tips',
   'how to price home desert real estate market',
-  // Community
+  // Homeowner Impact — laws, restrictions, community changes
+  // (these flow into market-update or community in scoring)
+  'Coachella Valley water restrictions drought rules homeowner 2026',
+  'Palm Springs HOA new rules ordinance change 2026',
+  'California new homeowner law affecting Palm Springs residents 2026',
+  'Coachella Valley desert landscape water conservation rules',
+  'Palm Springs Palm Desert noise ordinance short term rental enforcement',
+  'CVWD Coachella Valley Water District rate changes 2026',
+  'California insurance changes homeowners desert wildfire',
+  // Community — events, lifestyle, things to do
   'Coachella Valley events things to do 2026',
   'Palm Springs community events farmers market 2026',
   'Palm Desert La Quinta local events activities',
@@ -46,12 +59,31 @@ const TOPIC_QUERIES = [
   'Coachella Festival Stagecoach housing demand event impact',
   'Palm Springs snowbird season community events',
   'Coachella Valley new restaurant development lifestyle',
-  // Trending Topics
+  // Community — seasonal / summer indoor activities
+  'Palm Springs indoor activities summer hot weather things to do',
+  'Coachella Valley new indoor entertainment venue 2026 air conditioning',
+  'Palm Desert golf simulator indoor sports new venue 2026',
+  'Palm Springs new restaurant bar opening 2026 review',
+  'Coachella Valley indoor family activities kids summer cooling',
+  'Palm Springs spa wellness escape summer heat',
+  'Coachella Valley museum art gallery exhibition 2026',
+  // Trending Topics — celebrity & viral
   'celebrity real estate news 2026 famous home sale',
   'viral real estate trends 2026 interesting housing story',
   'luxury celebrity estate auction notable home',
-  'Coachella Valley notable development project 2026',
   'California housing news trending real estate story',
+  // Trending Topics — Big Developments & Investment Signals
+  // High value: shows the market believes in long-term growth.
+  // Shana posts about these from a homeowner POV: "more investment = more confidence"
+  'Coachella Valley new development construction breaking ground 2026',
+  'Palm Springs major construction announcement investment 2026',
+  'Coachella Valley pickleball facility stadium sports complex construction',
+  'Palm Desert La Quinta new school college campus construction',
+  'Coachella Valley convention center hotel resort expansion 2026',
+  'Palm Springs major infrastructure transit project investment',
+  'Coachella Valley billion million dollar development project announced',
+  'Palm Springs revitalization redevelopment investment downtown',
+  'Coachella Valley hospital healthcare expansion construction 2026',
 ]
 
 const HISTORY_QUERIES = [
@@ -71,10 +103,13 @@ function getDailyQueries(date: string): string[] {
   const seed = date.replace(/-/g, '')
   const offset = parseInt(seed.slice(-2), 10)
 
-  // 8 real estate queries from rotating pool
+  // 12 real estate / community queries from rotating pool.
+  // Bumped from 8 to 12 (Oct 2026) to surface more variety as the pool grew —
+  // big-development announcements, homeowner-impact laws, and seasonal indoor
+  // activities are now part of the pool and need rotation slots.
   const reOffset = offset % TOPIC_QUERIES.length
   const reRotated = [...TOPIC_QUERIES.slice(reOffset), ...TOPIC_QUERIES.slice(0, reOffset)]
-  const reQueries = reRotated.slice(0, 8)
+  const reQueries = reRotated.slice(0, 12)
 
   // 2 history queries guaranteed every day, rotating through the history pool
   const histOffset = Math.floor(offset / 2) % HISTORY_QUERIES.length
@@ -107,23 +142,52 @@ async function searchTavily(query: string): Promise<TavilyResult[]> {
 
 const SCORING_SYSTEM = `You are a real estate content curator for Shana Gates, REALTOR® at Craft & Bauer | Real Broker in the Coachella Valley, CA.
 
-Your job: score and categorize news articles by their relevance and value to Shana's clients — Coachella Valley buyers, sellers, and real estate investors.
+Your job: score and categorize news articles by their relevance and value to Shana's clients — Coachella Valley buyers, sellers, and real estate investors — AND to her broader homeowner community.
+
+EDITORIAL VOICE — important context:
+Shana's blog is informative-first, not sales-first. The strongest posts are written from a homeowner / community-member perspective: "here's what's happening, here's what it means for you." When scoring, favor articles Shana can comment on as a knowledgeable local — not as a salesperson. Articles that lend themselves to a sales angle ONLY are weaker; articles that are useful community service or "did you know this is happening" reports are stronger.
 
 SCORING RULES:
-- Score 1–10 based on relevance to the Coachella Valley / Palm Springs area market
+- Score 1–10 based on relevance to the Coachella Valley / Palm Springs area market AND community
 - Score 1 and DROP articles about other markets (Las Vegas, Texas, Florida, Northeast, etc.) unless they directly affect CA buyers
-- Score 8–10: Directly about Coachella Valley, Palm Springs, or CA real estate law with local impact
-- Score 5–7: National trends or CA-wide news that meaningfully affects local buyers/sellers
+- Score 8–10: Directly about Coachella Valley, Palm Springs, CA real estate law with local impact, OR a CV-area development / law / event with clear homeowner impact
+- Score 5–7: National trends or CA-wide news that meaningfully affects local buyers/sellers/homeowners
 - Score 1–4: Tangentially relevant or mostly about other markets
 
 CATEGORIES (pick the single best fit):
-- market-update: prices, inventory, market conditions, forecasts, mortgage rates, CA law changes affecting buyers/sellers, market analysis
+- market-update: prices, inventory, market conditions, forecasts, mortgage rates, CA law changes affecting buyers/sellers, market analysis, mid-year / quarterly reports, water-rate or insurance changes that affect home costs
 - investor-tips: rental properties, ROI, STR/Airbnb, vacation homes, investment strategy, cap rates, short-term rental rules
 - seller-tips: seller strategy, staging, pricing, timing, listing advice, preparing a home to sell
-- community: Coachella Valley events, things to do, farmers markets, festivals, community news, city spotlights, local lifestyle, dining, outdoor recreation
-- trending-topics: celebrity real estate news, viral or pop-culture real estate stories, notable property sales, interesting housing trends making national news, major development announcements
+- community: Coachella Valley events, things to do, farmers markets, festivals, community news, city spotlights, local lifestyle, dining, outdoor recreation, indoor activities, new venue openings, seasonal activities (e.g. summer indoor escapes, snowbird-season events)
+- trending-topics: celebrity real estate news, viral or pop-culture real estate stories, notable property sales, interesting housing trends making national news, MAJOR DEVELOPMENT ANNOUNCEMENTS (any large CV project breaking ground or being announced)
 - local-history: historical anniversaries, significant past events, cold cases, unsolved crimes, notable local figures, landmarks, battles, disasters tied to a specific date and place in the Coachella Valley / Palm Springs area
 - local-interest: local legends, famous stories, notable people born or based in the Coachella Valley, community moments that put the area on the map
+
+HIGH-VALUE SIGNAL TOPICS — prioritize these when surfaced:
+
+1. MAJOR DEVELOPMENT PROJECTS (category: trending-topics, score 8–10)
+   - New pickleball facilities, stadiums, schools, hospitals, hotels, resorts, civic projects
+   - Any large dollar-amount investment ($10M+) breaking ground or being announced
+   - Major redevelopment / revitalization
+   - Why it matters to Shana: it's a positive long-term growth signal. Investors and developers are putting capital into the valley because they believe in the future of these communities. Shana posts on these to position herself as someone tracking long-term value drivers — NOT as a salesperson but as an informed local watching where the smart money is going.
+
+2. HOMEOWNER-IMPACT LAW / REGULATION CHANGES (category: market-update, score 8–10)
+   - Water restrictions, drought rules, CVWD rate changes
+   - HOA rule changes, noise ordinances, STR enforcement updates
+   - Insurance changes affecting CA / desert homeowners (esp. wildfire)
+   - New CA legislation that affects what homeowners can do with their property
+   - Why it matters: practical, helpful, non-sales content the community values. Shana surfaces these as a community service — many homeowners don't know about them yet.
+
+3. SEASONAL / TOPICAL LIFESTYLE (category: community, score 7–9)
+   - In summer months: indoor activities, new air-conditioned venues, golf simulators, indoor entertainment, restaurants/bars opening
+   - In winter months: snowbird-season events, holiday markets, year-end community events
+   - In shoulder seasons: festivals, outdoor events
+   - Why it matters: relevant + timely. Especially valuable when the article is about something NEW or trending that locals haven't tried yet.
+
+4. MID-YEAR & QUARTERLY MARKET REPORTS (category: market-update, score 8–10)
+   - Half-year recaps, summer outlook, second-half forecasts
+   - Quarterly inventory / median price reports for CV cities
+   - Why it matters: positions Shana as someone who tracks the data and can explain it to clients.
 
 HIGH-VALUE LOCAL INTEREST TOPICS (does NOT need to be real estate):
 - Historical anniversaries: significant events in Palm Springs / Coachella Valley history (storms, floods, civic milestones, 25th/50th/75th/100th anniversaries of major events)
@@ -132,6 +196,8 @@ HIGH-VALUE LOCAL INTEREST TOPICS (does NOT need to be real estate):
 - Big community moments: things that put Palm Springs or the Coachella Valley on the map nationally
 
 For local-history/local-interest articles: score based on how specific and memorable the story is to Coachella Valley residents. Score 8–10 if the event has a real date, named people, and a specific Palm Springs or CV location. Use category "local-history" or "local-interest". Do NOT drop these for being non-real-estate — they score on localRelevance (20–25 if very CV-specific) and audienceValue (10–13 if locals genuinely care).
+
+DIVERSITY GUIDANCE: When you have many articles to score, look across the FULL set and aim for category spread. If 8 of your 10 highest-scoring articles are all category "market-update", relax slightly on borderline development / community / homeowner-impact articles so Shana has a varied digest to choose from. Repetitive blog content is the failure mode we're guarding against.
 
 COMPLIANCE — never select or recommend articles that mention:
 - School quality, ratings, or test scores
