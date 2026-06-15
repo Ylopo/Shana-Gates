@@ -157,6 +157,36 @@
     .legend-swatch { width: 12px; height: 12px; }
     .legend-line { width: 18px; height: 1px; border-top: 1px dashed var(--bronze); }
 
+    /* ─────────── Growth section (since-launch climb) ─────────── */
+    .growth-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 24px; }
+    .growth-stat { background: var(--surface); padding: 30px 28px 26px; position: relative; }
+    .growth-stat::before {
+      content: ''; position: absolute; top: 0; left: 28px; right: 28px; height: 1px;
+      background: linear-gradient(90deg, var(--gold-soft), transparent);
+    }
+    .growth-stat-label { font-size: 10.5px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; font-weight: 400; }
+    .growth-stat-value { font-family: var(--serif); font-weight: 300; font-size: 52px; line-height: 0.95; letter-spacing: -0.01em; color: var(--gold); font-variant-numeric: lining-nums; }
+    .growth-stat-foot { margin-top: 14px; font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+    .growth-stat-foot em { font-style: italic; color: var(--bronze); }
+
+    .growth-panel { background: var(--surface); border: 1px solid var(--border); padding: 36px 36px 28px; }
+    .growth-svg { width: 100%; height: auto; display: block; }
+    .growth-line { fill: none; stroke: var(--gold); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 4000; stroke-dashoffset: 4000; animation: growthDraw 2.2s cubic-bezier(.22,1,.36,1) 0.3s both; }
+    .growth-area { fill: url(#growthGrad); opacity: 0; animation: growthFade 1.4s ease 1.5s both; }
+    @keyframes growthDraw { to { stroke-dashoffset: 0; } }
+    @keyframes growthFade { to { opacity: 1; } }
+    .growth-dot { fill: var(--gold); }
+    .growth-dot.now { fill: var(--bronze); stroke: var(--bg); stroke-width: 3; }
+    .growth-axis-label { font-family: var(--sans); font-size: 10px; fill: var(--faint); letter-spacing: 0.08em; }
+    .growth-month-marker { fill: var(--bronze); font-family: var(--serif); font-size: 13px; font-style: italic; }
+    .growth-caption { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); letter-spacing: 0.04em; }
+    .growth-caption em { font-style: italic; color: var(--gold); }
+
+    @media (max-width: 720px) {
+      .growth-stats { grid-template-columns: 1fr; }
+      .growth-stat-value { font-size: 42px; }
+    }
+
     /* ─────────── Network cards ─────────── */
     .network-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
     .net-card {
@@ -529,6 +559,101 @@
         '</svg>'
     }
 
+    /* ── growth curve (cumulative since launch) ── */
+
+    // Renders a cumulative-line SVG chart from growthByMonth[].
+    // Each point's y = cumulativeSessions (only ever grows).
+    // First and last points get markers; the line itself is gold with a
+    // teal gradient fill underneath. Empty/short data renders a placeholder.
+    function growthCurveChart(growthByMonth) {
+      const W = 960, H = 260
+      const padL = 50, padR = 50, padTop = 30, padBot = 38
+      const plotW = W - padL - padR
+      const plotH = H - padTop - padBot
+
+      const pts = (growthByMonth || []).filter(m => typeof m.cumulativeSessions === 'number')
+      if (pts.length < 2) {
+        return '<svg class="growth-svg" viewBox="0 0 ' + W + ' ' + H + '">' +
+          '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" class="growth-axis-label" style="font-size:13px;">' +
+          (pts.length === 0 ? 'Growth curve will populate as the engine runs' : 'One month of data so far — the curve starts climbing next month') +
+          '</text></svg>'
+      }
+
+      const maxY = Math.max.apply(null, pts.map(p => p.cumulativeSessions)) * 1.08 || 1
+      const nPts = pts.length
+      const xFor = (i) => padL + (i / (nPts - 1)) * plotW
+      const yFor = (v) => padTop + plotH - (v / maxY) * plotH
+
+      // Path: smooth-ish polyline (could spline but a clean polyline reads as honest data)
+      let linePath = ''
+      let areaPath = ''
+      pts.forEach((p, i) => {
+        const x = xFor(i), y = yFor(p.cumulativeSessions)
+        linePath += (i === 0 ? 'M ' : ' L ') + x.toFixed(1) + ' ' + y.toFixed(1)
+        if (i === 0) areaPath += 'M ' + x.toFixed(1) + ' ' + (padTop + plotH).toFixed(1) + ' L ' + x.toFixed(1) + ' ' + y.toFixed(1)
+        else areaPath += ' L ' + x.toFixed(1) + ' ' + y.toFixed(1)
+      })
+      areaPath += ' L ' + xFor(nPts - 1).toFixed(1) + ' ' + (padTop + plotH).toFixed(1) + ' Z'
+
+      // Month labels along x axis — render every label (small series) or every other (longer series)
+      let xLabels = ''
+      pts.forEach((p, i) => {
+        const renderLabel = nPts <= 6 || i === 0 || i === nPts - 1 || i % Math.ceil(nPts / 6) === 0
+        if (!renderLabel) return
+        const d = new Date(p.month + '-01T12:00:00')
+        const label = i === nPts - 1
+          ? 'now'
+          : d.toLocaleDateString('en-US', { month: 'short', year: i === 0 ? 'numeric' : undefined })
+        xLabels += '<text class="growth-axis-label" x="' + xFor(i).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + label + '</text>'
+      })
+
+      // Y-axis ticks — round nicely
+      const yTicks = []
+      const tickCount = 4
+      for (let i = 1; i <= tickCount; i++) {
+        const v = Math.round((maxY / tickCount) * i / 100) * 100  // round to nearest 100
+        if (v > 0) yTicks.push(v)
+      }
+      let yLabels = ''
+      yTicks.forEach(v => {
+        const y = yFor(v)
+        yLabels += '<text class="growth-axis-label" x="' + (padL - 10) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end">' + fmtNum(v) + '</text>'
+        yLabels += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>'
+      })
+
+      const startPt = pts[0]
+      const endPt = pts[nPts - 1]
+      const startX = xFor(0), startY = yFor(startPt.cumulativeSessions)
+      const endX = xFor(nPts - 1), endY = yFor(endPt.cumulativeSessions)
+
+      // Start-of-journey marker (small label above first point)
+      const startLabel = '<text class="growth-month-marker" x="' + startX.toFixed(1) + '" y="' + (startY - 12).toFixed(1) + '" text-anchor="start">launch</text>'
+      // End-of-journey marker (the headline cumulative number above the most-recent point)
+      const endLabel = '<text class="growth-month-marker" x="' + endX.toFixed(1) + '" y="' + (endY - 14).toFixed(1) + '" text-anchor="end" style="font-size:18px;">' + fmtNum(endPt.cumulativeSessions) + ' visits</text>'
+
+      return '<svg class="growth-svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Cumulative website visits since launch">' +
+        '<defs><linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0%" stop-color="#C2A26B" stop-opacity="0.28"/>' +
+        '<stop offset="100%" stop-color="#C2A26B" stop-opacity="0"/>' +
+        '</linearGradient></defs>' +
+        yLabels +
+        '<path class="growth-area" d="' + areaPath + '"/>' +
+        '<path class="growth-line" d="' + linePath + '"/>' +
+        '<circle class="growth-dot" cx="' + startX.toFixed(1) + '" cy="' + startY.toFixed(1) + '" r="4"/>' +
+        '<circle class="growth-dot now" cx="' + endX.toFixed(1) + '" cy="' + endY.toFixed(1) + '" r="6"/>' +
+        startLabel + endLabel +
+        xLabels +
+        '</svg>'
+    }
+
+    function growthCaption(d) {
+      const ct = d.cumulativeTraffic
+      if (!ct || !ct.sinceDate) return 'Once the engine has been running for a few weeks, this section will narrate the climb.'
+      const launch = new Date(ct.sinceDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+      const visits = fmtNum(ct.sessions)
+      return 'Since <em>' + launch + '</em>, the engine has compounded into <em>' + visits + '</em> website visits — and every new post adds another rung to the climb.'
+    }
+
     /* ── momentum chart ── */
 
     function momentumChart(weeks) {
@@ -651,6 +776,20 @@
       const socialTotal = socialPlats.reduce((s, p) => s + p.views, 0)
       const totalReach = socialTotal + sessions
 
+      // Cumulative social = same 30-day numbers for now (OneUp doesn't expose
+      // since-launch totals in their analytics API). For Shana the engine
+      // launched mid-April, so 30-day TikTok/FB numbers capture most of the
+      // engagement window anyway. When OneUp ships custom date ranges we'll
+      // swap these for a real since-launch sum.
+      const cumulativeSocialReach = socialTotal
+      const breakdownParts = []
+      if (tt) breakdownParts.push(fmtNum(tt.views) + ' TikTok')
+      if (fb) breakdownParts.push(fmtNum(fb.views) + ' Facebook reach')
+      if (yt && yt.views > 0) breakdownParts.push(fmtNum(yt.views) + ' YouTube')
+      const cumulativeSocialBreakdown = breakdownParts.length
+        ? breakdownParts.join(' · ')
+        : 'YouTube · TikTok · Facebook · <em>climbing</em>'
+
       // Weighted delta — each platform's delta is weighted by its share of total reach.
       // Sessions contribute via the GA4 priorSessions baseline. Falls back to null
       // when there's no prior-period baseline anywhere (renders as flat).
@@ -735,7 +874,41 @@
           '</div>' +
         '</div>' +
 
-        /* 2 ─ Momentum */
+        /* 2 ─ Growth (since launch) */
+        '<section class="section">' +
+          '<div class="section-head">' +
+            '<div><div class="section-kicker">Since Launch</div>' +
+            '<h2 class="section-title">The <em>Climb</em></h2></div>' +
+            '<div class="section-note">Cumulative reach · ' + (d.cumulativeTraffic && d.cumulativeTraffic.sinceDate
+              ? 'since ' + new Date(d.cumulativeTraffic.sinceDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+              : 'all time') + '</div>' +
+          '</div>' +
+          '<div class="growth-stats reveal">' +
+            '<div class="growth-stat">' +
+              '<div class="growth-stat-label">Total Website Visits</div>' +
+              '<div class="growth-stat-value" data-countup="' + (d.cumulativeTraffic ? d.cumulativeTraffic.sessions : 0) + '">0</div>' +
+              '<div class="growth-stat-foot">' + (d.cumulativeTraffic
+                ? fmtNum(d.cumulativeTraffic.users) + ' unique visitors · <em>compounding</em>'
+                : 'GA4 connecting…') + '</div>' +
+            '</div>' +
+            '<div class="growth-stat">' +
+              '<div class="growth-stat-label">Total Social Reach</div>' +
+              '<div class="growth-stat-value" data-countup="' + cumulativeSocialReach + '">0</div>' +
+              '<div class="growth-stat-foot">' + cumulativeSocialBreakdown + '</div>' +
+            '</div>' +
+            '<div class="growth-stat">' +
+              '<div class="growth-stat-label">Posts Published</div>' +
+              '<div class="growth-stat-value" data-countup="' + d.totalPosts + '">0</div>' +
+              '<div class="growth-stat-foot">across ' + Object.keys(d.byCat || {}).length + ' categories · <em>and counting</em></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="growth-panel reveal">' +
+            growthCurveChart(d.growthByMonth) +
+            '<div class="growth-caption">' + growthCaption(d) + '</div>' +
+          '</div>' +
+        '</section>' +
+
+        /* 3 ─ Momentum */
         '<section class="section">' +
           '<div class="section-head">' +
             '<div><div class="section-kicker">Publishing Pace</div>' +

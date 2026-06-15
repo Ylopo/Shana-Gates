@@ -23,6 +23,12 @@ export default async function handler(req: any, res: any) {
     ? (typeof raw === 'string' ? JSON.parse(raw) : raw)
     : []
 
+  // "Since we started" baseline = the earliest published post's date. The
+  // dashboard's Growth section frames the cumulative narrative around this
+  // anchor: how the engine has compounded organic reach since day one.
+  const allDates = allPosts.map((p) => p.publishedAt).sort()
+  const launchDate = allDates[0] ? allDates[0].slice(0, 10) : null
+
   // Last 90 days
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - 90)
@@ -64,10 +70,15 @@ export default async function handler(req: any, res: any) {
   let siteTraffic: { sessions: string | null; users: string | null; priorSessions: string | null } | null = null
   let ylopoClicks: { total: number } | null = null
   let topYlopoPages: { page: string; clicks: number }[] | null = null
+  let cumulativeTraffic: { sessions: number; users: number; pageviews: number; sinceDate: string } | null = null
+  let growthByMonth: { month: string; sessions: number; users: number; pageviews: number; posts: number; cumulativeSessions: number; cumulativeUsers: number; cumulativePageviews: number; cumulativePosts: number }[] = []
 
   const gaReady = !!(process.env.GOOGLE_SERVICE_ACCOUNT_JSON && process.env.GOOGLE_ANALYTICS_PROPERTY_ID)
   if (gaReady) {
-    const [sessionRows, priorSessionRows, topPagesRows, blogPostRows] = await Promise.all([
+    // GA4 fetches: existing 30-day stats + two new queries for the Growth section
+    // (cumulative-since-launch totals + monthly time-series for the climbing-curve chart).
+    const sinceLaunch = launchDate || '90daysAgo'
+    const [sessionRows, priorSessionRows, topPagesRows, blogPostRows, cumulativeRows, monthlyRows] = await Promise.all([
       // 30-day sessions / users
       runGA4Report({
         dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
@@ -106,6 +117,19 @@ export default async function handler(req: any, res: any) {
         orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
         limit: 50,
       }),
+      // Cumulative since launch — the headline "since we started" total.
+      runGA4Report({
+        dateRanges: [{ startDate: sinceLaunch, endDate: 'today' }],
+        dimensions: [],
+        metrics: [{ name: 'sessions' }, { name: 'totalUsers' }, { name: 'screenPageViews' }],
+      }),
+      // Monthly time-series since launch — feeds the cumulative growth-curve chart.
+      runGA4Report({
+        dateRanges: [{ startDate: sinceLaunch, endDate: 'today' }],
+        dimensions: [{ name: 'yearMonth' }],
+        metrics: [{ name: 'sessions' }, { name: 'totalUsers' }, { name: 'screenPageViews' }],
+        orderBys: [{ dimension: { dimensionName: 'yearMonth' } }],
+      }),
     ])
 
     if (sessionRows.length > 0) {
@@ -126,6 +150,49 @@ export default async function handler(req: any, res: any) {
     } else {
       ylopoClicks = { total: 0 }
       topYlopoPages = []
+    }
+
+    // Cumulative-since-launch totals.
+    if (cumulativeRows.length > 0 && launchDate) {
+      cumulativeTraffic = {
+        sessions: parseInt(cumulativeRows[0]?.metricValues[0]?.value ?? '0', 10) || 0,
+        users: parseInt(cumulativeRows[0]?.metricValues[1]?.value ?? '0', 10) || 0,
+        pageviews: parseInt(cumulativeRows[0]?.metricValues[2]?.value ?? '0', 10) || 0,
+        sinceDate: launchDate,
+      }
+    }
+
+    // Monthly time-series — combine GA4 traffic with the per-month post count
+    // from Redis, then accumulate so each entry carries running totals (the
+    // shape the growth-curve chart consumes directly).
+    if (monthlyRows.length > 0) {
+      const postsByMonth: Record<string, number> = {}
+      allPosts.forEach((p) => {
+        const m = p.publishedAt.slice(0, 7).replace('-', '') // "202604"
+        postsByMonth[m] = (postsByMonth[m] || 0) + 1
+      })
+
+      let runSessions = 0, runUsers = 0, runPageviews = 0, runPosts = 0
+      growthByMonth = monthlyRows.map((row) => {
+        const ym = row.dimensionValues[0].value // "202604"
+        const month = `${ym.slice(0, 4)}-${ym.slice(4, 6)}`
+        const sessions = parseInt(row.metricValues[0].value, 10) || 0
+        const users = parseInt(row.metricValues[1].value, 10) || 0
+        const pageviews = parseInt(row.metricValues[2].value, 10) || 0
+        const posts = postsByMonth[ym] || 0
+        runSessions += sessions
+        runUsers += users
+        runPageviews += pageviews
+        runPosts += posts
+        return {
+          month,
+          sessions, users, pageviews, posts,
+          cumulativeSessions: runSessions,
+          cumulativeUsers: runUsers,
+          cumulativePageviews: runPageviews,
+          cumulativePosts: runPosts,
+        }
+      })
     }
 
     // Merge per-post pageviews into the posts map. pagePath examples:
@@ -167,12 +234,15 @@ export default async function handler(req: any, res: any) {
     totalPosts: allPosts.length,
     recentPosts: recent.length,
     postsPerWeek,
+    launchDate,
     byCat,
     byPipeline,
     gaMeasurementId: process.env.GA_MEASUREMENT_ID || 'G-X2N2M3LDKS',
     gaPropertyId: process.env.GOOGLE_ANALYTICS_PROPERTY_ID || null,
     gaConnected: gaReady,
     siteTraffic,
+    cumulativeTraffic,
+    growthByMonth,
     ylopoClicks,
     topYlopoPages,
     posts,
