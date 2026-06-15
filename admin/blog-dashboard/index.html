@@ -442,10 +442,28 @@
       return streak
     }
 
+    // Monday 00:00 (local) of the calendar week containing `d`.
+    // ISO weeks start Monday, so a Sunday belongs to the week that started 6 days earlier.
+    function mondayOfWeek(d) {
+      const m = new Date(d)
+      m.setHours(0, 0, 0, 0)
+      const dow = m.getDay()                  // Sun=0, Mon=1, ..., Sat=6
+      const daysFromMonday = (dow + 6) % 7    // Mon=0, Tue=1, ..., Sun=6
+      m.setDate(m.getDate() - daysFromMonday)
+      return m
+    }
+
+    // Bucket posts by Monday-Sunday calendar week. weeks[11] = current week
+    // (starting this Monday); weeks[0] = the week that started 11 Mondays ago.
+    // Earlier versions used rolling 7-day windows from "now", which pulled
+    // last-calendar-week's posts into "this wk" on Monday mornings.
     function computeWeeklyCounts(posts) {
       const weeks = new Array(12).fill(0)
+      const thisMonday = mondayOfWeek(new Date()).getTime()
+      const WEEK_MS = 7 * 86400000
       posts.forEach(p => {
-        const idx = Math.floor(p.ageDays / 7)
+        const pubMonday = mondayOfWeek(new Date(p.publishedAt)).getTime()
+        const idx = Math.round((thisMonday - pubMonday) / WEEK_MS)
         if (idx >= 0 && idx < 12) weeks[11 - idx]++
       })
       return weeks
@@ -528,7 +546,7 @@
 
       let bars = ''
       let labels = ''
-      const now = new Date()
+      const thisMonday = mondayOfWeek(new Date())
       for (let i = 0; i < n; i++) {
         const v = weeks[i]
         const hgt = Math.max((v / maxVal) * plotH, v > 0 ? 4 : 1.5)
@@ -542,8 +560,10 @@
         if (isPeak) {
           bars += '<text class="momentum-peak-label" x="' + (x + barW / 2).toFixed(1) + '" y="' + (y - 12).toFixed(1) + '" text-anchor="middle">' + v + '</text>'
         }
-        const weekStart = new Date(now)
-        weekStart.setDate(weekStart.getDate() - (n - 1 - i) * 7 - 6)
+        // Each bar is anchored to its week's Monday. i=11 is this week's Monday;
+        // i=0 is 11 Mondays ago.
+        const weekStart = new Date(thisMonday)
+        weekStart.setDate(thisMonday.getDate() - (n - 1 - i) * 7)
         if (i % 2 === 1 || i === n - 1) {
           const lbl = i === n - 1 ? 'this wk' : weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
           labels += '<text class="momentum-axis-label" x="' + (x + barW / 2).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle">' + lbl + '</text>'
