@@ -57,7 +57,10 @@ async function getAccessToken(serviceAccountJson: string): Promise<string> {
 export async function runGA4Report(body: object): Promise<GA4ReportRow[]> {
   const saJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
   const propId = process.env.GOOGLE_ANALYTICS_PROPERTY_ID
-  if (!saJson || !propId) return []
+  if (!saJson || !propId) {
+    console.warn('[ga4] env vars missing', { saJson: !!saJson, propId: !!propId })
+    return []
+  }
 
   try {
     const token = await getAccessToken(saJson)
@@ -72,10 +75,15 @@ export async function runGA4Report(body: object): Promise<GA4ReportRow[]> {
         body: JSON.stringify(body),
       }
     )
-    if (!res.ok) return []
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '')
+      console.error(`[ga4] HTTP ${res.status} on report — body:`, JSON.stringify(body), '— GA4 says:', errBody.slice(0, 600))
+      return []
+    }
     const data = await res.json()
     return data.rows ?? []
-  } catch {
+  } catch (err: any) {
+    console.error('[ga4] exception:', err?.message || err, '— body was:', JSON.stringify(body))
     return []
   }
 }

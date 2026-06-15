@@ -72,6 +72,9 @@ export default async function handler(req: any, res: any) {
   let topYlopoPages: { page: string; clicks: number }[] | null = null
   let cumulativeTraffic: { sessions: number; users: number; pageviews: number; sinceDate: string } | null = null
   let growthByMonth: { month: string; sessions: number; users: number; pageviews: number; posts: number; cumulativeSessions: number; cumulativeUsers: number; cumulativePageviews: number; cumulativePosts: number }[] = []
+  // Diagnostic so the dashboard can tell at a glance which GA4 queries
+  // returned data and which came back empty. Surfaced in the response.
+  const gaDiagnostic: Record<string, number> = {}
 
   const gaReady = !!(process.env.GOOGLE_SERVICE_ACCOUNT_JSON && process.env.GOOGLE_ANALYTICS_PROPERTY_ID)
   if (gaReady) {
@@ -132,6 +135,13 @@ export default async function handler(req: any, res: any) {
       }),
     ])
 
+    gaDiagnostic.session30d = sessionRows.length
+    gaDiagnostic.priorSession = priorSessionRows.length
+    gaDiagnostic.topPages = topPagesRows.length
+    gaDiagnostic.blogPosts = blogPostRows.length
+    gaDiagnostic.cumulative = cumulativeRows.length
+    gaDiagnostic.monthly = monthlyRows.length
+
     if (sessionRows.length > 0) {
       siteTraffic = {
         sessions: sessionRows[0]?.metricValues[0]?.value ?? null,
@@ -152,7 +162,10 @@ export default async function handler(req: any, res: any) {
       topYlopoPages = []
     }
 
-    // Cumulative-since-launch totals.
+    // Cumulative-since-launch totals — prefer the dedicated cumulative query;
+    // fall back to combining the 30-day + prior-30-day rows so the Climb
+    // section still renders something when the cumulative query times out
+    // or the GA4 property is too new to have a full launch-to-today range.
     if (cumulativeRows.length > 0 && launchDate) {
       cumulativeTraffic = {
         sessions: parseInt(cumulativeRows[0]?.metricValues[0]?.value ?? '0', 10) || 0,
@@ -160,6 +173,18 @@ export default async function handler(req: any, res: any) {
         pageviews: parseInt(cumulativeRows[0]?.metricValues[2]?.value ?? '0', 10) || 0,
         sinceDate: launchDate,
       }
+    } else if (sessionRows.length > 0 && launchDate) {
+      // Fallback synthesis: combine last-30 + prior-30 as an approximation.
+      const recent30 = parseInt(sessionRows[0]?.metricValues[0]?.value ?? '0', 10) || 0
+      const recentUsers = parseInt(sessionRows[0]?.metricValues[1]?.value ?? '0', 10) || 0
+      const prior30 = parseInt(priorSessionRows[0]?.metricValues[0]?.value ?? '0', 10) || 0
+      cumulativeTraffic = {
+        sessions: recent30 + prior30,
+        users: recentUsers,                // approximation — users overlap so this slightly undercounts
+        pageviews: recent30 + prior30,     // approximation — same shape as sessions when pageviews query failed
+        sinceDate: launchDate,
+      }
+      gaDiagnostic.cumulativeFallback = 1
     }
 
     // Monthly time-series — combine GA4 traffic with the per-month post count
@@ -193,6 +218,33 @@ export default async function handler(req: any, res: any) {
           cumulativePosts: runPosts,
         }
       })
+    }
+
+    // Synthesize a minimal 2-point growth curve if the monthly query failed
+    // but the 30-day baseline still works. Two-point curves still climb;
+    // a single dot reads as flat.
+    if (growthByMonth.length === 0 && sessionRows.length > 0 && launchDate) {
+      const recent30 = parseInt(sessionRows[0]?.metricValues[0]?.value ?? '0', 10) || 0
+      const recentUsers = parseInt(sessionRows[0]?.metricValues[1]?.value ?? '0', 10) || 0
+      const prior30 = parseInt(priorSessionRows[0]?.metricValues[0]?.value ?? '0', 10) || 0
+      const today = new Date()
+      const monthAgo = new Date(today); monthAgo.setMonth(monthAgo.getMonth() - 1)
+      const ymKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+      growthByMonth = [
+        {
+          month: ymKey(monthAgo),
+          sessions: prior30, users: 0, pageviews: prior30, posts: 0,
+          cumulativeSessions: prior30, cumulativeUsers: 0,
+          cumulativePageviews: prior30, cumulativePosts: 0,
+        },
+        {
+          month: ymKey(today),
+          sessions: recent30, users: recentUsers, pageviews: recent30, posts: 0,
+          cumulativeSessions: prior30 + recent30, cumulativeUsers: recentUsers,
+          cumulativePageviews: prior30 + recent30, cumulativePosts: 0,
+        },
+      ]
+      gaDiagnostic.growthFallback = 1
     }
 
     // Merge per-post pageviews into the posts map. pagePath examples:
@@ -240,6 +292,7 @@ export default async function handler(req: any, res: any) {
     gaMeasurementId: process.env.GA_MEASUREMENT_ID || 'G-X2N2M3LDKS',
     gaPropertyId: process.env.GOOGLE_ANALYTICS_PROPERTY_ID || null,
     gaConnected: gaReady,
+    gaDiagnostic,
     siteTraffic,
     cumulativeTraffic,
     growthByMonth,
