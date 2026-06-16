@@ -6,6 +6,7 @@ import { computeTimeliness, computeSourceCredibility, computeNovelty, assembleSc
 import { sourceTypeLabel } from './source-rules'
 import { saveIdea, getCoveredTopics, buildWeekId } from './idea-store'
 import { seedEvergreenHistoryIdeas } from './history-seeds'
+import { seedEvergreenContentIdeas } from './evergreen-seeds'
 
 // ── Coachella Valley topic queries ───────────────────────────────────────────
 // 8 real estate queries rotate daily from this pool; 2 history slots are always
@@ -391,6 +392,16 @@ export async function runDailyResearch(date: string): Promise<ScoredArticle[]> {
     console.log(`[research] Seeded ${historyCount} evergreen history ideas`)
   } catch (err) {
     console.error('[research] Failed to seed history ideas:', err)
+  }
+
+  // Seed client-curated evergreen content ideas (lifestyle guides, market
+  // analysis, city deep-dives, etc.) — stable IDs so each is seeded exactly
+  // once into the store and remains in the picker until Shana approves it.
+  try {
+    const evergreenCount = await seedEvergreenContentIdeas()
+    if (evergreenCount > 0) console.log(`[research] Seeded ${evergreenCount} new evergreen content ideas`)
+  } catch (err) {
+    console.error('[research] Failed to seed evergreen content ideas:', err)
   }
 
   return topScored
