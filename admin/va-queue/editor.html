@@ -1152,6 +1152,11 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
         btn.disabled = true
         btn.innerHTML = `<span class="spinner spinner-green"></span> Publishing…`
 
+        // Flips true the moment /api/content/publish-video accepts the
+        // submission. Used by the catch block to avoid re-enabling Publish
+        // (which would double-fire the social blast on retry).
+        let socialSubmittedSuccessfully = false
+
         try {
           // 1. Save edits to the post first (captions, title, script, video URL, etc.)
           const saveRes = await fetch('/api/blog/queue-mark-ready', {
@@ -1209,6 +1214,17 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           })
           const vd = await vr.json()
           if (!vr.ok || !vd.ok) throw new Error(vd.error || 'OneUp submission failed')
+          // Flag set: if anything below this point fails, the catch block
+          // must NOT re-enable Publish (would double-fire the social blast).
+          // The server-side guard (post.socialPublishedAt) catches duplicates
+          // anyway, but we harden the UI here too.
+          // If alreadyPublished is true, we're resuming after a previous
+          // partial failure — same lockout applies (don't re-submit).
+          socialSubmittedSuccessfully = true
+          if (vd.alreadyPublished) {
+            document.getElementById('actionError').innerHTML =
+              '<div class="inline-banner">Social was already submitted at ' + vd.socialPublishedAt + ' — resuming blog publish without re-firing OneUp.</div>'
+          }
 
           // Mark IG/TT/FB as "Submitted" — OneUp doesn't expose per-platform
           // confirmation, but the submission succeeded so we can trust it'll
@@ -1272,8 +1288,19 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
           btn.style.opacity = '0.5'
         } catch (err) {
           document.getElementById('actionError').innerHTML = `<div class="inline-error">${err.message}</div>`
-          btn.disabled = false
-          btn.innerHTML = 'Publish'
+          // CRITICAL: do NOT re-enable the Publish button if OneUp already
+          // accepted the social submission. Re-clicking Publish would call
+          // /api/content/publish-video again, which double-posts to TT/YT/FB.
+          // (Server-side socialPublishedAt guard now blocks the double-submit
+          // even if this UI lockout fails, but we harden both layers.)
+          if (socialSubmittedSuccessfully) {
+            btn.innerHTML = '⚠ Social posted — refresh to retry blog only'
+            btn.style.opacity = '0.5'
+            btn.disabled = true
+          } else {
+            btn.disabled = false
+            btn.innerHTML = 'Publish'
+          }
         }
       })
     }

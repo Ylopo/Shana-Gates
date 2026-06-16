@@ -46,6 +46,12 @@ export interface BlogPostSummary {
   // NOT the same as videoUrl (which is the source MP4 on Vercel Blob).
   youtubeUrl?: string
   youtubeSubmissionId?: string  // Blotato postSubmissionId, kept so editor can resume polling after reload
+
+  // ISO timestamp set the moment a OneUp submission succeeds for this post.
+  // Acts as an idempotency guard: /api/content/publish-video refuses to
+  // re-submit if this is set, preventing the duplicate-post bug where a
+  // retry after a YouTube-RSS timeout would re-fire the social blast.
+  socialPublishedAt?: string
 }
 
 export interface BlogPostFull extends BlogPostSummary {
@@ -276,6 +282,19 @@ export async function publishQueuedPost(slug: string): Promise<void> {
   filteredIndex.unshift(summary)
   filteredIndex.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
   await redis.set('blog_posts_index', JSON.stringify(filteredIndex))
+}
+
+// Idempotency stamp: mark a post as having been submitted to OneUp so a
+// retry-click in the editor (after a YouTube-RSS timeout, for example) can
+// short-circuit instead of re-firing the social blast. Called by
+// /api/content/publish-video immediately after OneUp accepts the submission.
+export async function markSocialPublished(slug: string): Promise<void> {
+  const key = `blog_post:${slug}`
+  const raw = await redis.get<string>(key)
+  if (!raw) throw new Error(`Post not found: ${slug}`)
+  const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
+  post.socialPublishedAt = new Date().toISOString()
+  await redis.set(key, JSON.stringify(post))
 }
 
 // Persist the YouTube watch URL on a blog post. Called by the Blotato status

@@ -14,7 +14,7 @@
  * publish on YouTube (which we capture via the channel RSS poller).
  */
 import { checkAdminAuth } from '../../lib/admin-auth'
-import { getPostBySlug } from '../../lib/blog-redis'
+import { getPostBySlug, markSocialPublished } from '../../lib/blog-redis'
 import { scheduleVideoNow } from '../../lib/oneup-client'
 import { SITE_URL } from '../../lib/publish-service'
 
@@ -47,6 +47,25 @@ export default async function handler(req: any, res: any) {
     const post = await getPostBySlug(slug)
     if (!post) return res.status(404).json({ error: 'Post not found' })
 
+    // Idempotency guard — refuse to re-submit if this post has already
+    // been published to OneUp. Prevents the duplicate-post bug where an
+    // editor retry (after a YouTube RSS timeout, for example) would
+    // re-fire the social blast even though the first attempt succeeded.
+    // The blog can still be republished cleanly via /api/blog/queue-publish.
+    if (post.socialPublishedAt) {
+      return res.status(200).json({
+        ok: true,
+        alreadyPublished: true,
+        socialPublishedAt: post.socialPublishedAt,
+        message: 'Already submitted to OneUp at ' + post.socialPublishedAt + ' — skipping re-submission. Use /api/blog/republish-social only if you intend to publish a second copy.',
+        // Return a since-cutoff that's before the original submission so
+        // the editor's YouTube RSS poller can still find the (already-uploaded)
+        // video and resume the publish flow.
+        since: post.socialPublishedAt,
+        submitted: ['youtube', 'instagram', 'tiktok', 'facebook'],
+      })
+    }
+
     const articleUrl = `${SITE_URL}/blog/post.html?slug=${post.slug}`
 
     // OneUp accepts ONE shared caption + title across all platforms.
@@ -74,6 +93,13 @@ export default async function handler(req: any, res: any) {
     if (!result.ok) {
       return res.status(502).json({ ok: false, error: result.message, raw: result.raw })
     }
+
+    // Stamp idempotency marker IMMEDIATELY after OneUp accepts the submission.
+    // Even if the editor's downstream YouTube-wait + blog-publish fails, a
+    // retry-click won't re-fire the social blast.
+    await markSocialPublished(slug).catch((err) => {
+      console.error('[publish-video] markSocialPublished failed (non-fatal):', err)
+    })
 
     return res.status(200).json({
       ok: true,

@@ -1,4 +1,4 @@
-import { getDueScheduledPosts, getPostBySlug, publishQueuedPost, setYouTubeUrl } from '../../lib/blog-redis'
+import { getDueScheduledPosts, getPostBySlug, publishQueuedPost, setYouTubeUrl, markSocialPublished } from '../../lib/blog-redis'
 import { scheduleVideoNow, getYouTubeChannelId } from '../../lib/oneup-client'
 import { findNewestVideoSince } from '../../lib/youtube-rss'
 import { SITE_URL } from '../../lib/publish-service'
@@ -75,20 +75,32 @@ export default async function handler(req: any, res: any) {
       // category). Wait for the YouTube upload to land via channel RSS, then
       // publish the blog so the page renders with the embed in place.
       if (post.videoUrl && process.env.ONEUP_API_KEY) {
-        const since = new Date().toISOString()
-        const submission = await scheduleVideoNow({
-          title: post.title,
-          content: `${captionBase}\n\n${articleUrl}`,
-          videoUrl: post.videoUrl,
-          thumbnailUrl: post.videoThumbnailUrl,
-        })
+        if (post.socialPublishedAt) {
+          // Already submitted to OneUp — likely a re-run of the cron after a
+          // partial failure on a previous tick. Skip the social blast to
+          // avoid duplicates and proceed to publish the blog.
+          console.log(`[publish-scheduled] ${summary.slug} social already published at ${post.socialPublishedAt}, skipping OneUp re-submission`)
+        } else {
+          const since = new Date().toISOString()
+          const submission = await scheduleVideoNow({
+            title: post.title,
+            content: `${captionBase}\n\n${articleUrl}`,
+            videoUrl: post.videoUrl,
+            thumbnailUrl: post.videoThumbnailUrl,
+          })
 
-        if (!submission.ok) {
-          console.warn(`[publish-scheduled] ${summary.slug} OneUp submission failed:`, submission.message)
-        } else if (channelId) {
-          const ytWait = await waitForYouTubeRss(summary.slug, since, channelId)
-          if (!ytWait.ok) {
-            console.warn(`[publish-scheduled] ${summary.slug} YouTube wait: ${ytWait.error}`)
+          if (!submission.ok) {
+            console.warn(`[publish-scheduled] ${summary.slug} OneUp submission failed:`, submission.message)
+          } else {
+            await markSocialPublished(summary.slug).catch((err) => {
+              console.error(`[publish-scheduled] ${summary.slug} markSocialPublished failed:`, err)
+            })
+            if (channelId) {
+              const ytWait = await waitForYouTubeRss(summary.slug, since, channelId)
+              if (!ytWait.ok) {
+                console.warn(`[publish-scheduled] ${summary.slug} YouTube wait: ${ytWait.error}`)
+              }
+            }
           }
         }
       }
