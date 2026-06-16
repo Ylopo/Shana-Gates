@@ -460,16 +460,25 @@
       return posts.filter(p => p.ageDays >= fromDay && p.ageDays <= toDay)
     }
 
-    function computeStreak(posts) {
-      const days = new Set(posts.map(p => new Date(p.publishedAt).toDateString()))
-      let streak = 0
-      const cursor = new Date()
-      if (!days.has(cursor.toDateString())) cursor.setDate(cursor.getDate() - 1)
-      while (days.has(cursor.toDateString())) {
-        streak++
-        cursor.setDate(cursor.getDate() - 1)
+    // Each fully-produced post (research → writing → image → video script →
+    // HeyGen render → thumbnail → multi-platform social posting → blog publish)
+    // saves the operator roughly 6 hours of manual work. Conservative estimate
+    // covering research, writing, image generation, video script, video edit,
+    // thumbnail design, captions, scheduling, and cross-platform monitoring.
+    const HOURS_SAVED_PER_POST = 6
+
+    // Returns { thisWeek, allTime } in hours. thisWeek = posts published since
+    // this Monday × HOURS_SAVED_PER_POST. allTime = total posts × HOURS_SAVED_PER_POST.
+    function computeHoursSaved(posts, totalPosts) {
+      const thisMonday = mondayOfWeek(new Date()).getTime()
+      const weekCount = posts.filter(p => {
+        const pubTime = new Date(p.publishedAt).getTime()
+        return pubTime >= thisMonday
+      }).length
+      return {
+        thisWeek: weekCount * HOURS_SAVED_PER_POST,
+        allTime: (totalPosts || 0) * HOURS_SAVED_PER_POST,
       }
-      return streak
     }
 
     // Monday 00:00 (local) of the calendar week containing `d`.
@@ -798,7 +807,7 @@
       const totalPrior = socialPriorEst + priorSessions
       const reachDelta = totalPrior > 0 ? (totalCurrent - totalPrior) / totalPrior : null
 
-      const streak = computeStreak(posts)
+      const hoursSaved = computeHoursSaved(posts, d.totalPosts)
       const topPerf = findTopPerformer(d)
       const weeks = computeWeeklyCounts(posts)
 
@@ -868,9 +877,9 @@
             '<div class="kpi-foot"><span style="color:var(--gold);">' + escHtml(topPerf.metric) + '</span></div>' +
           '</div>' +
           '<div class="kpi reveal">' +
-            '<div class="kpi-label">Publishing Streak</div>' +
-            '<div class="kpi-value"><span data-countup="' + streak + '">0</span><span class="unit">' + (streak === 1 ? 'day' : 'days') + '</span></div>' +
-            '<div class="kpi-foot"><span>consecutive days with a published post</span></div>' +
+            '<div class="kpi-label">Hours Saved · This Week</div>' +
+            '<div class="kpi-value"><span data-countup="' + hoursSaved.thisWeek + '">0</span><span class="unit">' + (hoursSaved.thisWeek === 1 ? 'hour' : 'hours') + '</span></div>' +
+            '<div class="kpi-foot"><span><strong style="color:var(--text);font-weight:500;">' + fmtNum(hoursSaved.allTime) + ' hours</strong> saved all-time</span></div>' +
           '</div>' +
         '</div>' +
 
