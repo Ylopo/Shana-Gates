@@ -1,0 +1,160 @@
+{
+  "address": "4321 Lumina Way, Palm Springs, CA 92262",
+  "price": "$1,695,000",
+  "date": "May 14, 2026",
+  "overall_score": 57,
+  "property_image": "/Users/kiwi/Desktop/Cowork/Branded Sites/Shana Gates/images/4321-lumina-way.jpeg",
+  "property_details": {
+    "beds": "3",
+    "baths": "3",
+    "sqft": "2,593",
+    "year_built": "2023",
+    "lot_size": "0.16 ac (6,970 sf)",
+    "property_type": "SFR — Escena Golf Club (Gated)"
+  },
+  "categories": {
+    "Value & Comps": { "score": 57, "weight": "25%" },
+    "Income Potential": { "score": 44, "weight": "20%" },
+    "Neighborhood Quality": { "score": 66, "weight": "20%" },
+    "Investment Upside": { "score": 52, "weight": "20%" },
+    "Market Conditions": { "score": 66, "weight": "15%" }
+  },
+  "comps": [
+    { "address": "4499 Esplanade Ln, PS", "price": "$1,470,000", "sqft": "2,561", "price_sqft": "$574", "sold_date": "Apr 2025", "distance": "0.3 mi" },
+    { "address": "4631 Kellogg Way, PS", "price": "~$1,350,000", "sqft": "2,579", "price_sqft": "~$524", "sold_date": "2025", "distance": "0.4 mi" },
+    { "address": "4450 Moneo Ct, PS", "price": "$1,445,000", "sqft": "2,421", "price_sqft": "$597", "sold_date": "Oct 2025", "distance": "0.3 mi" }
+  ],
+  "comp_summary": {
+    "avg_price": "~$1,422,000 (comp avg)",
+    "avg_price_sqft": "$565/sq ft (comp avg)"
+  },
+  "cashflow": {
+    "items": [
+      { "item": "Gross Rental Income (LTR)", "monthly": "$6,500", "annual": "$78,000" },
+      { "item": "Vacancy Loss (5%)", "monthly": "-$325", "annual": "-$3,900" },
+      { "item": "Effective Gross Income", "monthly": "$6,175", "annual": "$74,100" },
+      { "item": "Mortgage P&I (6.62%, 30yr)", "monthly": "-$8,675", "annual": "-$104,100" },
+      { "item": "Property Taxes (~1.1%)", "monthly": "-$1,554", "annual": "-$18,648" },
+      { "item": "HOA", "monthly": "-$230", "annual": "-$2,760" },
+      { "item": "Insurance", "monthly": "-$267", "annual": "-$3,200" },
+      { "item": "Prop. Mgmt (9% EGI)", "monthly": "-$556", "annual": "-$6,669" },
+      { "item": "Maintenance Reserve (7%)", "monthly": "-$432", "annual": "-$5,187" },
+      { "item": "CapEx Reserve (5%)", "monthly": "-$309", "annual": "-$3,705" },
+      { "item": "Net Cash Flow (Leveraged)", "monthly": "-$5,848", "annual": "-$70,169" }
+    ]
+  },
+  "investment_metrics": {
+    "cap_rate": "2.00%",
+    "cap_rate_status": "Below market — luxury PS benchmark is 4-6%; improved from prior ask",
+    "cash_on_cash": "-20.7%",
+    "coc_status": "Negative — appreciation-only play at current rates; improves if rates drop",
+    "grm": "21.7x",
+    "grm_status": "Expensive — GRM >20 signals low yield relative to price",
+    "dscr": "0.33",
+    "dscr_status": "Far below 1.0 — lenders require 1.25+ for DSCR loans",
+    "one_pct": "0.38%",
+    "one_pct_status": "Well below 1% rule — luxury lifestyle/appreciation asset",
+    "breakeven": "N/A (negative cash flow all scenarios)",
+    "breakeven_status": "No leverage break-even in LTR; STR optimistic near break-even"
+  },
+  "mortgage": {
+    "purchase_price": "$1,695,000",
+    "down_payment": "$339,000 (20%)",
+    "loan_amount": "$1,356,000",
+    "rate": "6.62% (30-yr jumbo fixed)",
+    "term": "30-year fixed jumbo",
+    "monthly_pi": "$8,675",
+    "monthly_piti": "$10,496 (incl. tax + ins.)"
+  },
+  "neighborhood": {
+    "scores": {
+      "School Quality": 55,
+      "Safety & Crime": 55,
+      "Walkability": 75,
+      "Demographics": 70,
+      "Growth Trajectory": 75
+    },
+    "details": [
+      { "factor": "Elementary School", "detail": "Vista Del Monte — 5/10", "notes": "PSUSD; Spanish/English dual immersion program; below CA average proficiency" },
+      { "factor": "Middle School", "detail": "Raymond Cree — 5/10", "notes": "Average ratings; families seeking higher scores look to Palm Desert" },
+      { "factor": "High School", "detail": "Palm Springs High — 6/10", "notes": "Average CA ratings; private school alternatives available nearby" },
+      { "factor": "Crime Rate", "detail": "57.5/1,000 (19th pctl)", "notes": "73% above national avg citywide; gated community provides meaningful buffer" },
+      { "factor": "Amenities", "detail": "Excellent — on-site golf/dining", "notes": "Nicklaus golf course + Escena Grill on-site; PSP Airport <10 min; CV Link completed 2025" },
+      { "factor": "Growth Drivers", "detail": "CV Link + Convention Ctr", "notes": "$50M+ convention center expansion; new COD campus 2026-27; +3.6% home value forecast 2026" }
+    ],
+    "demographics": {
+      "population_growth": "Stable; lifestyle migration from LA/SF",
+      "median_age": "Resort/second-home market; mixed ages",
+      "employment_rate": "Tourism + healthcare anchored (Desert Regional Medical)",
+      "major_employers": "Agua Caliente Band (gaming), Desert Care Network, Hospitality/Tourism (1.6M visitors/yr)"
+    }
+  },
+  "strategies": [
+    {
+      "strategy": "Buy & Hold (Long-Term)",
+      "projected_return": "+$180K-$420K net (5yr)",
+      "timeframe": "7-10 years",
+      "pros": "3.5-5.5% annual appreciation; $55,636/yr depreciation; solar-owned; minimal capex (2023 build)",
+      "risk": "-$5K to -$7K/mo negative cash flow; STR regulatory risk; rate environment"
+    },
+    {
+      "strategy": "Buy & Hold (STR)",
+      "projected_return": "Near break-even at $700/night + 70% occ.",
+      "timeframe": "7-10 years",
+      "pros": "$179K gross revenue (optimistic); solar lowers utility costs; pool + views = premium rates",
+      "risk": "26-contract cap; 20% density cap; HOA approval required; management-intensive"
+    },
+    {
+      "strategy": "Fix & Flip",
+      "projected_return": "-$80K to -$160K (loss)",
+      "timeframe": "Not viable",
+      "pros": "None — new construction at market price",
+      "risk": "Fails 70% rule; transaction costs alone exceed any flip premium"
+    }
+  ],
+  "appreciation_projections": [
+    { "year": "Year 1", "conservative": "$1,754,325", "moderate": "$1,762,800", "aggressive": "$1,771,275" },
+    { "year": "Year 3", "conservative": "$1,879,300", "moderate": "$1,906,700", "aggressive": "$1,934,300" },
+    { "year": "Year 5", "conservative": "$2,013,200", "moderate": "$2,062,300", "aggressive": "$2,112,300" },
+    { "year": "Year 10", "conservative": "$2,390,000", "moderate": "$2,508,900", "aggressive": "$2,632,400" }
+  ],
+  "scenarios": [
+    {
+      "scenario": "Bull Case",
+      "probability": "25%",
+      "return": "+15-24% (5yr)",
+      "trigger": "STR activation approved + rate drop to 6% + Palm Springs luxury demand surge from LA migration"
+    },
+    {
+      "scenario": "Base Case",
+      "probability": "50%",
+      "return": "+4-15% (5yr)",
+      "trigger": "3.5% annual appreciation + LTR rental income + depreciation tax offset; negative monthly carry"
+    },
+    {
+      "scenario": "Bear Case",
+      "probability": "25%",
+      "return": "-5% to -12% (5yr)",
+      "trigger": "Luxury softening continues; STR permit denied; rates remain elevated; Toll Brothers new supply pressures prices"
+    }
+  ],
+  "recommendation": {
+    "signal": "WATCH",
+    "summary": "4321 Lumina Way is a genuinely exceptional luxury asset — 2023 new construction, owned solar, private pool, and panoramic golf and mountain views in a gated community. At the corrected listing price of $1,695,000 ($653/sqft), it remains approximately 11-19% above the comp-supported fair market value of ~$1,422,000–$1,525,000, but the gap is meaningfully smaller than a prior listing at $1,895,000. Monthly carry is -$5,848 under standard LTR assumptions — still negative, but $1,218/mo less than at the higher ask. In a market where 79% of listings are taking price reductions and average DOM is 68-94 days, patient buyers retain leverage. The right entry price remains $1,575,000-$1,650,000 — at $1,695,000 there is a narrow gap to close, and a motivated seller in summer 2026 may bridge it.",
+    "suggested_offer": "$1,575,000 – $1,650,000",
+    "action_items": [
+      "Confirm STR permit availability — verify Escena's neighborhood has not hit the 20% density cap (call Palm Springs STR office)",
+      "Obtain written HOA confirmation that STRs are currently permitted and review any operational restrictions",
+      "Verify solar ownership — confirm 18 panels + 2 battery backups are owned (not leased) and fully transferable",
+      "Check for Mello-Roos or special assessment districts beyond the standard HOA fee",
+      "Submit offer in summer 2026 (June-September) when buyer traffic drops and seller leverage diminishes"
+    ]
+  },
+  "risk_factors": [
+    { "factor": "Overpriced vs. Comps", "probability": "High", "impact": "Medium", "notes": "Asking $653/sqft vs. comp range of $524-$597/sqft; ~$120K-$270K premium vs. comp avg — gap is real but narrowed significantly from prior $1,895,000 ask" },
+    { "factor": "Negative Cash Flow", "probability": "Certain", "impact": "High", "notes": "-$5,848/mo under LTR; STR optimistic is near break-even path; improved $1,218/mo vs. prior ask" },
+    { "factor": "STR Permit Risk", "probability": "Medium", "impact": "High", "notes": "26-contract annual cap + 20% neighborhood density cap + HOA approval required; income thesis collapses if blocked" },
+    { "factor": "Luxury Market Softness", "probability": "Medium", "impact": "Medium", "notes": "-5.5% correction in 2025; 79% of listings taking reductions; DOM 68-94 days; no bidding wars at this price tier" },
+    { "factor": "New Supply (Toll Brothers)", "probability": "Medium", "impact": "Medium", "notes": "119 new Nola at Escena lots in pipeline; competing new construction within same community over 12-24 months" }
+  ]
+}
