@@ -157,6 +157,29 @@
     .legend-swatch { width: 12px; height: 12px; }
     .legend-line { width: 18px; height: 1px; border-top: 1px dashed var(--bronze); }
 
+    /* ─────────── GA4 diagnostic banner (shown only on failure) ─────────── */
+    .ga-warning {
+      margin: 32px 0 8px; padding: 18px 22px;
+      background: rgba(217, 140, 126, 0.08);
+      border: 1px solid rgba(217, 140, 126, 0.28);
+      border-radius: 2px;
+      font-size: 13px; line-height: 1.6; color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .ga-warning-title {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--sans); font-weight: 500; color: var(--down);
+      letter-spacing: 0.12em; text-transform: uppercase; font-size: 10.5px;
+      margin-bottom: 10px;
+    }
+    .ga-warning-title::before {
+      content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--down);
+    }
+    .ga-warning code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--bronze); background: rgba(255,255,255,0.04); padding: 1px 6px; border-radius: 2px; }
+    .ga-warning ul { margin: 8px 0 0 20px; padding: 0; color: var(--muted); }
+    .ga-warning li { margin-bottom: 4px; }
+    .ga-warning b { color: var(--text); font-weight: 500; }
+
     /* ─────────── Growth section (since-launch climb) ─────────── */
     .growth-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 24px; }
     .growth-stat { background: var(--surface); padding: 30px 28px 26px; position: relative; }
@@ -655,6 +678,37 @@
         '</svg>'
     }
 
+    // Renders a visible warning banner ONLY when GA4 isn't returning data.
+    // Diagnoses the most likely cause from gaDiagnostic + env-var hints so
+    // the operator knows exactly which knob to turn. Returns '' (no banner)
+    // when GA4 is healthy.
+    function ga4DiagnosticBanner(d) {
+      // Healthy: gaConnected true AND at least one query returned data
+      const diag = d.gaDiagnostic || {}
+      const hasAnyData = (diag.session30d || 0) > 0
+        || (diag.cumulative || 0) > 0
+        || (diag.monthly || 0) > 0
+      if (d.gaConnected && hasAnyData) return ''
+
+      const lines = []
+      if (!d.gaConnected) {
+        lines.push('<li><b>Env vars missing.</b> The server is missing one or both of <code>GOOGLE_SERVICE_ACCOUNT_JSON</code> / <code>GOOGLE_ANALYTICS_PROPERTY_ID</code>. Add them in Vercel → Settings → Environment Variables → all environments → redeploy.</li>')
+      } else if (!hasAnyData) {
+        lines.push('<li><b>Service account can\'t read the property.</b> Open GA4 Admin → Property Access Management → Add the service-account email (the <code>client_email</code> from the JSON, ends in <code>iam.gserviceaccount.com</code>) with Viewer role.</li>')
+        lines.push('<li><b>Wrong property ID.</b> Confirm <code>GOOGLE_ANALYTICS_PROPERTY_ID</code> is the 9-digit Property ID from GA4 Admin → Property Settings — NOT the <code>G-XXXXXX</code> measurement ID (those are two different IDs for the same property).</li>')
+        lines.push('<li><b>Property is too new.</b> If GA4 was attached recently, give it 24-48h for data to populate. Search Console links don\'t backfill GA4 history.</li>')
+        lines.push('<li><b>Tracking tag on wrong property.</b> Confirm the <code>G-XXXXXX</code> gtag snippet on the site matches the GA4 property the service account is reading from. If the tag is sending to a different property than the API is querying, you\'ll see traffic in GA4\'s UI but the API will report zero.</li>')
+      }
+
+      const diagJson = JSON.stringify(diag)
+      return '<div class="ga-warning">' +
+        '<div class="ga-warning-title">Website analytics not loading</div>' +
+        '<div>The dashboard can\'t pull website data from GA4 right now. Most likely cause(s):</div>' +
+        '<ul>' + lines.join('') + '</ul>' +
+        '<div style="margin-top:14px;font-size:11px;color:var(--faint);">Diagnostic: <code>' + escHtml(diagJson) + '</code> — share this with the developer if you need help debugging.</div>' +
+        '</div>'
+    }
+
     function growthCaption(d) {
       const ct = d.cumulativeTraffic
       if (!ct || !ct.sinceDate) return 'Once the engine has been running for a few weeks, this section will narrate the climb.'
@@ -859,6 +913,9 @@
       const websiteTopPerf = topPerf.slug ? shortTitle(topPerf.title, 34) : null
 
       document.getElementById('main').innerHTML =
+        /* 0 ─ GA4 diagnostic banner (only renders when GA4 has an issue) */
+        ga4DiagnosticBanner(d) +
+
         /* 1 ─ KPI row */
         '<div class="kpi-grid">' +
           '<div class="kpi reveal">' +
