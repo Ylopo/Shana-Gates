@@ -351,6 +351,104 @@
     }
 
     /* ── CTA card ── */
+    /* ── Author byline (top, under post-meta) ──
+       Compact "By Shana Gates, REALTOR® · date · N min read". E-E-A-T signal. */
+    .post-byline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: -4px;
+      margin-bottom: 32px;
+    }
+    .post-byline-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      border: 1px solid rgba(200,200,200,0.3);
+    }
+    .post-byline a { color: var(--text); text-decoration: none; font-weight: 500; }
+    .post-byline a:hover { color: var(--bronze); }
+    .post-byline-sep { color: rgba(255,255,255,0.18); }
+
+    /* ── TL;DR callout — italic bronze left border ── */
+    .post-tldr {
+      border-left: 3px solid var(--bronze);
+      padding: 14px 22px;
+      margin: 0 0 36px;
+      background: rgba(200,200,200,0.04);
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.88);
+      border-radius: 0 6px 6px 0;
+    }
+    .post-tldr-label {
+      display: inline-block;
+      color: var(--bronze);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    /* ── About the Author block ── */
+    .author-block {
+      margin-top: 48px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .author-block-overline {
+      color: var(--bronze);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .author-block-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      border: 2px solid var(--bronze);
+    }
+    .author-block-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .author-block-title {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .author-block-bio p {
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.78);
+      margin-bottom: 12px;
+    }
+    .author-block-bio p:last-child { margin-bottom: 0; }
+    .author-block-socials { margin-top: 16px; display: flex; gap: 14px; align-items: center; }
+    .author-block-socials a { color: var(--muted); transition: color 0.2s; }
+    .author-block-socials a:hover { color: var(--bronze); }
+    @media (max-width: 600px) {
+      .author-block { grid-template-columns: 1fr; text-align: center; }
+      .author-block-photo { margin: 0 auto; }
+      .author-block-socials { justify-content: center; }
+    }
+
     .cta-card {
       margin-top: 48px;
       background: var(--surface);
@@ -500,16 +598,50 @@
   <!-- Post content -->
   <article class="post-wrap" id="postWrap">
     <div class="post-meta" id="postMeta"></div>
+    <div class="post-byline" id="postByline" style="display:none;">
+      <img class="post-byline-avatar" src="/images/shana%20pro.JPG" alt="Shana Gates" />
+      <span>By <a href="#aboutAuthor">Shana Gates, REALTOR®</a></span>
+      <span class="post-byline-sep">·</span>
+      <span id="bylineDate"></span>
+      <span class="post-byline-sep">·</span>
+      <span id="bylineReadTime"></span>
+    </div>
     <img id="heroImage" class="post-hero-image" style="display:none;" alt="" />
     <div id="videoEmbed" class="post-video-embed" style="display:none;"></div>
+    <div class="post-tldr" id="postTldr" style="display:none;"><span class="post-tldr-label">TL;DR</span><span id="postTldrText"></span></div>
     <div class="post-body" id="postBody"></div>
     <div class="source-credit" id="sourceCredit" style="display:none;"></div>
     <div id="cityLinkCard" style="display:none;"></div>
+
+    <!-- About the Author block — E-E-A-T signal for AI citation -->
+    <section class="author-block" id="aboutAuthor">
+      <img class="author-block-photo" src="/images/shana%20pro.JPG" alt="Shana Gates" />
+      <div>
+        <div class="author-block-overline">About the Author</div>
+        <h3 class="author-block-name">Shana Gates</h3>
+        <div class="author-block-title">REALTOR® · Craft &amp; Bauer | Real Broker · Coachella Valley, CA</div>
+        <div class="author-block-bio">
+          <p>Shana Gates is a Coachella Valley REALTOR® with Craft &amp; Bauer | Real Broker, helping buyers, sellers, and investors navigate Palm Springs, Palm Desert, Rancho Mirage, Indian Wells, La Quinta, and the surrounding desert communities. She specializes in luxury second homes, mid-century modern architecture, and short-term-rental investment strategy — combining local market expertise with a homeowner-first perspective on every post she writes.</p>
+          <p>When she isn't showing homes, Shana is documenting the people, places, and history that make the Coachella Valley unique — from the architectural legacy of Frank Sinatra's Twin Palms to the 21st-century developments reshaping the valley's skyline. She publishes new market analysis, neighborhood guides, and local stories every week.</p>
+        </div>
+        <div class="author-block-socials">
+          <a href="https://www.tiktok.com/@shanagatesrealtor" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.6 5.8a5.6 5.6 0 0 1-3.4-3.7c-.1-.4-.2-.9-.2-1.3h-3.7v14.8a3.1 3.1 0 1 1-3.1-3.1c.3 0 .6 0 .9.1V8.8a7 7 0 0 0-.9-.1 6.9 6.9 0 1 0 6.9 6.9V8.4a9.2 9.2 0 0 0 5.4 1.7V6.4c-.7 0-1.3-.2-1.9-.6z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/shanagatesrealtor/reels/" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3.1V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/@shanagatesrealtor" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <div class="cta-card">
-      <img class="cta-avatar" src="/images/shana%20pro.JPG" alt="Shana Gates, REALTOR®" />
       <div class="overline">Ready to Buy or Sell?</div>
       <h3>Let's Talk Coachella Valley</h3>
-      <p>Shana Gates knows this market inside and out. Whether you're buying your dream desert home or ready to sell, she's here to guide you every step of the way.</p>
+      <p>Whether you're buying your dream desert home or ready to sell, Shana is here to guide you every step of the way.</p>
       <a href="mailto:shana@craftbauer.com" class="cta-btn">Contact Shana →</a>
     </div>
   </article>
@@ -596,6 +728,115 @@
       'coachella':        { name: 'Coachella',        page: '/coachella.html',        ylopoCity: 'Coachella' },
     }
 
+    // Build + inject schema.org JSON-LD for the blog post. Best-effort:
+    // executes client-side here for crawlers that render JS. The canonical
+    // /blog/post/:slug route (post-page.ts) emits the same schema server-side
+    // for crawlers that don't run JS.
+    function injectBlogPostSchema(post, readMin) {
+      const SITE = 'https://www.shanasells.com'
+      const NEWS_CATEGORIES = { 'trending-topics': 1, 'market-update': 1 }
+      const pageUrl = SITE + '/blog/post.html?slug=' + encodeURIComponent(post.slug)
+      const description = post.tldr || post.metaDescription || post.excerpt || post.title
+      const image = post.heroImageUrl && (post.heroImageUrl.startsWith('http') ? post.heroImageUrl : SITE + post.heroImageUrl)
+
+      const author = {
+        '@type': 'Person',
+        'name': 'Shana Gates',
+        'url': SITE + '/',
+        'jobTitle': 'REALTOR®',
+        'description': 'Coachella Valley REALTOR® at Craft & Bauer specializing in Palm Springs, Palm Desert, Rancho Mirage, Indian Wells, and La Quinta.',
+        'image': SITE + '/images/shana%20pro.JPG',
+        'worksFor': { '@type': 'Organization', 'name': 'Craft & Bauer | Real Broker' },
+        'sameAs': [
+          'https://www.tiktok.com/@shanagatesrealtor',
+          'https://www.facebook.com/shanagatesrealtor/reels/',
+          'https://www.youtube.com/@shanagatesrealtor',
+        ],
+      }
+      const publisher = {
+        '@type': 'Organization',
+        'name': 'Shana Gates · Craft & Bauer | Real Broker',
+        'url': SITE,
+        'logo': { '@type': 'ImageObject', 'url': SITE + '/images/favcon.png' },
+      }
+      const article = {
+        '@type': NEWS_CATEGORIES[post.category] ? 'NewsArticle' : 'Article',
+        'headline': post.title,
+        'description': description,
+        'datePublished': post.publishedAt,
+        'dateModified': post.publishedAt,
+        'author': author,
+        'publisher': publisher,
+        'mainEntityOfPage': pageUrl,
+        'articleSection': post.category,
+        'inLanguage': 'en-US',
+        'wordCount': (post.body || '').split(/\s+/).filter(Boolean).length,
+      }
+      if (image) article.image = image
+
+      const graph = [article]
+
+      // FAQPage — prefer structured faq[]; fall back to regex parsing the body
+      let faqItems = []
+      if (Array.isArray(post.faq) && post.faq.length) {
+        faqItems = post.faq
+      } else if (post.body) {
+        const sec = (post.body.match(/##+\s*Frequently Asked Questions\s*\n([\s\S]*?)(?=\n##\s|\n#\s|$)/i) || [])[1]
+        if (sec) {
+          const qre = /###\s+(.+?)\n+([\s\S]*?)(?=\n###\s+|$)/g
+          let m
+          while ((m = qre.exec(sec)) !== null) {
+            const q = m[1].trim().replace(/[*_]/g, '')
+            const a = m[2].replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/[*_`]/g, '').replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim()
+            if (q && a) faqItems.push({ question: q, answer: a })
+          }
+        }
+      }
+      if (faqItems.length) {
+        graph.push({
+          '@type': 'FAQPage',
+          'mainEntity': faqItems.map(item => ({
+            '@type': 'Question',
+            'name': item.question,
+            'acceptedAnswer': { '@type': 'Answer', 'text': item.answer },
+          })),
+        })
+      }
+
+      // Breadcrumbs
+      graph.push({
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': SITE + '/' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': SITE + '/blog/' },
+          { '@type': 'ListItem', 'position': 3, 'name': CATEGORY_LABELS[post.category] || post.category, 'item': SITE + '/blog/?category=' + encodeURIComponent(post.category) },
+          { '@type': 'ListItem', 'position': 4, 'name': post.title, 'item': pageUrl },
+        ],
+      })
+
+      // VideoObject if a YouTube watch URL is present
+      const ytMatch = post.youtubeUrl && String(post.youtubeUrl).match(/(?:v=|youtu\.be\/|\/shorts\/|\/embed\/|\/live\/)([\w-]{11})/)
+      const ytId = ytMatch ? ytMatch[1] : null
+      if (ytId) {
+        graph.push({
+          '@type': 'VideoObject',
+          'name': post.title,
+          'description': description,
+          'thumbnailUrl': 'https://i.ytimg.com/vi/' + ytId + '/hqdefault.jpg',
+          'uploadDate': post.publishedAt,
+          'embedUrl': 'https://www.youtube.com/embed/' + ytId,
+          'contentUrl': 'https://www.youtube.com/watch?v=' + ytId,
+          'publisher': publisher,
+        })
+      }
+
+      const jsonLd = { '@context': 'https://schema.org', '@graph': graph }
+      const script = document.createElement('script')
+      script.type = 'application/ld+json'
+      script.textContent = JSON.stringify(jsonLd)
+      document.head.appendChild(script)
+    }
+
     function renderCityLinkCard(citySlug) {
       const meta = CITY_META[citySlug]
       if (!meta) return
@@ -642,9 +883,19 @@
       const data = await res.json()
       const post = data.post
 
-      // Update page metadata
-      document.title = `${post.title} — Shana Gates Blog`
-      document.getElementById('pageDesc').setAttribute('content', post.excerpt || '')
+      // Update page metadata — prefer writer-generated metaTitle / metaDescription
+      // when present; fall back to title / tldr / excerpt for legacy posts.
+      document.title = post.metaTitle || `${post.title} — Shana Gates Blog`
+      const desc = post.metaDescription || post.tldr || post.excerpt || ''
+      document.getElementById('pageDesc').setAttribute('content', desc)
+
+      // Inject schema.org JSON-LD into <head>. Best-effort — AI crawlers
+      // that execute JS will see this. The canonical /blog/post/:slug
+      // route (post-page.ts) emits schema server-side for bots that don't.
+      try {
+        const readMin = Math.max(1, Math.round((post.body || '').split(/\s+/).filter(Boolean).length / 220))
+        injectBlogPostSchema(post, readMin)
+      } catch (e) { /* never break the page over schema */ }
 
       // Hero image
       if (post.heroImageUrl) {
@@ -673,6 +924,18 @@
         <span class="category-badge" style="background:${color}22;color:${color};">${label}</span>
         <span class="post-date">${date}</span>
       `
+
+      // Byline (author + date + read time) — under post-meta, above hero image
+      const readMin = Math.max(1, Math.round((post.body || '').split(/\s+/).filter(Boolean).length / 220))
+      document.getElementById('bylineDate').textContent = date
+      document.getElementById('bylineReadTime').textContent = readMin + ' min read'
+      document.getElementById('postByline').style.display = 'flex'
+
+      // TL;DR callout — only shown if writer generated one
+      if (post.tldr) {
+        document.getElementById('postTldrText').textContent = post.tldr
+        document.getElementById('postTldr').style.display = 'block'
+      }
 
       // Render markdown body (with equity phrases auto-linked)
       const bodyEl = document.getElementById('postBody')

@@ -11,6 +11,8 @@
  */
 
 import { getPostBySlug } from '../../lib/blog-redis'
+import { buildBlogPostSchema, readTime } from '../../lib/blog-schema'
+import { AUTHOR } from '../../lib/author'
 
 function esc(s: string): string {
   return String(s)
@@ -43,7 +45,7 @@ export default async function handler(req: any, res: any) {
     return
   }
 
-  const canonicalUrl = `https://shana-gates.vercel.app/blog/post/${esc(slug)}`
+  const canonicalUrl = `https://www.shanasells.com/blog/post/${esc(slug)}`
   const imageTag = post.heroImageUrl
     ? `
   <meta property="og:image"        content="${esc(post.heroImageUrl)}" />
@@ -51,6 +53,22 @@ export default async function handler(req: any, res: any) {
   <meta property="og:image:height" content="720" />
   <meta name="twitter:image"       content="${esc(post.heroImageUrl)}" />`
     : ''
+
+  // Use writer-generated metaTitle / metaDescription when present;
+  // fall back to the post's title / excerpt for legacy posts.
+  const pageTitle = post.metaTitle || (post.title + ' — Shana Gates')
+  const pageDescription = post.metaDescription || post.tldr || post.excerpt || ''
+
+  // Schema.org JSON-LD — built server-side so AI crawlers and Google bots
+  // see it on first load (no JS execution required). Returns '' on failure.
+  const schemaScript = buildBlogPostSchema(post, 'https://www.shanasells.com')
+
+  // Read-time estimate for the byline
+  const readMinutes = readTime(post.body || '')
+
+  // Author bio HTML — single source-of-truth lives in lib/author.ts so a
+  // per-client fork only edits one file. Bio paragraphs split on \n\n.
+  const bioParas = AUTHOR.bioLong.split('\n\n').map((p) => `<p>${esc(p)}</p>`).join('')
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -66,23 +84,28 @@ export default async function handler(req: any, res: any) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>${esc(post.title)} — Shana Gates</title>
-  <meta name="description" content="${esc(post.excerpt)}" />
+  <title>${esc(pageTitle)}</title>
+  <meta name="description" content="${esc(pageDescription)}" />
+  <meta name="author" content="${esc(AUTHOR.name)}" />
 
   <!-- Open Graph -->
   <meta property="og:type"        content="article" />
   <meta property="og:site_name"   content="Shana Gates Real Estate" />
-  <meta property="og:title"       content="${esc(post.title)}" />
-  <meta property="og:description" content="${esc(post.excerpt)}" />
-  <meta property="og:url"         content="${canonicalUrl}" />${imageTag}
+  <meta property="og:title"       content="${esc(post.metaTitle || post.title)}" />
+  <meta property="og:description" content="${esc(pageDescription)}" />
+  <meta property="og:url"         content="${canonicalUrl}" />
+  <meta property="article:author" content="${esc(AUTHOR.name)}" />
+  <meta property="article:published_time" content="${esc(post.publishedAt)}" />${imageTag}
 
   <!-- Twitter / X -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="${esc(post.title)}" />
-  <meta name="twitter:description" content="${esc(post.excerpt)}" />
+  <meta name="twitter:title"       content="${esc(post.metaTitle || post.title)}" />
+  <meta name="twitter:description" content="${esc(pageDescription)}" />
 
   <link rel="canonical" href="${canonicalUrl}" />
   <link rel="icon" type="image/png" href="/images/favcon.png" />
+
+  ${schemaScript}
 
   <!-- marked.js for markdown rendering -->
   <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
@@ -258,6 +281,54 @@ export default async function handler(req: any, res: any) {
     }
     .post-date { color: var(--muted); font-size: 13px; margin-left: auto; }
 
+    /* ── Author byline (top, under post-meta) ──
+       Compact "By Shana Gates, REALTOR® · date · N min read" line.
+       Adds an E-E-A-T signal AI assistants pick up alongside the schema. */
+    .post-byline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: -4px;
+      margin-bottom: 32px;
+    }
+    .post-byline-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      border: 1px solid rgba(200,200,200,0.3);
+    }
+    .post-byline a { color: var(--text); text-decoration: none; font-weight: 500; }
+    .post-byline a:hover { color: var(--bronze); }
+    .post-byline-sep { color: rgba(255,255,255,0.18); }
+
+    /* ── TL;DR callout (above body) ──
+       Quotable summary AI assistants cite verbatim. Italic bronze
+       left-border styling matches the editorial design language. */
+    .post-tldr {
+      border-left: 3px solid var(--bronze);
+      padding: 14px 22px;
+      margin: 0 0 36px;
+      background: rgba(200,200,200,0.04);
+      font-size: 16px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.88);
+      border-radius: 0 6px 6px 0;
+    }
+    .post-tldr-label {
+      display: inline-block;
+      color: var(--bronze);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-right: 8px;
+      font-style: normal;
+    }
+
     /* ── Markdown body ── */
     .post-body {
       line-height: 1.8;
@@ -420,6 +491,72 @@ export default async function handler(req: any, res: any) {
     }
     .cta-btn:hover { opacity: 0.85; }
 
+    /* ── About the Author block (bottom of post) ──
+       The single biggest E-E-A-T signal per Google's AI Optimization
+       Guide. Surfaces Shana's name, photo, and 2-paragraph bio so AI
+       assistants connect blog posts to a real person with expertise.
+       Sits ABOVE the existing CTA so the bio comes first, then CTA. */
+    .author-block {
+      margin-top: 48px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .author-block-overline {
+      color: var(--bronze);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .author-block-photo {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      border: 2px solid var(--bronze);
+    }
+    .author-block-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .author-block-title {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .author-block-bio p {
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.78);
+      margin-bottom: 12px;
+    }
+    .author-block-bio p:last-child { margin-bottom: 0; }
+    .author-block-socials {
+      margin-top: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .author-block-socials a {
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .author-block-socials a:hover { color: var(--bronze); }
+    @media (max-width: 600px) {
+      .author-block { grid-template-columns: 1fr; text-align: center; }
+      .author-block-photo { margin: 0 auto; }
+      .author-block-socials { justify-content: center; }
+    }
+
     /* ── Equity links (auto-linked phrases about home value) ── */
     .equity-link { color: var(--bronze); text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
     .equity-link:hover { text-decoration-style: solid; }
@@ -534,17 +671,48 @@ export default async function handler(req: any, res: any) {
 
   <article class="post-wrap" id="postWrap">
     <div class="post-meta" id="postMeta"></div>
+    <div class="post-byline" id="postByline" style="display:none;">
+      <img class="post-byline-avatar" src="${esc(AUTHOR.headshotUrl)}" alt="${esc(AUTHOR.name)}" />
+      <span>By <a href="#aboutAuthor">${esc(AUTHOR.name)}, ${esc(AUTHOR.title)}</a></span>
+      <span class="post-byline-sep">·</span>
+      <span id="bylineDate"></span>
+      <span class="post-byline-sep">·</span>
+      <span>${readMinutes} min read</span>
+    </div>
     <img id="heroImage" class="post-hero-image" style="display:none;" alt="" />
     <div id="videoEmbed" class="post-video-embed" style="display:none;"></div>
+    ${post.tldr ? `<div class="post-tldr"><span class="post-tldr-label">TL;DR</span>${esc(post.tldr)}</div>` : ''}
     <div class="post-body" id="postBody"></div>
     <div class="source-credit" id="sourceCredit" style="display:none;"></div>
     <div id="cityLinkCard" style="display:none;"></div>
+
+    <!-- About the Author — biggest E-E-A-T signal for AI citation -->
+    <section class="author-block" id="aboutAuthor">
+      <img class="author-block-photo" src="${esc(AUTHOR.headshotUrl)}" alt="${esc(AUTHOR.name)}" />
+      <div>
+        <div class="author-block-overline">About the Author</div>
+        <h3 class="author-block-name">${esc(AUTHOR.name)}</h3>
+        <div class="author-block-title">${esc(AUTHOR.title)} · ${esc(AUTHOR.brokerage)} · ${esc(AUTHOR.market)}</div>
+        <div class="author-block-bio">${bioParas}</div>
+        <div class="author-block-socials">
+          <a href="${esc(AUTHOR.sameAs[0])}" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.6 5.8a5.6 5.6 0 0 1-3.4-3.7c-.1-.4-.2-.9-.2-1.3h-3.7v14.8a3.1 3.1 0 1 1-3.1-3.1c.3 0 .6 0 .9.1V8.8a7 7 0 0 0-.9-.1 6.9 6.9 0 1 0 6.9 6.9V8.4a9.2 9.2 0 0 0 5.4 1.7V6.4c-.7 0-1.3-.2-1.9-.6z"/></svg>
+          </a>
+          <a href="${esc(AUTHOR.sameAs[1])}" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3.1V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.4l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg>
+          </a>
+          <a href="${esc(AUTHOR.sameAs[2])}" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <div class="cta-card">
-      <img class="cta-avatar" src="/images/shana%20pro.JPG" alt="Shana Gates, REALTOR&reg;" />
       <div class="overline">Ready to Buy or Sell?</div>
       <h3>Let's Talk Coachella Valley</h3>
-      <p>Shana Gates knows this market inside and out. Whether you're buying your dream desert home or ready to sell, she's here to guide you every step of the way.</p>
-      <a href="mailto:shana@craftbauer.com" class="cta-btn">Contact Shana &rarr;</a>
+      <p>Whether you're buying your dream desert home or ready to sell, Shana is here to guide you every step of the way.</p>
+      <a href="mailto:${esc(AUTHOR.contactEmail)}" class="cta-btn">Contact Shana &rarr;</a>
     </div>
   </article>
 
@@ -742,6 +910,15 @@ export default async function handler(req: any, res: any) {
       document.getElementById('postMeta').innerHTML =
         '<span class="category-badge" style="background:' + color + '22;color:' + color + ';">' + label + '</span>' +
         '<span class="post-date">' + date + '</span>'
+
+      // Byline date fills in client-side so the date string respects the
+      // reader's locale. Read-time minute count is baked into the HTML
+      // server-side (no per-render flicker).
+      const bylineEl = document.getElementById('postByline')
+      if (bylineEl) {
+        document.getElementById('bylineDate').textContent = date
+        bylineEl.style.display = 'flex'
+      }
 
       document.getElementById('postBody').innerHTML = openExternalLinksInNewTab(fixKnownBrokenLinks(addEquityLinks(marked.parse(post.body || ''))))
 

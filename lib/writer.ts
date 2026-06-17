@@ -5,34 +5,119 @@ import { detectCity } from './blog-image-gen'
 import { autoLinkEntities } from './blog-entity-links'
 import { FAIR_HOUSING_RULES } from './fair-housing'
 
-// ── Shared post structure ─────────────────────────────────────────────────────
+// ── Content-mode routing ──────────────────────────────────────────────────────
+// AI-optimized categories get the citation-friendly, definitions-first prompt
+// (Track A). All others get the storytelling, video-script-friendly prompt
+// (Track B). Resolved at write time and persisted on the post so downstream
+// tooling (drift analysis, video-script extraction) can branch on it.
 
-const WRITER_SYSTEM = `You are writing blog posts for Shana Gates, REALTOR® at Craft & Bauer | Real Broker — a respected Coachella Valley real estate professional.
+const AI_OPTIMIZED_CATEGORIES = new Set([
+  'market-update', 'investor-tips', 'seller-tips', 'homeowner-impact',
+])
 
-VOICE:
-- Write as Shana Gates (first person occasionally, but mostly "you/your" to speak to the reader)
-- Knowledgeable and approachable, never salesy
-- Second-person ("you/your") to make the message personal and actionable
-- Always ties news or advice back to the local Coachella Valley / Palm Springs market
+export type ContentMode = 'ai-optimized' | 'entertainment'
+
+export function contentModeFor(category: string | undefined): ContentMode {
+  return category && AI_OPTIMIZED_CATEGORIES.has(category) ? 'ai-optimized' : 'entertainment'
+}
+
+// Both prompts share these META TAG rules so the publish pipeline can extract
+// the writer's chosen metaTitle / metaDescription from HTML comments at the
+// top of the markdown output (regex-safe, survives any body content).
+const META_TAG_RULES = `META TAGS (emit at the very top of your output, before the # title):
+<!-- META_TITLE: [SEO title, under 60 chars, includes the target keyword] -->
+<!-- META_DESCRIPTION: [120-160 char meta description, includes the target keyword + a hook] -->
+
+These are stripped from the body at save time and used for the page <title> and og:description.`
+
+// ── Track A: AI-optimized (informational / citation-friendly) ────────────────
+// Used for: market-update, investor-tips, seller-tips, homeowner-impact.
+// Per Google's AI Optimization Guide: write for humans first, but lean into
+// authoritative, definition-first phrasing so AI assistants can cite cleanly.
+
+const AI_OPTIMIZED_SYSTEM = `You are writing blog posts for Shana Gates, REALTOR® at Craft & Bauer | Real Broker — a respected Coachella Valley real estate professional. These posts are designed to be both read by humans AND cited by generative AI assistants (ChatGPT, Claude, Gemini, Google's AI Overviews).
+
+EDITORIAL APPROACH (Track A — AI-optimized):
+- Write for humans first; AI citation is a side effect of clarity and authority.
+- Use definitions-first phrasing on key terms ("Palm Springs Ordinance 2118 limits short-term rentals to..." NOT "If you're thinking about renting out...").
+- State facts plainly with specific numbers, dates, named regulations, and named neighborhoods. Vague generalities get filtered out by AI rankers.
+- Authoritative but warm — Shana is an expert AND a local who lives here.
+- Quotable lines: write sentences AI can lift verbatim into a summary without rewriting.
+- Always tie advice back to the Coachella Valley / Palm Springs market with specific city names.
+
+${META_TAG_RULES}
 
 POST STRUCTURE (follow exactly):
 1. # [Use the exact title provided — do not change it]
-2. [Opening question — the exact question the blog answers, in **bold**]
-3. [1–2 sentence "snippet answer" immediately below the question]
-4. ## [Section heading]
-   [2–3 paragraphs per section]
-5. ## [Section heading]
-6. ## What This Means For You
-   - [Bullet 1]
-   - [Bullet 2]
-   - [Bullet 3]
-   - [Bullet 4]
-7. [Closing paragraph — ties it together, actionable takeaway]
-8. *Ready to make your move in the Coachella Valley? Reach out to Shana Gates at Craft & Bauer — she knows this market inside and out. [Contact Shana →](mailto:shana@craftbauer.com)*
+2. **TL;DR:** [2–3 sentence summary that answers the article's core question. Quotable. AI assistants cite this verbatim. Include the target keyword once.]
+3. ## [Heading phrased as a common Google query: "What is X?", "How does Y work?", "When should I Z?"]
+   [2–3 paragraphs — definition-first, specific facts, named entities]
+4. ## [Second query-phrased heading]
+   [2–3 paragraphs]
+5. ## [Optional third heading if the topic warrants it]
+6. ## Key Takeaways
+   - [3–5 short, quotable bullets. Each should stand alone as a fact AI could cite.]
+7. ## What This Means For You
+   - [3–4 bullets connecting the topic to action a CV homeowner/buyer/investor can take]
+8. [Closing paragraph — actionable takeaway, ties back to the local market]
+9. ## Frequently Asked Questions
+   ### [Question 1 — phrase as a real search query]
+   [2–3 sentence answer with specific facts]
+   ### [Question 2]
+   [Answer]
+   ### [Question 3]
+   [Answer]
+10. *Ready to make your move in the Coachella Valley? Reach out to Shana Gates at Craft & Bauer — she knows this market inside and out. [Contact Shana →](mailto:shana@craftbauer.com)*
+
+LENGTH: 700–1100 words.
 
 ${FAIR_HOUSING_RULES}
 
-Return ONLY the blog post in markdown. No metadata, no JSON, no preamble.`
+Return ONLY the META TAGS comments followed by the blog post in markdown. No JSON, no preamble, no closing remarks.`
+
+// ── Track B: Entertainment / Video-friendly (storytelling) ───────────────────
+// Used for: community, trending-topics, local-history, local-interest.
+// Scene-first hooks, sensory detail, short paragraphs — extractable as TikTok /
+// YouTube video script lines.
+
+const ENTERTAINMENT_SYSTEM = `You are writing blog posts for Shana Gates, REALTOR® at Craft & Bauer | Real Broker — a Coachella Valley local who genuinely loves this place. These posts get repurposed as TikTok and YouTube video scripts, so they need to be vivid, scene-driven, and extractable line-by-line.
+
+EDITORIAL APPROACH (Track B — entertainment / video):
+- Open with a SCENE or a SPECIFIC DETAIL, not a "Did you know..." or "Have you ever wondered..." (banned openings).
+- Vivid sensory detail — what does it look like, smell like, sound like.
+- Short paragraphs (1–3 sentences each). Each paragraph should work as a single line of voiceover.
+- Conversational tone. First person occasionally, second person ("you") often, never salesy.
+- Named places, named people, real dates — specificity is what makes a story memorable.
+- Tie the story to a specific Coachella Valley neighborhood, landmark, or street so local readers recognize it.
+
+${META_TAG_RULES}
+
+POST STRUCTURE (loose — favor narrative flow):
+1. # [Use the exact title provided — do not change it]
+2. **[Hook line — a scene, a fact, a single arresting sentence in bold]**
+3. [Opening paragraph — drops the reader into the moment. No "Did you know."]
+4. ## [Section heading — can be a phrase, not a question]
+   [Story continues. Short paragraphs. Vivid detail.]
+5. ## [Next section]
+6. ## [Optional third section]
+7. ## Why It Still Matters Today
+   [1–2 paragraphs connecting the story to living in the Coachella Valley right now]
+8. [Closing — leaves the reader feeling something]
+
+NO closing sales CTA on these posts. They're authority and entertainment content, not lead-gen — readers find Shana through her byline and bio block, not a salesy email link.
+
+FAQ section is OPTIONAL on entertainment posts. Only add ## Frequently Asked Questions if the topic genuinely warrants Q&A (e.g. a historical post where readers commonly ask "Is the house still standing?"). If you include it, follow the same format (### question + 2-3 sentence answer, exactly 3 pairs).
+
+LENGTH: 600–900 words.
+
+${FAIR_HOUSING_RULES}
+
+Return ONLY the META TAGS comments followed by the blog post in markdown. No JSON, no preamble, no closing remarks.`
+
+// Return the system prompt that fits the content mode for a given category.
+function systemPromptFor(category: string | undefined): string {
+  return contentModeFor(category) === 'ai-optimized' ? AI_OPTIMIZED_SYSTEM : ENTERTAINMENT_SYSTEM
+}
 
 // ── Shared types for blog picker output ──────────────────────────────────────
 
@@ -46,6 +131,14 @@ export interface BlogPostOutput {
   sourceTitle: string
   pipeline: 'daily' | 'weekly'
   city?: string
+  // Structured fields extracted from the writer's markdown output. Optional
+  // because legacy callers / fallback paths may not produce them.
+  metaTitle?: string
+  metaDescription?: string
+  tldr?: string
+  faq?: { question: string; answer: string }[]
+  keyTakeaways?: string[]
+  contentMode?: ContentMode
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -76,10 +169,108 @@ function extractTitle(body: string, fallback: string): string {
   return match ? match[1].trim() : fallback
 }
 
+// ── Structured-field extraction from writer markdown output ──────────────────
+// The writer prompt instructs Claude to emit certain markers at known
+// positions in the output (HTML comments for meta tags, a **TL;DR:** line,
+// a ## Frequently Asked Questions section, a ## Key Takeaways section).
+// These helpers parse them out and return clean structured fields.
+
+function extractMetaComments(body: string): {
+  metaTitle?: string
+  metaDescription?: string
+  stripped: string
+} {
+  let stripped = body
+  let metaTitle: string | undefined
+  let metaDescription: string | undefined
+
+  const titleMatch = body.match(/<!--\s*META_TITLE:\s*(.+?)\s*-->/i)
+  if (titleMatch) {
+    metaTitle = titleMatch[1].trim()
+    stripped = stripped.replace(titleMatch[0], '')
+  }
+  const descMatch = body.match(/<!--\s*META_DESCRIPTION:\s*(.+?)\s*-->/i)
+  if (descMatch) {
+    metaDescription = descMatch[1].trim()
+    stripped = stripped.replace(descMatch[0], '')
+  }
+  // Tidy up leading whitespace left by stripped comments
+  stripped = stripped.replace(/^\s*\n+/, '')
+  return { metaTitle, metaDescription, stripped }
+}
+
+function extractTldr(body: string): string | undefined {
+  // Matches: **TL;DR:** Sentence one. Sentence two.
+  const m = body.match(/\*\*TL;?DR:\*\*\s*([^\n]+(?:\n(?!#)[^\n]+)*)/i)
+  if (!m) return undefined
+  return m[1].replace(/\s+/g, ' ').trim()
+}
+
+function extractFaqMarkdown(body: string): { question: string; answer: string }[] {
+  const match = body.match(/##+\s*Frequently Asked Questions\s*\n([\s\S]*?)(?=\n##\s|\n#\s|$)/i)
+  if (!match) return []
+  const section = match[1]
+  const pairs: { question: string; answer: string }[] = []
+  const qRegex = /###\s+(.+?)\n+([\s\S]*?)(?=\n###\s+|$)/g
+  let m: RegExpExecArray | null
+  while ((m = qRegex.exec(section)) !== null) {
+    const question = m[1].trim().replace(/[*_]/g, '')
+    // Light markdown strip: links → text, bold/italic markers removed
+    const answer = m[2]
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/[*_`]/g, '')
+      .replace(/\n+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    if (question && answer) pairs.push({ question, answer })
+  }
+  return pairs
+}
+
+function extractKeyTakeaways(body: string): string[] {
+  const match = body.match(/##+\s*Key Takeaways\s*\n([\s\S]*?)(?=\n##\s|\n#\s|$)/i)
+  if (!match) return []
+  const lines = match[1].split('\n')
+  return lines
+    .map((l) => l.trim())
+    .filter((l) => /^[-*]\s+/.test(l))
+    .map((l) => l.replace(/^[-*]\s+/, '').replace(/^\*\*([^*]+)\*\*:?\s*/, '$1: ').trim())
+    .filter(Boolean)
+}
+
+// Run all structured extractors against a writer markdown output.
+// Returns the cleaned body (meta comments stripped) plus the structured fields.
+function extractStructuredFields(rawBody: string, category: string): {
+  body: string
+  metaTitle?: string
+  metaDescription?: string
+  tldr?: string
+  faq?: { question: string; answer: string }[]
+  keyTakeaways?: string[]
+  contentMode: ContentMode
+} {
+  const { metaTitle, metaDescription, stripped } = extractMetaComments(rawBody)
+  const tldr = extractTldr(stripped)
+  const faq = extractFaqMarkdown(stripped)
+  const keyTakeaways = extractKeyTakeaways(stripped)
+  return {
+    body: stripped,
+    metaTitle,
+    metaDescription,
+    tldr,
+    faq: faq.length > 0 ? faq : undefined,
+    keyTakeaways: keyTakeaways.length > 0 ? keyTakeaways : undefined,
+    contentMode: contentModeFor(category),
+  }
+}
+
 // ── Write from daily article (blog picker flow) ───────────────────────────────
 
 export async function writeFromArticle(article: ScoredArticle): Promise<BlogPostOutput> {
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+
+  const mode = contentModeFor(article.category)
+  const lengthHint = mode === 'ai-optimized' ? '700–1100 words' : '600–900 words'
 
   const prompt = `Write a complete blog post for Shana Gates based on this article:
 
@@ -90,24 +281,27 @@ Summary: ${article.summary}
 Why It Matters: ${article.whyItMatters}
 Category: ${article.category}
 
-Write the full blog post now. Make it 600–800 words. Follow the post structure exactly.`
+Write the full blog post now. Length: ${lengthHint}. Follow the post structure for this content mode exactly.`
 
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 2000,
-    system: WRITER_SYSTEM,
+    max_tokens: 3000,
+    system: systemPromptFor(article.category),
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const body = response.content
+  const rawBody = response.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')
     .map((b) => b.text)
     .join('')
 
-  const title = extractTitle(body, article.title)
-  const excerpt = extractExcerpt(body)
+  // Extract structured fields BEFORE autoLinkEntities runs so the meta-tag
+  // comments and structured-field markers don't get mangled by link injection.
+  const extracted = extractStructuredFields(rawBody, article.category)
+  const title = extractTitle(extracted.body, article.title)
+  const excerpt = extractExcerpt(extracted.body)
   const city = cityToSlug(detectCity(title + ' ' + article.title + ' ' + article.summary + ' ' + (article.whyItMatters || '')))
-  const enrichedBody = await autoLinkEntities(body).catch(() => body)
+  const enrichedBody = await autoLinkEntities(extracted.body).catch(() => extracted.body)
 
   return {
     title,
@@ -119,6 +313,12 @@ Write the full blog post now. Make it 600–800 words. Follow the post structure
     sourceTitle: article.title,
     pipeline: 'daily',
     city,
+    metaTitle: extracted.metaTitle,
+    metaDescription: extracted.metaDescription,
+    tldr: extracted.tldr,
+    faq: extracted.faq,
+    keyTakeaways: extracted.keyTakeaways,
+    contentMode: extracted.contentMode,
   }
 }
 
@@ -126,6 +326,9 @@ Write the full blog post now. Make it 600–800 words. Follow the post structure
 
 export async function writeFromTopic(topic: WeeklyTopic): Promise<BlogPostOutput> {
   const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+
+  const mode = contentModeFor(topic.category)
+  const lengthHint = mode === 'ai-optimized' ? '700–1100 words' : '600–900 words'
 
   const prompt = `Write a complete blog post for Shana Gates based on this topic:
 
@@ -135,25 +338,26 @@ Angle: ${topic.angle}
 Research Context: ${topic.researchContext}
 Target Keywords: ${topic.keywords.join(', ')}
 
-Write the full blog post now. Make it 700–900 words. Follow the post structure exactly.
+Write the full blog post now. Length: ${lengthHint}. Follow the post structure for this content mode exactly.
 Use the target keywords naturally in the title, first paragraph, subheadings, and closing.`
 
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 2500,
-    system: WRITER_SYSTEM,
+    max_tokens: 3000,
+    system: systemPromptFor(topic.category),
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const body = response.content
+  const rawBody = response.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')
     .map((b) => b.text)
     .join('')
 
-  const title = extractTitle(body, topic.title)
-  const excerpt = extractExcerpt(body)
+  const extracted = extractStructuredFields(rawBody, topic.category)
+  const title = extractTitle(extracted.body, topic.title)
+  const excerpt = extractExcerpt(extracted.body)
   const city = cityToSlug(detectCity(title + ' ' + topic.title + ' ' + (topic.angle || '') + ' ' + (topic.researchContext || '')))
-  const enrichedBody = await autoLinkEntities(body).catch(() => body)
+  const enrichedBody = await autoLinkEntities(extracted.body).catch(() => extracted.body)
 
   return {
     title,
@@ -165,6 +369,12 @@ Use the target keywords naturally in the title, first paragraph, subheadings, an
     sourceTitle: '',
     pipeline: 'weekly',
     city,
+    metaTitle: extracted.metaTitle,
+    metaDescription: extracted.metaDescription,
+    tldr: extracted.tldr,
+    faq: extracted.faq,
+    keyTakeaways: extracted.keyTakeaways,
+    contentMode: extracted.contentMode,
   }
 }
 

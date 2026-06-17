@@ -52,6 +52,28 @@ export interface BlogPostSummary {
   // re-submit if this is set, preventing the duplicate-post bug where a
   // retry after a YouTube-RSS timeout would re-fire the social blast.
   socialPublishedAt?: string
+
+  // ── AI / SEO optimization fields ──────────────────────────────────────────
+  // Populated by the publish pipeline; all optional so legacy posts still work.
+  // metaTitle / metaDescription override the page's <title> and meta tags when
+  // present (fallback: title / excerpt).
+  metaTitle?: string
+  metaDescription?: string
+  // 2-3 sentence quotable summary shown above the body and used as the
+  // schema.org Article description. Optimised for AI assistant citation.
+  tldr?: string
+  // Structured FAQ items parsed from the writer's markdown output. Emitted
+  // as schema.org FAQPage on the post page. Legacy posts without this field
+  // fall back to regex-extracting the FAQ section from the body at render.
+  faq?: { question: string; answer: string }[]
+  // 3-5 short bullets summarising the article's "what you should know."
+  // Only populated on AI-optimized posts (Track A); entertainment posts skip.
+  keyTakeaways?: string[]
+  // Resolved at write time from the post's category. Persisted so future
+  // tooling (drift analysis, video-script extraction) can branch on it.
+  // 'ai-optimized' = informational, FAQ + key-takeaways structure.
+  // 'entertainment' = storytelling, scene-first, TikTok / YouTube friendly.
+  contentMode?: 'ai-optimized' | 'entertainment'
 }
 
 export interface BlogPostFull extends BlogPostSummary {
@@ -98,6 +120,15 @@ export async function publishBlogPost(
     sourceUrl: post.sourceUrl || '',
     sourceTitle: post.sourceTitle || '',
     workflowStatus: 'media_pending', // hidden until reviewed + published via VA queue
+    // AI / SEO structured fields — extracted by the writer from its own
+    // markdown output. Persist them so post-page render can emit Article
+    // schema, FAQPage schema, TL;DR callout, etc. without re-parsing.
+    metaTitle: post.metaTitle,
+    metaDescription: post.metaDescription,
+    tldr: post.tldr,
+    faq: post.faq,
+    keyTakeaways: post.keyTakeaways,
+    contentMode: post.contentMode,
   }
 
   // Store full post
@@ -109,6 +140,12 @@ export async function publishBlogPost(
     category: full.category, excerpt: full.excerpt,
     heroImageUrl, pipeline: full.pipeline, city: full.city,
     workflowStatus: 'media_pending',
+    // Mirror structured fields onto the summary so the listing page can
+    // surface TL;DR or contentMode without loading each full post.
+    metaTitle: post.metaTitle,
+    metaDescription: post.metaDescription,
+    tldr: post.tldr,
+    contentMode: post.contentMode,
   }
   const qRaw = await redis.get<string>('blog_posts_queue')
   const queue: BlogPostSummary[] = qRaw
