@@ -56,29 +56,56 @@ export async function getIdea(id: string): Promise<IdeaCandidate | null> {
   return typeof raw === 'string' ? JSON.parse(raw) : raw
 }
 
+// Batch-read every idea key in the queue using Upstash's MGET so we make ~1
+// Redis round-trip instead of N sequential GETs. The previous serial loop
+// hit Vercel's function timeout once the queue grew past ~600 entries,
+// silently breaking the Idea Review page for the VA.
+async function batchFetchIdeas(ids: string[]): Promise<Map<string, IdeaCandidate | null>> {
+  const out = new Map<string, IdeaCandidate | null>()
+  if (ids.length === 0) return out
+  const redis = getRedis()
+  const BATCH = 200   // Upstash MGET caps at ~1000 args; 200 keeps payloads small
+  for (let i = 0; i < ids.length; i += BATCH) {
+    const chunk = ids.slice(i, i + BATCH)
+    const keys = chunk.map(ideaKey)
+    const values = await redis.mget<(string | IdeaCandidate | null)[]>(...keys)
+    for (let j = 0; j < chunk.length; j++) {
+      const raw = values[j]
+      if (!raw) { out.set(chunk[j], null); continue }
+      try {
+        const idea = typeof raw === 'string' ? JSON.parse(raw) as IdeaCandidate : raw as IdeaCandidate
+        out.set(chunk[j], idea)
+      } catch {
+        out.set(chunk[j], null)
+      }
+    }
+  }
+  return out
+}
+
 export async function getPendingIdeas(): Promise<IdeaCandidate[]> {
   const redis = getRedis()
   const ids = await redis.zrange<string[]>(QUEUE_KEY, 0, -1, { rev: true })
   if (!ids || ids.length === 0) return []
 
+  const fetched = await batchFetchIdeas(ids)
   const ideas: IdeaCandidate[] = []
   const expired: string[] = []
 
   for (const id of ids) {
-    const idea = await getIdea(id)
-    if (!idea) {
-      expired.push(id)
-      continue
-    }
-    if (idea.status === 'pending') {
-      ideas.push(idea)
-    } else {
-      expired.push(id)
-    }
+    const idea = fetched.get(id)
+    if (!idea) { expired.push(id); continue }
+    if (idea.status === 'pending') ideas.push(idea)
+    else expired.push(id)
   }
 
   if (expired.length > 0) {
-    await redis.zrem(QUEUE_KEY, ...expired)
+    // ZREM accepts a variadic list of members. Chunk so we never send a
+    // single command larger than Upstash will accept.
+    const BATCH = 200
+    for (let i = 0; i < expired.length; i += BATCH) {
+      await redis.zrem(QUEUE_KEY, ...expired.slice(i, i + BATCH))
+    }
   }
 
   return ideas
@@ -89,9 +116,10 @@ export async function getAllIdeas(): Promise<IdeaCandidate[]> {
   const ids = await redis.zrange<string[]>(QUEUE_KEY, 0, -1, { rev: true })
   if (!ids || ids.length === 0) return []
 
+  const fetched = await batchFetchIdeas(ids)
   const ideas: IdeaCandidate[] = []
   for (const id of ids) {
-    const idea = await getIdea(id)
+    const idea = fetched.get(id)
     if (idea) ideas.push(idea)
   }
   return ideas

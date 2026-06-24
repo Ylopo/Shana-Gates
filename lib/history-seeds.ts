@@ -122,11 +122,16 @@ export async function seedEvergreenHistoryIdeas(): Promise<number> {
   let saved = 0
 
   for (const story of PALM_SPRINGS_STORIES) {
-    const id = `history-${story.slug}-${weekId}`
+    // Stable slug-based ID (no week suffix). The previous `history-${slug}-${weekId}`
+    // pattern created a fresh entry for the same story every week, bloating
+    // the queue indefinitely (1,944 entries seen in production before cleanup).
+    // Stable IDs mirror lib/evergreen-seeds.ts — once Shana approves, the
+    // idea is gone for good; until then it stays in the picker.
+    const id = `history-${story.slug}`
 
-    // Don't overwrite if already reviewed/approved this week
+    // Skip if already in the store (any status) — don't overwrite.
     const existing = await getIdea(id)
-    if (existing && existing.status !== 'pending') continue
+    if (existing) continue
 
     const idea: IdeaCandidate = {
       id,
