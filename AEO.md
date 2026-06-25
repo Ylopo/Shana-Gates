@@ -382,7 +382,7 @@ OUTPUT: Strict JSON matching the AEOPageContent interface (see code).
 | Variable | Purpose |
 |---|---|
 | `ANTHROPIC_API_KEY` | Claude API (claude-sonnet-4-6 recommended for cost/quality balance) |
-| `GITHUB_TOKEN` | Fine-grained PAT with Contents read/write on `kiwi-vegas/Shana-Gates` |
+| `GITHUB_TOKEN` | Fine-grained PAT with Contents read/write on `Ylopo/Shana-Gates` |
 | `UPSTASH_REDIS_REST_URL` | Round counter |
 | `UPSTASH_REDIS_REST_TOKEN` | Redis auth |
 | `RESEND_API_KEY` | Daily summary email |
