@@ -60,10 +60,13 @@ ALWAYS:
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 export type FHViolation = {
+  id: string
   excerpt: string
   reason: string
   severity: 'warning' | 'violation'
   suggestion: string
+  // Review state for the VA-queue Fix/Ignore workflow. Defaults to 'open'.
+  status: 'open' | 'fixed' | 'ignored'
 }
 
 export type FHCheckResult = {
@@ -73,7 +76,34 @@ export type FHCheckResult = {
   reviewedAt?: string
 }
 
+// ── Review-state helpers ─────────────────────────────────────────────────────
+
+/** A hard violation that hasn't been fixed or ignored yet — blocks publishing. */
+export function hasOpenViolations(result: FHCheckResult | null | undefined): boolean {
+  if (!result) return false
+  return result.violations.some((v) => v.severity === 'violation' && v.status === 'open')
+}
+
+/** Recompute top-level severity from the remaining open violations/warnings. */
+export function recomputeSeverity(violations: FHViolation[]): FHCheckResult['severity'] {
+  const open = violations.filter((v) => v.status === 'open')
+  if (open.some((v) => v.severity === 'violation')) return 'violation'
+  if (open.some((v) => v.severity === 'warning')) return 'warning'
+  return 'clear'
+}
+
 export type FHContentType = 'blog-post' | 'social-caption' | 'video-script'
+
+// Small deterministic string hash — used to mint stable per-violation ids so the
+// editor's Fix/Ignore buttons target the same violation across reloads.
+function hashString(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i)
+    h |= 0
+  }
+  return h
+}
 
 // ─── Compliance checker ────────────────────────────────────────────────────────
 
@@ -158,9 +188,18 @@ If the content is fully compliant, return:
     }
 
     const parsed = JSON.parse(jsonMatch[0])
+    const rawViolations = Array.isArray(parsed.violations) ? parsed.violations : []
+    const violations: FHViolation[] = rawViolations.map((v: any, i: number) => ({
+      id: `v${i}-${Math.abs(hashString(String(v.excerpt ?? '') + i)).toString(36)}`,
+      excerpt: String(v.excerpt ?? ''),
+      reason: String(v.reason ?? ''),
+      severity: v.severity === 'violation' ? 'violation' : 'warning',
+      suggestion: String(v.suggestion ?? ''),
+      status: 'open',
+    }))
     return {
-      severity: parsed.severity ?? 'clear',
-      violations: Array.isArray(parsed.violations) ? parsed.violations : [],
+      severity: recomputeSeverity(violations),
+      violations,
       checkedAt: new Date().toISOString(),
     }
   } catch (err: any) {

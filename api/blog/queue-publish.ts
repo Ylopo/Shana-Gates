@@ -11,6 +11,7 @@
  */
 import { checkAdminAuth } from '../../lib/admin-auth'
 import { getPostBySlug, publishQueuedPost } from '../../lib/blog-redis'
+import { getFHResult, hasOpenViolations } from '../../lib/fair-housing'
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -29,6 +30,15 @@ export default async function handler(req: any, res: any) {
   if (!['media_ready', 'media_pending'].includes(post.workflowStatus ?? '')) {
     return res.status(400).json({
       error: `Post is not ready to publish (status: ${post.workflowStatus})`,
+    })
+  }
+
+  // Block publishing while any hard Fair Housing violation is still open.
+  const fhResult = await getFHResult(slug).catch(() => null)
+  if (hasOpenViolations(fhResult)) {
+    return res.status(422).json({
+      error: 'Resolve all Fair Housing violations (Fix or Ignore) before publishing.',
+      violations: fhResult?.violations.filter((v) => v.severity === 'violation' && v.status === 'open'),
     })
   }
 

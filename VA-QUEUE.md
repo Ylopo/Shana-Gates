@@ -37,14 +37,31 @@ The main review screen. Left column has all editable fields; right column has th
 
 **Left column cards:**
 1. **Article** — edit title, suggest AI headlines
-2. **Facebook Post Caption** — edit or AI-generate social copy
-3. **Video Script** — AI-generate a 45–90 second Shana-voice script, or write manually
-4. **Video** — Step 1: HeyGen base video generation; Step 2: upload final edited video
+2. **⚖️ Fair Housing Review** — only shown when the post has flagged violations (see below)
+3. **Facebook Post Caption** — edit or AI-generate social copy
+4. **Video Script** — AI-generate a 45–90 second Shana-voice script, or write manually
+5. **Video** — Step 1: HeyGen base video generation; Step 2: upload final edited video
 
 **Right column:**
 - Thumbnail preview + upload
 - Publish card with "Mark as Ready" and "Publish" buttons
 - Platform status grid (shown after publish with video)
+
+### Fair Housing Review (Fix / Ignore)
+Every post is FH-checked at write time (`lib/fair-housing.ts`) — both the scored-idea
+path (`api/content/ideas.ts`) and the news path (`api/blog/publish.ts`). Violations are
+**no longer hard-blocked**; the post lands in the queue flagged and is resolved here.
+
+- Results are stored in Redis at `sgs:fh:{slug}` and returned by `queue-post` alongside the post.
+- Each violation shows its severity (Violation / Warning), the reason, the flagged phrase,
+  and an AI-suggested compliant rewrite, with two buttons:
+  - **Fix** → `POST /api/blog/fh-resolve {slug, violationId, action:'fix'}` — replaces the
+    flagged phrase with the suggestion across the post title, excerpt, body, and any captions,
+    then marks the violation `fixed`.
+  - **Ignore** → same endpoint with `action:'ignore'` — marks it `ignored`, content untouched.
+- **Publish gate:** `queue-publish` and `queue-schedule` return **422** while any *hard*
+  violation is still `open`. The editor's Publish button stays disabled until all are
+  resolved (warnings don't block). Violation state machine per item: `open → fixed | ignored`.
 
 ---
 

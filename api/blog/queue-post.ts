@@ -1,5 +1,6 @@
 import { checkAdminAuth } from '../../lib/admin-auth'
 import { getPostBySlug } from '../../lib/blog-redis'
+import { getFHResult } from '../../lib/fair-housing'
 
 
 export default async function handler(req: any, res: any) {
@@ -16,6 +17,8 @@ export default async function handler(req: any, res: any) {
   const post = await getPostBySlug(slug)
   if (!post) return res.status(404).json({ error: 'Post not found' })
 
+  const fairHousing = await getFHResult(slug).catch(() => null)
+
   res.setHeader('Cache-Control', 'private, no-store')
-  return res.status(200).json({ post })
+  return res.status(200).json({ post, fairHousing })
 }

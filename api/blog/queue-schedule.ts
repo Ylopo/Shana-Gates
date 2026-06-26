@@ -1,5 +1,6 @@
 import { checkAdminAuth } from '../../lib/admin-auth'
 import { markPostScheduled, cancelPostSchedule, getPostBySlug } from '../../lib/blog-redis'
+import { getFHResult, hasOpenViolations } from '../../lib/fair-housing'
 
 
 export default async function handler(req: any, res: any) {
@@ -19,6 +20,14 @@ export default async function handler(req: any, res: any) {
 
     const ok = ['media_pending', 'media_ready', 'scheduled'].includes(post.workflowStatus ?? '')
     if (!ok) return res.status(400).json({ error: `Cannot schedule from status: ${post.workflowStatus}` })
+
+    // Block scheduling while any hard Fair Housing violation is still open.
+    const fhResult = await getFHResult(slug).catch(() => null)
+    if (hasOpenViolations(fhResult)) {
+      return res.status(422).json({
+        error: 'Resolve all Fair Housing violations (Fix or Ignore) before scheduling.',
+      })
+    }
 
     try {
       await markPostScheduled(slug, scheduledPublishAt, videoUrl, videoThumbnailUrl)

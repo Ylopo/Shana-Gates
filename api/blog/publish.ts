@@ -4,6 +4,7 @@ import { writeFromArticle } from '../../lib/writer'
 import { generateHeroImage } from '../../lib/blog-images'
 import { publishBlogPost, uploadImageAsset } from '../../lib/blog-redis'
 import { injectImagesIntoBody, type ApprovedSelection } from '../../lib/blog-inline-images'
+import { checkFairHousing, saveFHResult } from '../../lib/fair-housing'
 
 const COOKIE_NAME = 'sg_assistant_session'
 const MAX_ARTICLES = 5
@@ -111,6 +112,15 @@ export default async function handler(req: any, res: any) {
         post.body
       )
       const published = await publishBlogPost(post, heroImage)
+      // Fair Housing check — flag (don't block). The post lands in the Media
+      // Queue and the VA resolves each violation via Fix/Ignore in the editor;
+      // queue-publish refuses to go live while a hard violation is still open.
+      try {
+        const fhResult = await checkFairHousing(post.body, 'blog-post')
+        await saveFHResult(post.slug, fhResult)
+      } catch (err: any) {
+        console.error('[publish] FH check failed (non-blocking):', err?.message)
+      }
       return { ...published, title: post.title, category: post.category }
     })
   )

@@ -329,6 +329,35 @@
       color: var(--muted); margin-bottom: 10px; padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
+
+    /* ── Fair Housing review card ── */
+    .fh-card { border-color: rgba(245,158,11,0.35); }
+    .fh-head-note { font-size: 11px; font-weight: 600; margin-left: 8px; padding: 2px 8px; border-radius: 999px; vertical-align: middle; }
+    .fh-head-note.fh-blocked { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .fh-head-note.fh-clear   { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .fh-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .fh-item { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--surf2); }
+    .fh-item.fh-v-hard { border-left: 3px solid #ef4444; }
+    .fh-item.fh-v-warn { border-left: 3px solid #f59e0b; }
+    .fh-item-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .fh-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; }
+    .fh-badge.fh-v-hard { background: rgba(239,68,68,0.15); color: #f87171; }
+    .fh-badge.fh-v-warn { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .fh-reason { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+    .fh-excerpt { font-size: 13px; color: #fca5a5; margin-bottom: 6px; line-height: 1.5; }
+    .fh-excerpt em { font-style: normal; background: rgba(239,68,68,0.12); padding: 0 4px; border-radius: 4px; }
+    .fh-suggestion { font-size: 13px; color: #86efac; margin-bottom: 12px; line-height: 1.5; }
+    .fh-actions { display: flex; gap: 8px; }
+    .fh-btn { font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 7px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text); }
+    .fh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .fh-btn.fh-fix { background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.3); color: #4ade80; }
+    .fh-btn.fh-fix:hover:not(:disabled) { background: rgba(34,197,94,0.24); }
+    .fh-btn.fh-ignore:hover:not(:disabled) { background: rgba(255,255,255,0.06); }
+    .fh-item.fh-resolved { background: transparent; border-style: dashed; opacity: 0.7; padding: 9px 14px; }
+    .fh-resolved-tag { font-size: 11px; font-weight: 700; color: var(--muted); }
+    .fh-resolved .fh-resolved-tag.fixed { color: #4ade80; }
+    .fh-excerpt-mini { font-size: 12px; color: var(--muted); }
+    .fh-gate-note { font-size: 12px; color: #f87171; text-align: center; margin-top: 10px; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -401,6 +430,8 @@
     if (!slug) document.getElementById('loadingState').textContent = 'No slug provided.'
 
     let currentPost = null
+    let currentFH = null              // FHCheckResult for this post (or null)
+    let publishEnabledByStatus = false // true when status allows publishing (media_ready)
     let pendingImageBase64 = null
     let pendingVideoUrl = null        // Vercel Blob URL after upload
     let heygenPollInterval = null     // polling timer for HeyGen status
@@ -738,13 +769,107 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
       }
     }
 
-    function render(post) {
+    // ── Fair Housing review ──────────────────────────────────────────────────
+    function fhOpenHardCount(fh) {
+      if (!fh || !Array.isArray(fh.violations)) return 0
+      return fh.violations.filter(v => v.severity === 'violation' && v.status === 'open').length
+    }
+
+    function fhCardHtml(fh) {
+      if (!fh || !Array.isArray(fh.violations) || !fh.violations.length) return ''
+      const openHard = fhOpenHardCount(fh)
+      const rows = fh.violations.map(v => {
+        if (v.status !== 'open') {
+          const fixed = v.status === 'fixed'
+          return `<div class="fh-item fh-resolved">
+            <div class="fh-item-head">
+              <span class="fh-resolved-tag ${fixed ? 'fixed' : ''}">${fixed ? '✓ Fixed' : '— Ignored'}</span>
+              <span class="fh-excerpt-mini">"${escHtml(v.excerpt)}"</span>
+            </div>
+          </div>`
+        }
+        const hard = v.severity === 'violation'
+        const sevClass = hard ? 'fh-v-hard' : 'fh-v-warn'
+        return `<div class="fh-item ${sevClass}" id="fh-item-${v.id}">
+          <div class="fh-item-head">
+            <span class="fh-badge ${sevClass}">${hard ? 'Violation' : 'Warning'}</span>
+            <span class="fh-reason">${escHtml(v.reason)}</span>
+          </div>
+          <div class="fh-excerpt">Flagged: "<em>${escHtml(v.excerpt)}</em>"</div>
+          ${v.suggestion ? `<div class="fh-suggestion">Suggested: "${escHtml(v.suggestion)}"</div>` : ''}
+          <div class="fh-actions">
+            <button class="fh-btn fh-fix" onclick="resolveFH('${v.id}','fix')" ${v.suggestion ? '' : 'disabled title="No suggested rewrite"'}>Fix</button>
+            <button class="fh-btn fh-ignore" onclick="resolveFH('${v.id}','ignore')">Ignore</button>
+          </div>
+        </div>`
+      }).join('')
+      const note = openHard > 0
+        ? `<span class="fh-head-note fh-blocked">${openHard} unresolved — publishing blocked</span>`
+        : `<span class="fh-head-note fh-clear">All resolved ✓</span>`
+      return `<div class="card fh-card" id="fhCard">
+        <div class="card-label">⚖️ Fair Housing Review ${note}</div>
+        <div class="fh-list">${rows}</div>
+      </div>`
+    }
+
+    function applyFHGate() {
+      const blocked = fhOpenHardCount(currentFH) > 0
+      const pubBtn = document.getElementById('publishBtn')
+      if (pubBtn) pubBtn.disabled = !publishEnabledByStatus || blocked
+      const gate = document.getElementById('fhGateNote')
+      if (gate) gate.textContent = blocked
+        ? 'Resolve the Fair Housing items above before publishing.'
+        : ''
+    }
+
+    function refreshFHCard() {
+      const card = document.getElementById('fhCard')
+      const html = fhCardHtml(currentFH)
+      if (card) {
+        if (html) card.outerHTML = html
+        else card.remove()
+      }
+      applyFHGate()
+    }
+
+    async function resolveFH(violationId, action) {
+      if (!currentPost) return
+      const item = document.getElementById('fh-item-' + violationId)
+      if (item) item.querySelectorAll('button').forEach(b => b.disabled = true)
+      try {
+        const r = await fetch('/api/blog/fh-resolve' + (_sgSecret ? '?secret=' + encodeURIComponent(_sgSecret) : ''), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: currentPost.slug, violationId, action }),
+        })
+        if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
+        const d = await r.json()
+        if (!r.ok) throw new Error(d.error || 'Could not resolve')
+        currentFH = d.fairHousing
+        if (d.post) {
+          currentPost.title = d.post.title
+          currentPost.excerpt = d.post.excerpt
+          currentPost.body = d.post.body
+          const ti = document.getElementById('titleInput')
+          if (ti) ti.value = d.post.title
+        }
+        refreshFHCard()
+        showToast(action === 'fix' ? 'Violation fixed' : 'Violation ignored')
+      } catch (err) {
+        if (item) item.querySelectorAll('button').forEach(b => b.disabled = false)
+        showToast(err.message || 'Could not resolve', true)
+      }
+    }
+
+    function render(post, fh) {
       currentPost = post
+      currentFH = fh || null
       const status = post.workflowStatus || 'media_pending'
       const isPending   = status === 'media_pending'
       const isReady     = status === 'media_ready'
       const isScheduled = status === 'scheduled'
       const isPublished = status === 'published'
+      publishEnabledByStatus = isReady
       const catLabel    = CATEGORY_LABELS[post.category] || post.category
       const prompt      = buildImagePrompt(post)
 
@@ -795,6 +920,9 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             <div id="suggestError"></div>
             ${post.excerpt ? `<div class="post-excerpt">${post.excerpt}</div>` : ''}
           </div>
+
+          <!-- Fair Housing review -->
+          ${fhCardHtml(currentFH)}
 
           <!-- Social captions (per platform) -->
           <div class="card">
@@ -922,6 +1050,7 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
             <div class="publish-prereq" id="publishPrereq" ${isReady || isScheduled || isPublished ? 'style="display:none"' : ''}>
               Upload a thumbnail, then click<br>"Mark as Ready" first.
             </div>
+            <div id="fhGateNote" class="fh-gate-note"></div>
             <div id="actionError"></div>
           </div>
 
@@ -952,6 +1081,9 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
 
       document.getElementById('editorGrid').style.display = 'grid'
       document.getElementById('loadingState').style.display = 'none'
+
+      // Enforce the Fair Housing publish gate after the grid is in the DOM
+      applyFHGate()
 
       // Seed caption textarea with active platform value + listen for edits
       const captionEl = document.getElementById('captionArea')
@@ -1329,7 +1461,7 @@ Style: bold text overlay, professional real estate feel, bright and eye-catching
         if (r.status === 401) { window.location.href = '/admin/assistant/login.html'; return }
         const d = await r.json()
         if (!r.ok) throw new Error(d.error || 'Not found')
-        render(d.post)
+        render(d.post, d.fairHousing)
       } catch (err) {
         document.getElementById('loadingState').innerHTML =
           `<div style="color:var(--muted);font-size:14px;"><strong style="color:var(--text);display:block;margin-bottom:6px;">Error loading post</strong>${err.message}</div>`

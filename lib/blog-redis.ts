@@ -224,6 +224,44 @@ export async function markPostReady(
   }
 }
 
+/**
+ * Apply a content edit to a queued post without changing its workflow status.
+ * Used by the Fair Housing "Fix" action to write the compliant rewrite back
+ * into the post body / title / excerpt / captions. Mirrors the changed fields
+ * into the queue summary so listings stay in sync.
+ */
+export async function applyContentEdit(
+  slug: string,
+  fields: Partial<Pick<BlogPostFull, 'title' | 'excerpt' | 'body' | 'socialCopy' | 'captions'>>,
+): Promise<BlogPostFull> {
+  const key = `blog_post:${slug}`
+  const raw = await redis.get<string>(key)
+  if (!raw) throw new Error(`Post not found: ${slug}`)
+  const post: BlogPostFull = typeof raw === 'string' ? JSON.parse(raw) : raw
+
+  if (fields.title !== undefined) post.title = fields.title
+  if (fields.excerpt !== undefined) post.excerpt = fields.excerpt
+  if (fields.body !== undefined) post.body = fields.body
+  if (fields.socialCopy !== undefined) post.socialCopy = fields.socialCopy
+  if (fields.captions !== undefined) post.captions = fields.captions
+  await redis.set(key, JSON.stringify(post))
+
+  const qRaw = await redis.get<string>('blog_posts_queue')
+  const queue: BlogPostSummary[] = qRaw
+    ? (typeof qRaw === 'string' ? JSON.parse(qRaw) : (qRaw as BlogPostSummary[]))
+    : []
+  const idx = queue.findIndex((p) => p.slug === slug)
+  if (idx >= 0) {
+    if (fields.title !== undefined) queue[idx].title = fields.title
+    if (fields.excerpt !== undefined) queue[idx].excerpt = fields.excerpt
+    if (fields.socialCopy !== undefined) queue[idx].socialCopy = fields.socialCopy
+    if (fields.captions !== undefined) queue[idx].captions = fields.captions
+    await redis.set('blog_posts_queue', JSON.stringify(queue))
+  }
+
+  return post
+}
+
 // ── Scheduling ─────────────────────────────────────────────────────────────
 
 export async function markPostScheduled(

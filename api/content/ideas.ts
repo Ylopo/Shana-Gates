@@ -92,17 +92,12 @@ export default async function handler(req: any, res: any) {
       const learnings = await getLearnings()
       const draft = await writePostFromIdea(idea, learnings)
 
-      // Fair housing check (block on violation, warn otherwise)
+      // Fair housing check. We no longer block on violations — the post is sent
+      // to the Media Queue flagged, and the VA resolves each violation (Fix or
+      // Ignore) in the editor. queue-publish refuses to go live while any hard
+      // violation is still open. FH result is keyed by SLUG so the editor finds it.
       const markdownBody = portableTextToMarkdown(draft.body)
       const fhResult = await checkFairHousing(markdownBody, 'blog-post')
-
-      if (fhResult.severity === 'violation') {
-        await saveFHResult(id, fhResult)
-        return res.status(422).json({
-          error: 'Fair Housing violation detected — post not published',
-          violations: fhResult.violations,
-        })
-      }
 
       // Build a BlogPostOutput for the Redis Media Queue (matches the article path)
       const post: BlogPostOutput = {
@@ -126,7 +121,7 @@ export default async function handler(req: any, res: any) {
 
       // Publish to Redis as media_pending — lands in the VA / Media Queue
       const published = await publishBlogPost(post, heroImage)
-      await saveFHResult(id, fhResult)
+      await saveFHResult(post.slug, fhResult)
       await addCoveredTopic(post.slug)
 
       return res.status(200).json({
