@@ -10,7 +10,7 @@
  * to CASES — they run in order and each is reported independently.
  */
 import { strict as assert } from 'node:assert'
-import { normalizeScriptForSpeech, intToWords, yearToWords } from './normalize-speech'
+import { normalizeScriptForSpeech, intToWords, yearToWords, intToOrdinal } from './normalize-speech'
 
 type Case = readonly [label: string, input: string, expected: string]
 
@@ -37,10 +37,39 @@ const CASES: Case[] = [
   ['percent 6.75%', '6.75% APR', 'six point seven five percent APR'],
 
   // ── Measurements ─────────────────────────────────────────────────────────
-  ['sq ft 1,250', '1,250 sq ft', 'twelve hundred fifty square feet'],
-  ['sq ft 2,400', '2,400 sq ft of living space', 'twenty-four hundred square feet of living space'],
+  ['sq ft 1,250', '1,250 sq ft', 'one thousand two hundred fifty square feet'],
+  ['sq ft 2,400', '2,400 sq ft of living space', 'two thousand four hundred square feet of living space'],
+  ['sq ft 3,400 (spec example)', '3,400 square feet', 'three thousand four hundred square feet'],
   ['acres 0.25', 'sits on 0.25 acres', 'sits on zero point two five acres'],
   ['acres 1', 'just 1 acre', 'just one acre'],
+  ['miles plain', '5 miles east of town', 'five miles east of town'],
+  ['miles decimal', '2.5 miles to the airport', 'two point five miles to the airport'],
+  ['acres spec example', 'purchased 25,000 acres', 'purchased twenty-five thousand acres'],
+
+  // ── Ordinals (1st → first, 250th → two hundred fiftieth) ─────────────────
+  ['ordinal 1st', 'finished 1st place', 'finished first place'],
+  ['ordinal 2nd', 'her 2nd home purchase', 'her second home purchase'],
+  ['ordinal 3rd', 'on the 3rd floor', 'on the third floor'],
+  ['ordinal 25th', 'celebrating its 25th anniversary', 'celebrating its twenty-fifth anniversary'],
+  ['ordinal 250th', 'the 250th property to sell', 'the two hundred fiftieth property to sell'],
+  ['ordinal 21st', 'this 21st century landmark', 'this twenty-first century landmark'],
+  ['ordinal 100th', 'the 100th day on market', 'the one hundredth day on market'],
+  ['ordinal 1000th', 'the 1000th sale of the year', 'the one thousandth sale of the year'],
+
+  // ── Dates (July 4, 2026 → July fourth, twenty twenty-six) ────────────────
+  ['date full', 'on July 4, 2026', 'on July fourth, twenty twenty-six'],
+  ['date no year', 'celebrate December 25 with us', 'celebrate December twenty-fifth with us'],
+  ['date short month', 'closed Dec 25, 2026', 'closed Dec twenty-fifth, twenty twenty-six'],
+  ['date with ordinal', 'on July 4th, 2026', 'on July fourth, twenty twenty-six'],
+  ['date 1st of month', 'open house March 1, 2026', 'open house March first, twenty twenty-six'],
+
+  // ── Times (7:30 AM → seven thirty A.M.) ──────────────────────────────────
+  ['time 7:30 AM', 'open at 7:30 AM', 'open at seven thirty A.M.'],
+  ['time 12:00 PM (noon)', 'lunch at 12:00 PM', 'lunch at noon'],
+  ['time 12:00 AM (midnight)', 'cutoff at 12:00 AM', 'cutoff at midnight'],
+  ['time 12:30 PM', 'showing at 12:30 PM', 'showing at twelve thirty P.M.'],
+  ['time 7:05 AM (oh five)', 'arrived at 7:05 AM', 'arrived at seven oh five A.M.'],
+  ['time 7:00 PM (zero minutes)', 'event at 7:00 PM', 'event at seven P.M.'],
 
   // ── Ranges ───────────────────────────────────────────────────────────────
   ['range 5–7 minutes', '5–7 minutes drive', 'five to seven minutes drive'],
@@ -69,7 +98,14 @@ const CASES: Case[] = [
   [
     'mixed script',
     'Built in 1950 and listed at $1.5M, this 2,400 sq ft estate features 3 bed / 2 bath at a 3.5% rate.',
-    'Built in nineteen fifty and listed at one point five million dollars, this twenty-four hundred square feet estate features three bed, two bath at a three point five percent rate.',
+    'Built in nineteen fifty and listed at one point five million dollars, this two thousand four hundred square feet estate features three bed, two bath at a three point five percent rate.',
+  ],
+
+  // ── User's spec example (from the prompt) ────────────────────────────────
+  [
+    'spec example — Howard Hughes',
+    'Howard Hughes purchased 25,000 acres in 1950 for $3,500,000. By 2026, homes in the area were selling for over $1,500,000.',
+    'Howard Hughes purchased twenty-five thousand acres in nineteen fifty for three million five hundred thousand dollars. By twenty twenty-six, homes in the area were selling for over one million five hundred thousand dollars.',
   ],
 
   // ── Plain decimals + small integers ──────────────────────────────────────
@@ -92,6 +128,17 @@ function helperChecks(): void {
   assert.equal(yearToWords(2009), 'two thousand nine')
   assert.equal(yearToWords(2010), 'twenty ten')
   assert.equal(yearToWords(2026), 'twenty twenty-six')
+
+  assert.equal(intToOrdinal(1), 'first')
+  assert.equal(intToOrdinal(2), 'second')
+  assert.equal(intToOrdinal(3), 'third')
+  assert.equal(intToOrdinal(11), 'eleventh')
+  assert.equal(intToOrdinal(20), 'twentieth')
+  assert.equal(intToOrdinal(21), 'twenty-first')
+  assert.equal(intToOrdinal(25), 'twenty-fifth')
+  assert.equal(intToOrdinal(100), 'one hundredth')
+  assert.equal(intToOrdinal(250), 'two hundred fiftieth')
+  assert.equal(intToOrdinal(1000), 'one thousandth')
 }
 
 // ── Runner ───────────────────────────────────────────────────────────────────

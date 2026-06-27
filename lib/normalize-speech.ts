@@ -137,19 +137,61 @@ function digitByDigit(s: string): string {
   return s.split('').map(c => ONES[parseInt(c, 10)] ?? c).join(' ')
 }
 
-/** Real-estate convention: 1,250 sq ft reads as "twelve hundred fifty"
- *  (not "one thousand two hundred fifty"). Only applies inside a measurement
- *  context — outside that context this function isn't called. */
-function sqFtToWords(n: number): string {
-  if (n >= 1000 && n < 10000) {
-    const hundreds = Math.floor(n / 100)
-    const rest = n % 100
-    const hundredsWord = under100(hundreds)
-    if (rest === 0) return `${hundredsWord} hundred`
-    return `${hundredsWord} hundred ${under100(rest)}`
+// ── Ordinals (1st → first, 250th → two hundred fiftieth) ──────────────────────
+const ONES_ORD  = ['zeroth', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth']
+const TEENS_ORD = ['tenth', 'eleventh', 'twelfth', 'thirteenth', 'fourteenth', 'fifteenth', 'sixteenth', 'seventeenth', 'eighteenth', 'nineteenth']
+const TENS_ORD  = ['', '', 'twentieth', 'thirtieth', 'fortieth', 'fiftieth', 'sixtieth', 'seventieth', 'eightieth', 'ninetieth']
+
+export function intToOrdinal(n: number): string {
+  if (!Number.isInteger(n) || n < 0) return intToWords(n) + 'th'
+  if (n < 10) return ONES_ORD[n]
+  if (n < 20) return TEENS_ORD[n - 10]
+  if (n < 100) {
+    const t = Math.floor(n / 10)
+    const o = n % 10
+    return o === 0 ? TENS_ORD[t] : `${TENS[t]}-${ONES_ORD[o]}`
   }
-  return intToWords(n)
+  if (n < 1000) {
+    const h = Math.floor(n / 100)
+    const rest = n % 100
+    if (rest === 0) return `${ONES[h]} hundredth`
+    return `${ONES[h]} hundred ${intToOrdinal(rest)}`
+  }
+  if (n < 1_000_000) {
+    const k = Math.floor(n / 1000)
+    const rest = n % 1000
+    if (rest === 0) return `${under1000(k)} thousandth`
+    return `${under1000(k)} thousand ${intToOrdinal(rest)}`
+  }
+  if (n < 1_000_000_000) {
+    const m = Math.floor(n / 1_000_000)
+    const rest = n % 1_000_000
+    if (rest === 0) return `${under1000(m)} millionth`
+    return `${under1000(m)} million ${intToOrdinal(rest)}`
+  }
+  const b = Math.floor(n / 1_000_000_000)
+  const rest = n % 1_000_000_000
+  if (rest === 0) return `${under1000(b)} billionth`
+  return `${under1000(b)} billion ${intToOrdinal(rest)}`
 }
+
+// ── Times (7:30 AM → seven thirty A.M., 12:00 PM → noon) ──────────────────────
+function timeToWords(hour: number, minute: number, ampm: string): string {
+  const isPm = /p/i.test(ampm)
+  if (hour === 12 && minute === 0) return isPm ? 'noon' : 'midnight'
+  const hourWord = intToWords(hour)
+  let minutePart = ''
+  if (minute > 0 && minute < 10)       minutePart = ` oh ${ONES[minute]}`
+  else if (minute >= 10)                minutePart = ` ${intToWords(minute)}`
+  const period = isPm ? 'P.M.' : 'A.M.'
+  return `${hourWord}${minutePart} ${period}`
+}
+
+// ── Dates ─────────────────────────────────────────────────────────────────────
+// Months — full names + common abbreviations. Used by the date pass so a
+// preceding month token tells us the next number is a day-of-month (and the
+// next 4-digit number after a comma is a year).
+const MONTH_PATTERN = '(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)'
 
 const PH_OPEN = 'PH'
 const PH_CLOSE = ''
@@ -198,6 +240,37 @@ export function normalizeScriptForSpeech(script: string): string {
   // ── Pass 4: percentages ──
   out = out.replace(/(\d+(?:\.\d+)?)\s*%/g, (_, num) => `${decimalToWords(num)} percent`)
 
+  // ── Pass 4.1: times (7:30 AM → seven thirty A.M., 12:00 PM → noon) ──
+  // Runs before year + integer passes so "12:00" doesn't get torn apart.
+  out = out.replace(/\b(\d{1,2}):(\d{2})\s*([aApP]\.?[mM]\.?)\b/g, (_, h, m, ampm) => {
+    const hour = parseInt(h, 10)
+    const minute = parseInt(m, 10)
+    if (hour < 1 || hour > 12 || minute > 59) return _ // not a valid time, leave as-is
+    return timeToWords(hour, minute, ampm)
+  })
+
+  // ── Pass 4.2: dates ("July 4, 2026" → "July fourth, twenty twenty-six") ──
+  // Day becomes ordinal; optional year becomes spoken-year form. Runs before
+  // the ordinal pass so "July 4th" is consumed here as a whole.
+  out = out.replace(
+    new RegExp(`\\b(${MONTH_PATTERN})\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:,?\\s*(\\d{4}))?\\b`, 'g'),
+    (_, month, day, year) => {
+      const dayN = parseInt(day, 10)
+      if (dayN < 1 || dayN > 31) return _
+      const dayWord = intToOrdinal(dayN)
+      if (year) {
+        const yearN = parseInt(year, 10)
+        return `${month} ${dayWord}, ${yearToWords(yearN)}`
+      }
+      return `${month} ${dayWord}`
+    },
+  )
+
+  // ── Pass 4.3: ordinals (1st → first, 250th → two hundred fiftieth) ──
+  // Runs AFTER dates so "July 4th" is already consumed, but BEFORE the
+  // remaining-integer pass so "25th" doesn't become "twenty-five th".
+  out = out.replace(/\b(\d+)(st|nd|rd|th)\b/g, (_, num) => intToOrdinal(parseInt(num, 10)))
+
   // ── Pass 5: bed/bath slash shorthand ──
   // "2 bed / 2 bath" → "two bed, two bath" (replaces the slash with a comma
   // so the reader pauses naturally between the two facts).
@@ -214,16 +287,26 @@ export function normalizeScriptForSpeech(script: string): string {
     })
 
   // ── Pass 6: square footage ──
+  // Standard form per spec: "3,400 square feet" → "three thousand four hundred
+  // square feet" (not "thirty-four hundred" — that's a slangier convention).
   out = out.replace(/(\d{1,3}(?:,\d{3})+|\d+)\s*(?:sq\s*\.?\s*ft|square\s+feet|sqft|sf)\b/gi,
     (_, num) => {
       const n = parseInt(num.replace(/,/g, ''), 10)
-      return `${sqFtToWords(n)} square feet`
+      return `${intToWords(n)} square feet`
     })
 
   // ── Pass 7: acres ──
-  out = out.replace(/(\d+(?:\.\d+)?)\s*acres?\b/gi, (_, num) => {
-    const word = decimalToWords(num)
-    const unit = parseFloat(num) === 1 ? 'acre' : 'acres'
+  // Accept comma-grouped form ("25,000 acres") OR decimal ("0.25 acres") OR
+  // plain integer ("5 acres"). Without the comma-grouped alternative the
+  // \d+ would greedily match just the trailing "000" of "25,000 acres" and
+  // produce nonsense like "twenty-five,zero acres".
+  out = out.replace(/(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)\s*acres?\b/gi, (_, num) => {
+    const hasComma = num.includes(',')
+    const clean = num.replace(/,/g, '')
+    const word = hasComma
+      ? intToWords(parseInt(clean, 10))
+      : decimalToWords(num)
+    const unit = parseFloat(clean) === 1 ? 'acre' : 'acres'
     return `${word} ${unit}`
   })
 
