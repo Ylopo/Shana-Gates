@@ -584,6 +584,49 @@
       return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     }
 
+    // HTML-escape — used by the Fair Housing rendering code below to safely
+    // print violation excerpts that may contain quotes / brackets / etc.
+    // Missing this function was throwing "escHtml is not defined" and
+    // breaking the entire editor render for any post with FH violations.
+    function escHtml(str) {
+      if (str == null) return ''
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+    }
+
+    // Minimal toast — self-contained, no setup needed. Called from
+    // resolveFH() and anywhere else that wants a non-blocking notice.
+    let _sgToastTimer = null
+    function showToast(message, isError) {
+      let el = document.getElementById('sgToast')
+      if (!el) {
+        el = document.createElement('div')
+        el.id = 'sgToast'
+        el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);'
+          + 'background:#141414;border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:14px;'
+          + 'padding:11px 20px;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);'
+          + 'opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;z-index:9999;'
+          + 'max-width:80vw;font-family:system-ui,-apple-system,sans-serif;'
+        document.body.appendChild(el)
+      }
+      el.textContent = message
+      el.style.borderColor = isError ? 'rgba(239,68,68,0.4)' : 'rgba(255,255,255,0.1)'
+      el.style.background = isError ? '#1f0a0a' : '#141414'
+      requestAnimationFrame(() => {
+        el.style.opacity = '1'
+        el.style.transform = 'translateX(-50%) translateY(0)'
+      })
+      clearTimeout(_sgToastTimer)
+      _sgToastTimer = setTimeout(() => {
+        el.style.opacity = '0'
+        el.style.transform = 'translateX(-50%) translateY(20px)'
+      }, 3000)
+    }
+
     function buildImagePrompt(post) {
       const catLabel = CATEGORY_LABELS[post.category] || post.category
       const location = post.city
